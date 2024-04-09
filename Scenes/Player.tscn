@@ -1,0 +1,28 @@
+[gd_scene load_steps=7 format=3 uid="uid://cjm6k462fd10s"]
+
+[ext_resource type="Script" path="res://Scenes/PlayerController.cs" id="1_ggywo"]
+[ext_resource type="Texture2D" uid="uid://chsgw2f0w0xf8" path="res://Assets/Player/bushy_t_pose.png" id="1_qlc4m"]
+[ext_resource type="PackedScene" uid="uid://cnkptwq4h84kk" path="res://Scenes/MovementComponent.tscn" id="3_wt20f"]
+[ext_resource type="PackedScene" uid="uid://seeco12ddgj7" path="res://Scenes/StateMachine.tscn" id="4_wtgcq"]
+[ext_resource type="Script" path="res://Scenes/GroundedState.cs" id="5_usjmr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3yif5"]
+size = Vector2(11.5, 15.5)
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_ggywo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.25, 0.25)
+shape = SubResource("RectangleShape2D_3yif5")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("1_qlc4m")
+
+[node name="MovementComponent" parent="." instance=ExtResource("3_wt20f")]
+
+[node name="StateMachine" parent="." instance=ExtResource("4_wtgcq")]
+
+[node name="GroundedState" type="Node" parent="StateMachine"]
+script = ExtResource("5_usjmr")

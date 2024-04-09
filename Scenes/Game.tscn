@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://jqayura2cnu7"]
+
+[ext_resource type="PackedScene" uid="uid://ckfgm88pv1iau" path="res://Scenes/Level.tscn" id="1_le2my"]
+[ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
+
+[node name="Game" type="Node2D"]
+
+[node name="TileMap" parent="." instance=ExtResource("1_le2my")]
+texture_filter = 1
+
+[node name="Player" parent="." instance=ExtResource("2_py0in")]
+position = Vector2(254, 132)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
