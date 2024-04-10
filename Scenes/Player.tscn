@@ -1,16 +1,20 @@
-[gd_scene load_steps=7 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=11 format=3 uid="uid://cjm6k462fd10s"]
 
-[ext_resource type="Script" path="res://Scenes/PlayerController.cs" id="1_ggywo"]
+[ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Texture2D" uid="uid://chsgw2f0w0xf8" path="res://Assets/Player/bushy_t_pose.png" id="1_qlc4m"]
 [ext_resource type="PackedScene" uid="uid://cnkptwq4h84kk" path="res://Scenes/MovementComponent.tscn" id="3_wt20f"]
+[ext_resource type="Script" path="res://Scripts/Components/MovementComponent.cs" id="4_ufg2q"]
 [ext_resource type="PackedScene" uid="uid://seeco12ddgj7" path="res://Scenes/StateMachine.tscn" id="4_wtgcq"]
-[ext_resource type="Script" path="res://Scenes/GroundedState.cs" id="5_usjmr"]
+[ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine/PlayerVariables.tres" id="6_pknnn"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/GroundedState.cs" id="6_x2myn"]
+[ext_resource type="PackedScene" uid="uid://bm6r2edmdx3an" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
+[ext_resource type="Script" path="res://Scripts/InputsComponent.cs" id="9_03rmc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3yif5"]
 size = Vector2(11.5, 15.5)
 
 [node name="Player" type="CharacterBody2D"]
-script = ExtResource("1_ggywo")
+script = ExtResource("1_1vn0y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0.25, 0.25)
@@ -21,8 +25,19 @@ texture_filter = 1
 texture = ExtResource("1_qlc4m")
 
 [node name="MovementComponent" parent="." instance=ExtResource("3_wt20f")]
+position = Vector2(1, 0)
+script = ExtResource("4_ufg2q")
 
-[node name="StateMachine" parent="." instance=ExtResource("4_wtgcq")]
+[node name="StateMachine" parent="." node_paths=PackedStringArray("movementComponent", "ActionsComponent") instance=ExtResource("4_wtgcq")]
+movementComponent = NodePath("../MovementComponent")
+characterVariables = ExtResource("6_pknnn")
+ActionsComponent = NodePath("../ActionsComponent")
 
 [node name="GroundedState" type="Node" parent="StateMachine"]
-script = ExtResource("5_usjmr")
+script = ExtResource("6_x2myn")
+
+[node name="ActionsComponent" parent="." instance=ExtResource("7_2bflq")]
+
+[node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
+script = ExtResource("9_03rmc")
+actionsComponent = NodePath("../ActionsComponent")

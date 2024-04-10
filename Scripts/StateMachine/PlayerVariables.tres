@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://t33dl5smdn5l"]
+
+[ext_resource type="Script" path="res://Scripts/StateMachine/CharacterVariables.cs" id="1_7vx6x"]
+
+[resource]
+script = ExtResource("1_7vx6x")
+GroundHorizontalAcceleration = 400
+GroundHorizontalDeceleration = 1800
+GroundHorizontalMovementSpeed = 250

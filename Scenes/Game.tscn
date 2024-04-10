@@ -9,6 +9,6 @@
 texture_filter = 1
 
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
-position = Vector2(254, 132)
+position = Vector2(272, 233)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]

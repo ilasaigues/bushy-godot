@@ -6,4 +6,7 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>Bushygodot</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Firebelley.GodotUtilities" Version="5.0.0" />
+  </ItemGroup>
 </Project>
