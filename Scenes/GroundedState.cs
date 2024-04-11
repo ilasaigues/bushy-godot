@@ -4,12 +4,12 @@ using System.Diagnostics;
 
 public partial class GroundedState : BaseState
 {
-	public const float Speed = 300.0f;
+	public const float Speed = 150.0f;
 	public const float JumpVelocity = -400.0f;
 	public const float Gravity = 1000f;
 
-    public override void UpdateInternal(double delta)
-    {
+	public override void UpdateInternal(double delta)
+	{
 		Vector2 velocity = movementComponent.CurrentVelocity;
 
 		bool onFloor = movementComponent.IsOnFloor;
@@ -35,6 +35,6 @@ public partial class GroundedState : BaseState
 
 		
 		movementComponent.Velocities[MovementComponent.VelocityType.MainMovement] = velocity;
-    }
+	}
 
 }

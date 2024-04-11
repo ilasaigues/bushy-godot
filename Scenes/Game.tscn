@@ -1,9 +1,12 @@
-[gd_scene load_steps=11 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=16 format=3 uid="uid://jqayura2cnu7"]
 
-[ext_resource type="PackedScene" uid="uid://ckfgm88pv1iau" path="res://Scenes/Level.tscn" id="1_le2my"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
+[ext_resource type="Texture2D" uid="uid://ef1lva2h8gum" path="res://Assets/Background/Forest5.png" id="3_rmref"]
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="3_sk417"]
 [ext_resource type="Script" path="res://bgm_test.gd" id="3_yg82o"]
+[ext_resource type="PackedScene" path="res://Scenes/Background Test.tscn" id="4_o424s"]
+[ext_resource type="Texture2D" uid="uid://qgf8xkxh2e1h" path="res://Assets/Background/Forest3.png" id="5_vqayu"]
+[ext_resource type="Texture2D" uid="uid://bonmdqqp0og3d" path="res://Assets/Background/Forest1.png" id="7_8bitn"]
 
 [sub_resource type="CSharpScript" id="CSharpScript_s7yvw"]
 script/source = "using Godot;
@@ -82,15 +85,16 @@ Button/styles/hover = SubResource("StyleBoxFlat_5ef0f")
 Button/styles/normal = SubResource("StyleBoxFlat_0b37n")
 Button/styles/pressed = SubResource("StyleBoxFlat_0g4c4")
 
+[sub_resource type="Gradient" id="Gradient_bw885"]
+offsets = PackedFloat32Array(0, 0.668605)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_f4u52"]
+gradient = SubResource("Gradient_bw885")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
 [node name="Game" type="Node2D"]
-
-[node name="TileMap" parent="." instance=ExtResource("1_le2my")]
-texture_filter = 1
-
-[node name="Player" parent="." instance=ExtResource("2_py0in")]
-position = Vector2(254, 132)
-
-[node name="Camera2D" type="Camera2D" parent="Player"]
 
 [node name="Audio Manager" type="Node" parent="."]
 script = ExtResource("3_yg82o")
@@ -149,6 +153,51 @@ offset_bottom = 22.0
 action_mode = 0
 text = "Death
 "
+
+[node name="Background Test" parent="." instance=ExtResource("4_o424s")]
+light_mask = 3
+texture_filter = 1
+position = Vector2(-431, -447)
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer4" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.33, 0.5)
+
+[node name="Forest5" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer4"]
+texture_filter = 1
+position = Vector2(337, 28)
+texture = ExtResource("3_rmref")
+
+[node name="ParallaxLayer3" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.66, 0.75)
+
+[node name="Forest3" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer3"]
+texture_filter = 1
+position = Vector2(337, 28)
+texture = ExtResource("5_vqayu")
+
+[node name="Forest1" type="Sprite2D" parent="."]
+modulate = Color(0.784314, 0.784314, 0.784314, 1)
+light_mask = 3
+texture_filter = 1
+position = Vector2(337, 28)
+texture = ExtResource("7_8bitn")
+
+[node name="Player" parent="." instance=ExtResource("2_py0in")]
+light_mask = 2
+position = Vector2(458, 247)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2(0, -50)
+
+[node name="PointLight2D" type="PointLight2D" parent="Player"]
+position = Vector2(-1, 0)
+color = Color(1, 0.360784, 0.239216, 1)
+energy = 2.0
+range_item_cull_mask = 2
+texture = SubResource("GradientTexture2D_f4u52")
+texture_scale = 1.5
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Finisher" to="Audio Manager" method="_on_finisher_button_down"]
