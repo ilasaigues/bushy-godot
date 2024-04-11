@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://ef1lva2h8gum" path="res://Assets/Background/Forest5.png" id="3_rmref"]
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="3_sk417"]
 [ext_resource type="Script" path="res://bgm_test.gd" id="3_yg82o"]
-[ext_resource type="PackedScene" path="res://Scenes/Background Test.tscn" id="4_o424s"]
+[ext_resource type="PackedScene" uid="uid://b6nji2qu7xm6" path="res://Scenes/Background Test.tscn" id="4_o424s"]
 [ext_resource type="Texture2D" uid="uid://qgf8xkxh2e1h" path="res://Assets/Background/Forest3.png" id="5_vqayu"]
 [ext_resource type="Texture2D" uid="uid://bonmdqqp0og3d" path="res://Assets/Background/Forest1.png" id="7_8bitn"]
 
@@ -186,7 +186,7 @@ texture = ExtResource("7_8bitn")
 
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
-position = Vector2(458, 247)
+position = Vector2(462, 266)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(0, -50)

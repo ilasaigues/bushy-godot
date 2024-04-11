@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://seeco12ddgj7" path="res://Scenes/StateMachine.tscn" id="4_wtgcq"]
 [ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine/PlayerVariables.tres" id="6_pknnn"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/GroundedState.cs" id="6_x2myn"]
-[ext_resource type="PackedScene" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
+[ext_resource type="PackedScene" uid="uid://bm6r2edmdx3an" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
 [ext_resource type="Script" path="res://Scripts/InputsComponent.cs" id="9_03rmc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3yif5"]
@@ -28,19 +28,16 @@ texture = ExtResource("1_qlc4m")
 position = Vector2(1, 0)
 script = ExtResource("4_ufg2q")
 
-[node name="StateMachine" parent="." instance=ExtResource("4_wtgcq")]
+[node name="StateMachine" parent="." node_paths=PackedStringArray("movementComponent", "actionsComponent") instance=ExtResource("4_wtgcq")]
+movementComponent = NodePath("../MovementComponent")
 characterVariables = ExtResource("6_pknnn")
-movementComponent = Object(Node2D,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"editor_description":"","visible":true,"modulate":Color(1, 1, 1, 1),"self_modulate":Color(1, 1, 1, 1),"show_behind_parent":false,"top_level":false,"clip_children":0,"light_mask":1,"visibility_layer":1,"z_index":0,"z_as_relative":true,"y_sort_enabled":false,"texture_filter":0,"texture_repeat":0,"material":null,"use_parent_material":false,"position":Vector2(1, 0),"rotation":0.0,"scale":Vector2(1, 1),"skew":0.0,"script":ExtResource("4_ufg2q"))
-
-ActionsComponent = Object(Node,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"editor_description":"","script":Resource("res://Scenes/PlayerActionsComponent.cs"))
-
+actionsComponent = NodePath("../ActionsComponent")
 
 [node name="GroundedState" type="Node" parent="StateMachine"]
 script = ExtResource("6_x2myn")
 
 [node name="ActionsComponent" parent="." instance=ExtResource("7_2bflq")]
 
-[node name="InputsComponent" type="Node" parent="."]
+[node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
 script = ExtResource("9_03rmc")
-actionsComponent = Object(Node,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"editor_description":"","script":Resource("res://Scenes/PlayerActionsComponent.cs"))
-
+actionsComponent = NodePath("../ActionsComponent")

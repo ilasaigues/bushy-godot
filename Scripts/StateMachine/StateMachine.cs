@@ -13,18 +13,18 @@ namespace BushyCore
 		[Export]
 		private CharacterVariables characterVariables;
 		[Export]
-		private ActionsComponent ActionsComponent;
+		private ActionsComponent actionsComponent;
 
 		private Dictionary<System.Type, BaseState> states;
 		private BaseState currentState;
 		public override void _Ready()
 		{	
-			ActionsComponent.SetStateMachine(this);
+			actionsComponent.SetStateMachine(this);
 			states = GetChildren()
 				.Where(n => n is BaseState)
 				.Select(bs => {
 					var baseState = (BaseState) bs;
-					baseState.InitState(movementComponent, characterVariables, ActionsComponent);
+					baseState.InitState(movementComponent, characterVariables, actionsComponent);
 					return baseState;
 				})
 				.ToDictionary(s => s.GetType());

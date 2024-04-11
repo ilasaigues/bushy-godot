@@ -29,7 +29,7 @@ DSP/dsp_buffer_count=4
 [application]
 
 config/name="Bushy-godot"
-run/main_scene="res://Scenes/Game.tscn"
+run/main_scene="res://Scenes/Game2.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
