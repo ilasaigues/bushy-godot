@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{09dd6e19-8c3d-435c-a088-bd41606dc6c7}">
+		<property name="name">
+			<value>Boss Status</value>
+		</property>
+		<relationship name="folder">
+			<destination>{e3aa8e26-c522-4129-9ef1-ad7e2ece3f71}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{9a3dcaf7-1ad5-4d3f-8852-ab929596c6c1}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{9a3dcaf7-1ad5-4d3f-8852-ab929596c6c1}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>4</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>Normal</value>
+			<value>Angered</value>
+			<value>Weakened</value>
+			<value>Dead</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
