@@ -8,7 +8,7 @@
 [ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine/PlayerVariables.tres" id="6_pknnn"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/GroundedState.cs" id="6_x2myn"]
 [ext_resource type="PackedScene" uid="uid://bm6r2edmdx3an" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
-[ext_resource type="Script" path="res://Scripts/InputsComponent.cs" id="9_03rmc"]
+[ext_resource type="Script" path="res://Scripts/Components/InputsComponent.cs" id="9_03rmc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3yif5"]
 size = Vector2(11.5, 15.5)
