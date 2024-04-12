@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://ef1lva2h8gum" path="res://Assets/Background/Forest5.png" id="4_6jnyl"]
 [ext_resource type="Texture2D" uid="uid://qgf8xkxh2e1h" path="res://Assets/Background/Forest3.png" id="5_56jh0"]
 [ext_resource type="Texture2D" uid="uid://bonmdqqp0og3d" path="res://Assets/Background/Forest1.png" id="6_7dx7c"]
-[ext_resource type="PackedScene" uid="uid://c76qag31rbyof" path="res://Scenes/Level Slopes.tscn" id="8_t35ss"]
+[ext_resource type="PackedScene" uid="uid://dw7uu3m3ee83h" path="res://Scenes/Level Slopes.tscn" id="8_t35ss"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pptmd"]
 
