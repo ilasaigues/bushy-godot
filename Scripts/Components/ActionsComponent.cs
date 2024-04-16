@@ -33,5 +33,13 @@ public partial class ActionsComponent : Node
 	{
 		this.stateMachine.ChangeState<AirState>(StateConfig.InitialVerticalVelocity(0));
 	}
-	
+	// State machine changes WILL throw state end exceptions. After this method is called, state will end immediately
+	public void Fall(Vector2 previousVel)
+	{
+		this.stateMachine.ChangeState<AirState>(StateConfig.InitialVelocityVector(previousVel));
+	}
+	public void Land()
+	{
+		this.stateMachine.ChangeState<GroundedState>();
+	}
 }

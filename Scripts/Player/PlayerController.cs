@@ -19,7 +19,7 @@ public partial class PlayerController : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		MovementComponent.UpdateState(this);;
+		MovementComponent.UpdateState(this);
 		MovementComponent.Move(this);
 	}
 }

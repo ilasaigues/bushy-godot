@@ -25,10 +25,11 @@ namespace BushyCore
 			verticalVelocity = 0f;
 
 			HandleMovement(delta);
-			
+			CheckTransitions();
+
 			var floorNormal = movementComponent.FloorNormal;
 			movementComponent.Velocities[VelocityType.Gravity] = floorNormal * (float) verticalVelocity * 10;
-			movementComponent.Velocities[VelocityType.MainMovement] = floorNormal.Orthogonal().Normalized() * (float) -horizontalVelocity;
+			movementComponent.Velocities[VelocityType.MainMovement] = floorNormal.Orthogonal().Normalized() * (float) - horizontalVelocity;
 		}
 
 		void CheckTransitions()
@@ -39,7 +40,7 @@ namespace BushyCore
 			}
 
 			bool stillGrounded = movementComponent.IsOnFloor;
-
+			
 			if (stillGrounded) return;
 			
 			verticalVelocity = 0;

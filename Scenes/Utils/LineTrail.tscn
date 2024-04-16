@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwt102y105ka0"]
+
+[ext_resource type="Script" path="res://Scenes/Utils/LineTrail.cs" id="1_4qkjx"]
+
+[node name="LineTrail" type="Line2D"]
+show_behind_parent = true
+top_level = true
+points = PackedVector2Array(39, 19, 110, 54)
+width = 2.0
+default_color = Color(0.856667, 0.695043, 0.656453, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+script = ExtResource("1_4qkjx")

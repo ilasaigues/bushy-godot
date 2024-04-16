@@ -17,10 +17,19 @@ public partial class MovementComponent : Node2D
 		Dash,
 	}
 	public Dictionary<VelocityType, Vector2> Velocities = new Dictionary<VelocityType, Vector2>();
+
 	public Vector2 CurrentVelocity => Velocities.Values.AsEnumerable()
 		.Append(Vector2.Zero)
 		.Aggregate((v1, v2) => v1 + v2);
 
+	public override void _Ready()
+	{
+		Velocities.Add(VelocityType.MainMovement, Vector2.Zero);
+		Velocities.Add(VelocityType.Gravity, Vector2.Zero);
+		Velocities.Add(VelocityType.InheritedVelocity, Vector2.Zero);
+		Velocities.Add(VelocityType.Dash, Vector2.Zero);	
+	}
+	
 	public void UpdateState(CharacterBody2D characterBody2D)
 	{
 		IsOnFloor = characterBody2D.IsOnFloor();

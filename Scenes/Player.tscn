@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=14 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Texture2D" uid="uid://chsgw2f0w0xf8" path="res://Assets/Player/bushy_t_pose.png" id="1_qlc4m"]
@@ -8,12 +8,16 @@
 [ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine/PlayerVariables.tres" id="6_pknnn"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/GroundedState.cs" id="6_x2myn"]
 [ext_resource type="PackedScene" uid="uid://bm6r2edmdx3an" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
+[ext_resource type="PackedScene" uid="uid://dv74lq75rbnkf" path="res://Scenes/States/JumpState.tscn" id="8_e1xim"]
 [ext_resource type="Script" path="res://Scripts/Components/InputsComponent.cs" id="9_03rmc"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AirState.cs" id="9_dpvnb"]
+[ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3yif5"]
 size = Vector2(11.5, 15.5)
 
 [node name="Player" type="CharacterBody2D"]
+z_index = 1
 script = ExtResource("1_1vn0y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -36,8 +40,16 @@ actionsComponent = NodePath("../ActionsComponent")
 [node name="GroundedState" type="Node" parent="StateMachine"]
 script = ExtResource("6_x2myn")
 
+[node name="JumpState" parent="StateMachine" instance=ExtResource("8_e1xim")]
+
+[node name="AirState" type="Node" parent="StateMachine"]
+script = ExtResource("9_dpvnb")
+
 [node name="ActionsComponent" parent="." instance=ExtResource("7_2bflq")]
 
 [node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
 script = ExtResource("9_03rmc")
 actionsComponent = NodePath("../ActionsComponent")
+
+[node name="LineTrail" parent="." instance=ExtResource("10_dffrb")]
+maxPoints = 16

@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://dv74lq75rbnkf"]
+
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/JumpState.cs" id="1_ajjs0"]
+
+[node name="JumpState" type="Node"]
+script = ExtResource("1_ajjs0")
+
+[node name="DurationTimer" type="Timer" parent="."]
+process_callback = 0
+one_shot = true
+
+[connection signal="timeout" from="DurationTimer" to="." method="DurationTimerTimeout"]

@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Diagnostics;
 
 namespace BushyCore 
 {
@@ -10,7 +11,7 @@ namespace BushyCore
 
         public override void _Process(double delta)
         {
-			if (Input.IsActionJustPressed("ui_accept"))
+			if (Input.IsActionPressed("ui_accept"))
 				actionsComponent.IsJumpRequested = true;
 			else
 				actionsComponent.IsJumpRequested = false;

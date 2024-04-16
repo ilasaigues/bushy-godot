@@ -37,9 +37,26 @@ namespace BushyCore
 
         public virtual void StateExit() {}
 
+        public void BaseOnRigidBodyEnter(Node node) 
+        {
+            try
+            {
+                OnRigidBodyEnter(node);
+            }
+            catch (StateEndedException) { }
+        }
+        public virtual void OnRigidBodyEnter(Node node) {}
         public override string ToString()
         {
             return $"State: {this.GetType().Name}. Time since start: {TimeSinceStateStart}";
+        }
+
+        protected void RunAndEndState(Action callable) {
+            try
+            {
+                callable.Invoke();
+            }
+            catch (StateEndedException) { }
         }
     }
 }
