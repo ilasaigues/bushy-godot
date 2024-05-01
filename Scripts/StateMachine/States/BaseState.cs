@@ -9,6 +9,7 @@ namespace BushyCore
     public abstract partial class BaseState : Node {
 
         public double TimeSinceStateStart { get; private set; }
+        public Vector2 IntendedDirection { get; private set; }
 
         protected MovementComponent movementComponent;
         protected CharacterVariables characterVariables;
@@ -25,7 +26,8 @@ namespace BushyCore
         public void StateUpdate(double delta)
         {
             try
-            {
+            {   
+                SetIntendedDirection();
                 StateUpdateInternal(delta);
             }
             catch (StateEndedException e) {}
@@ -65,6 +67,15 @@ namespace BushyCore
                 callable.Invoke();
             }
             catch (StateEndedException) { }
+        }
+
+        private void SetIntendedDirection()
+        {
+            var actionDirection = actionsComponent.MovementDirection.X * Vector2.Right;
+            
+            IntendedDirection = actionDirection.Equals(Vector2.Zero) 
+                ? movementComponent.FacingDirection 
+                : actionDirection;
         }
     }
 }

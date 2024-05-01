@@ -1,6 +1,5 @@
 using BushyCore;
 using Godot;
-using System;
 
 // The main idea behind this is to abstract how a StateMachine will obtain commands to transition, and also to mock it's inputs
 // In the future, we can use this to inject behavior into an enemy's state machine, or any other npc. This base class is meant
@@ -11,6 +10,7 @@ public partial class ActionsComponent : Node
 {
 	public bool CanJump { get; set; }
 	public bool CanDash { get; set; }
+	public double LastDashTime { get; set; }
 
 	public Vector2 MovementDirection { get; set; }
 	public bool IsJumpRequested { get; set; }
@@ -37,6 +37,12 @@ public partial class ActionsComponent : Node
 	public void Fall(Vector2 previousVel)
 	{
 		this.stateMachine.ChangeState<AirState>(StateConfig.InitialVelocityVector(previousVel));
+	}
+	// State machine changes WILL throw state and axceptions. After this method is called, state will end immediately
+	public void Dash(Vector2 dashDir)
+	{
+		this.LastDashTime = Time.GetTicksMsec();
+		this.stateMachine.ChangeState<DashState>(StateConfig.InitialVelocityVector(dashDir));
 	}
 	public void Land()
 	{

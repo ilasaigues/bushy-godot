@@ -37,6 +37,13 @@ namespace BushyCore
         public Vector2 AirSpeedThresholds { get; private set; }
         [Export]
         public float AirApexGravity { get; private set; }
+
+        [Export]
+        public float DashVelocity { get; private set; }
+        [Export]
+        public float DashDistance { get; private set; }
+        [Export]
+        public float DashCooldown { get; private set; }
         
 
         public CharacterVariables() {}

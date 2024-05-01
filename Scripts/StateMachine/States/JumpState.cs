@@ -90,11 +90,12 @@ namespace BushyCore
         void CheckTransitions()
         {
             earlyDrop |= !actionsComponent.IsJumpRequested;
+            
             if (earlyDrop)
-            {
                 actionsComponent.Fall(new Vector2(0, characterVariables.JumpShortHopSpeed));
-                return;
-            }
+
+            if (actionsComponent.IsDashRequested && actionsComponent.CanDash)
+                actionsComponent.Dash(this.IntendedDirection);
         }
 
         void DurationTimerTimeout()

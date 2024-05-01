@@ -47,7 +47,6 @@ namespace BushyCore
             HandleGravity(delta);
             HandleHorizontalMovement(delta);
             CheckTransitions();
-            // CheckDash();
             // CheckSwing();
             
             movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
@@ -69,14 +68,13 @@ namespace BushyCore
         //     if (actionsComponent.CanJump && TimeSinceStateStart <= _charVariables.CoyoteJumpTime && _charController.JumpPressed)
         //     {
         //         _charController.ChangeState<JumpState>();
-        //         return true;
+        //         return   true;
         //     }
         //     return false;
         // }
 
         float GetGravity()
         {
-            Debug.WriteLine($"vertical vel {verticalVelocity}. Threshold ({characterVariables.AirSpeedThresholds})");
             if (verticalVelocity <= characterVariables.AirSpeedThresholds.Y)
             {
                 return characterVariables.AirGravity;
@@ -130,10 +128,17 @@ namespace BushyCore
 
         void CheckTransitions() 
         {
+            if (actionsComponent.IsDashRequested && actionsComponent.CanDash)
+                actionsComponent.Dash(this.IntendedDirection);
+
             if (!movementComponent.IsOnFloor) return;
             
             if (verticalVelocity > 0) 
+            {
+                if (actionsComponent.IsJumpRequested) 
+                    actionsComponent.Jump();
                 actionsComponent.Land();
+            }
         }
         public override void OnRigidBodyEnter(Node node) 
         {

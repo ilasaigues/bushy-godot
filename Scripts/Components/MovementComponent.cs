@@ -8,6 +8,8 @@ using System.Linq;
 [Scene]
 public partial class MovementComponent : Node2D
 {
+	// Where is the character body facing
+	public Vector2 FacingDirection { get; private set; }
 	// IsOnFloor references whether the node collider is actually touching the floor
 	public bool IsOnFloor { get; private set; } 
 	// SnappedToFloor references whether the node collider is within snapping distance from the floor
@@ -53,6 +55,8 @@ public partial class MovementComponent : Node2D
 
 		GroundRayCastL.Enabled = false;
 		GroundRayCastR.Enabled = false;
+
+		FacingDirection = Vector2.Right;
 	}
 	
 	public void UpdateState(CharacterBody2D characterBody2D)
@@ -86,6 +90,8 @@ public partial class MovementComponent : Node2D
 			CheckRaycastFloor(GroundRayCastL);
 			CheckRaycastFloor(GroundRayCastR);
 		}
+
+		FacingDirection = characterBody2D.Velocity.X == 0f ? FacingDirection : characterBody2D.Velocity * Vector2.Right;
 	}
 	
 	private void CheckRaycastFloor(RayCast2D rayCast2D)
@@ -110,6 +116,15 @@ public partial class MovementComponent : Node2D
 	{
 		characterBody2D.Velocity = CurrentVelocity;
 		characterBody2D.MoveAndSlide();
+	}
+
+	public void SetRaycastPosition(CollisionShape2D collisionShape2D)
+	{
+		float colliderSizeX = collisionShape2D.Shape.GetRect().Size.X;
+		float colliderSizeY = collisionShape2D.Shape.GetRect().Size.Y;
+
+		GroundRayCastL.Position = new Vector2(-colliderSizeX/2, colliderSizeY/2);
+		GroundRayCastR.Position = new Vector2(colliderSizeX/2, colliderSizeY/2);
 	}
 
 	public override void _Notification(int what)

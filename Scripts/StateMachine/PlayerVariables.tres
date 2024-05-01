@@ -19,3 +19,6 @@ AirTerminalVelocity = 150.0
 AirGravity = 400.0
 AirSpeedThresholds = Vector2(25, -60)
 AirApexGravity = 300.0
+DashVelocity = 300.0
+DashDistance = 50.0
+DashCooldown = 600.0

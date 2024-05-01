@@ -9,13 +9,11 @@ namespace BushyCore
 	[Scene]
 	public partial class GroundedState : BaseState
 	{
+		[Node]
+		private Timer DashCooldownTimer;
+
 		private double horizontalVelocity;
 		private double verticalVelocity;
-
-		[Node]
-		private RayCast2D GroundRayCastL;
-		[Node]
-		private RayCast2D GroundRayCastR;
 
 		public override void _Ready()
 		{
@@ -23,22 +21,27 @@ namespace BushyCore
 
             this.AddToGroup();
             this.WireNodes();
-
-			GroundRayCastL.Enabled = false;
-			GroundRayCastR.Enabled = false;
 		}
 
 		public override void StateEnter(params StateConfig.IBaseStateConfig[] configs)
 		{
 			base.StateEnter(configs);
 
-			actionsComponent.CanJump = actionsComponent.CanDash = true;
+			SetCanDash();
+			actionsComponent.CanJump = true;
+				
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 
 			horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
 		}
 
-		public override void StateUpdateInternal(double delta)
+        public override void StateExit()
+        {
+            base.StateExit();
+
+			actionsComponent.CanDash = true;
+        }
+        public override void StateUpdateInternal(double delta)
 		{
 			// Having a downwards velocity constantly helps snapping the character to the ground
 			// We have to keep in mind that while using move and slide this WILL impact the characterś movement horizontally
@@ -58,11 +61,15 @@ namespace BushyCore
 			{
 				actionsComponent.Jump();
 			}
-			
+
+			if (actionsComponent.CanDash && actionsComponent.IsDashRequested)
+			{
+				actionsComponent.Dash(this.IntendedDirection);
+			}
+		
 			if (movementComponent.SnappedToFloor) return;
 			
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-			Debug.WriteLine("CAUSE IM FREEEE FALLING");
 			actionsComponent.Fall();
 		}
 
@@ -93,6 +100,25 @@ namespace BushyCore
 			}
 			horizontalVelocity = Mathf.Clamp(horizontalVelocity, -vars.GroundHorizontalMovementSpeed, vars.GroundHorizontalMovementSpeed);
 		}
+
+		void SetCanDash()
+		{
+			var dashCdRemaining = this.characterVariables.DashCooldown - (Time.GetTicksMsec() - actionsComponent.LastDashTime);
+			if (dashCdRemaining < 0)
+				actionsComponent.CanDash = true;
+			else
+				DashCooldownTimer.WaitTime = dashCdRemaining / 1000;
+
+			if (!actionsComponent.CanDash)
+				DashCooldownTimer.Start();
+		}
+
+        void DashCooldownTimerTimeout()
+        {
+			if (!this.IsActive) return;
+
+			actionsComponent.CanDash = true;
+        }
 	}
 
 }
