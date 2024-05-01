@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Texture2D" uid="uid://chsgw2f0w0xf8" path="res://Assets/Player/bushy_t_pose.png" id="1_qlc4m"]
-[ext_resource type="Script" path="res://Scripts/Components/SpriteComponent.cs" id="3_2v3uq"]
+[ext_resource type="Script" path="res://Scripts/Components/Sprite2DComponent.cs" id="3_2v3uq"]
 [ext_resource type="PackedScene" uid="uid://cnkptwq4h84kk" path="res://Scenes/MovementComponent.tscn" id="3_wt20f"]
 [ext_resource type="PackedScene" uid="uid://seeco12ddgj7" path="res://Scenes/StateMachine.tscn" id="4_wtgcq"]
 [ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine/PlayerVariables.tres" id="6_pknnn"]
@@ -24,7 +24,7 @@ script = ExtResource("1_1vn0y")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_3yif5")
 
-[node name="SpriteComponent" type="Sprite2D" parent="." node_paths=PackedStringArray("movementComponent")]
+[node name="Sprite2DComponent" type="Sprite2D" parent="." node_paths=PackedStringArray("movementComponent")]
 texture_filter = 1
 texture = ExtResource("1_qlc4m")
 script = ExtResource("3_2v3uq")
