@@ -1,13 +1,12 @@
-[gd_scene load_steps=14 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=13 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Texture2D" uid="uid://chsgw2f0w0xf8" path="res://Assets/Player/bushy_t_pose.png" id="1_qlc4m"]
 [ext_resource type="PackedScene" uid="uid://cnkptwq4h84kk" path="res://Scenes/MovementComponent.tscn" id="3_wt20f"]
-[ext_resource type="Script" path="res://Scripts/Components/MovementComponent.cs" id="4_ufg2q"]
 [ext_resource type="PackedScene" uid="uid://seeco12ddgj7" path="res://Scenes/StateMachine.tscn" id="4_wtgcq"]
 [ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine/PlayerVariables.tres" id="6_pknnn"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/GroundedState.cs" id="6_x2myn"]
 [ext_resource type="PackedScene" uid="uid://bm6r2edmdx3an" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
+[ext_resource type="PackedScene" uid="uid://btpni3inhihi7" path="res://Scenes/States/GroundedState.tscn" id="7_jmv6p"]
 [ext_resource type="PackedScene" uid="uid://dv74lq75rbnkf" path="res://Scenes/States/JumpState.tscn" id="8_e1xim"]
 [ext_resource type="Script" path="res://Scripts/Components/InputsComponent.cs" id="9_03rmc"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AirState.cs" id="9_dpvnb"]
@@ -30,15 +29,13 @@ texture = ExtResource("1_qlc4m")
 
 [node name="MovementComponent" parent="." instance=ExtResource("3_wt20f")]
 position = Vector2(1, 0)
-script = ExtResource("4_ufg2q")
 
 [node name="StateMachine" parent="." node_paths=PackedStringArray("movementComponent", "actionsComponent") instance=ExtResource("4_wtgcq")]
 movementComponent = NodePath("../MovementComponent")
 characterVariables = ExtResource("6_pknnn")
 actionsComponent = NodePath("../ActionsComponent")
 
-[node name="GroundedState" type="Node" parent="StateMachine"]
-script = ExtResource("6_x2myn")
+[node name="GroundedState" parent="StateMachine" instance=ExtResource("7_jmv6p")]
 
 [node name="JumpState" parent="StateMachine" instance=ExtResource("8_e1xim")]
 
@@ -52,4 +49,4 @@ script = ExtResource("9_03rmc")
 actionsComponent = NodePath("../ActionsComponent")
 
 [node name="LineTrail" parent="." instance=ExtResource("10_dffrb")]
-maxPoints = 16
+maxPoints = 24

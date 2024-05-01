@@ -1,9 +1,11 @@
 using System;
 using Godot;
 using System.Diagnostics;
+using GodotUtilities;
 
 namespace BushyCore 
 {
+    [Scene]
     public abstract partial class BaseState : Node {
 
         public double TimeSinceStateStart { get; private set; }
@@ -12,6 +14,7 @@ namespace BushyCore
         protected CharacterVariables characterVariables;
         
         protected ActionsComponent actionsComponent;
+
         public void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac) {
             this.movementComponent = mc;
             this.characterVariables = cv;

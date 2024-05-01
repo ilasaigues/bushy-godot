@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://btpni3inhihi7"]
+
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/GroundedState.cs" id="1_gfxa6"]
+
+[node name="GroundedState" type="Node"]
+script = ExtResource("1_gfxa6")
+
+[node name="GroundRayCastL" type="RayCast2D" parent="."]
+position = Vector2(6, 8)
+target_position = Vector2(0, 7)
+
+[node name="GroundRayCastR" type="RayCast2D" parent="."]
+position = Vector2(-5, 8)
+target_position = Vector2(0, 7)
