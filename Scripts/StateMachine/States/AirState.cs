@@ -114,14 +114,14 @@ namespace BushyCore
             }
             else //if we're not doing any input, we decelerate to 0
             {
-                var deceleration = characterVariables.AirHorizontalDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
-                if (Mathf.Abs(deceleration) < Mathf.Abs(horizontalVelocity))
+                if (Mathf.Abs(horizontalVelocity) <= Mathf.Abs(characterVariables.AirHorizontalMovementSpeed))
                 {
-                    horizontalVelocity += deceleration;
+                    var deceleration = characterVariables.AirHorizontalDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
+                    horizontalVelocity = Mathf.Max(0f, Mathf.Sign(horizontalVelocity) * Mathf.Abs(horizontalVelocity + deceleration));
                 }
                 else
                 {
-                    horizontalVelocity = 0;
+                    horizontalVelocity += characterVariables.AirHorizontalOvercappedDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
                 }
             }
         }
