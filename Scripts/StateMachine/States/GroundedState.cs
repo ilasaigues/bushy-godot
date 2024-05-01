@@ -40,15 +40,16 @@ namespace BushyCore
 
 		public override void StateUpdateInternal(double delta)
 		{
+			// Having a downwards velocity constantly helps snapping the character to the ground
+			// We have to keep in mind that while using move and slide this WILL impact the characterś movement horizontally
 			verticalVelocity = -10f;
 
 			HandleMovement(delta);
 			CheckTransitions();
 
-			var floorNormal = movementComponent.FloorNormal;
-			movementComponent.Velocities[VelocityType.Gravity] = floorNormal * (float) verticalVelocity * 10;
-			movementComponent.Velocities[VelocityType.MainMovement] = floorNormal.Orthogonal().Normalized() * (float) - horizontalVelocity;
-			Debug.WriteLine($"grounded velocities: grav {movementComponent.Velocities[VelocityType.Gravity]} - {movementComponent.Velocities[VelocityType.MainMovement]}");
+			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) horizontalVelocity;
+			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal * (float) verticalVelocity * 10;
+			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)horizontalVelocity, slopeVerticalComponent);
 		}
 
 		void CheckTransitions()
@@ -57,19 +58,8 @@ namespace BushyCore
 			{
 				actionsComponent.Jump();
 			}
-
-			bool stillGrounded = movementComponent.IsOnFloor || movementComponent.SnappedToFloor;
 			
-			if (stillGrounded) return;
-			
-			GroundRayCastL.ForceRaycastUpdate();
-			GroundRayCastR.ForceRaycastUpdate();
-
-			Object collider = GroundRayCastL.GetCollider();
-			if (collider != null && collider is TileMap tileMap) 
-			{
-				GroundRayCastL.GetCollisionNormal();
-			}
+			if (movementComponent.SnappedToFloor) return;
 			
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 			Debug.WriteLine("CAUSE IM FREEEE FALLING");
@@ -86,7 +76,7 @@ namespace BushyCore
 				//if the input direction is opposite of the current direction, we also add a deceleration
 				if (direction.X * horizontalVelocity < 0)
 				{
-					horizontalVelocity += direction.X * vars.GroundHorizontalDeceleration * deltaTime;
+					horizontalVelocity += direction.X * vars.GroundHorizontalTurnDeceleration * deltaTime;
 				}
 			}
 			else //if we're not doing any input, we decelerate to 0

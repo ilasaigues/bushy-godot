@@ -6,7 +6,6 @@ namespace BushyCore
 {
     public partial class AirState : BaseState
     {
-
         private double verticalVelocity;
         private double horizontalVelocity;
 
@@ -50,7 +49,6 @@ namespace BushyCore
             CheckTransitions();
             // CheckDash();
             // CheckSwing();
-            // if (!enabled) return;
             
             movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
             movementComponent.Velocities[VelocityType.MainMovement] = (float) horizontalVelocity * Vector2.Right;
@@ -64,7 +62,7 @@ namespace BushyCore
         // }
         void HandleGravity(double deltaTime)
         {
-            verticalVelocity = Mathf.Max(characterVariables.AirTerminalVelocity, verticalVelocity + GetGravity() * (float) deltaTime);
+            verticalVelocity = Mathf.Min(characterVariables.AirTerminalVelocity, verticalVelocity + GetGravity() * (float) deltaTime);
         }
         // bool TryCoyoteJump()
         // {
@@ -78,11 +76,12 @@ namespace BushyCore
 
         float GetGravity()
         {
-            if (verticalVelocity >= characterVariables.AirSpeedThresholds.Y)
+            Debug.WriteLine($"vertical vel {verticalVelocity}. Threshold ({characterVariables.AirSpeedThresholds})");
+            if (verticalVelocity <= characterVariables.AirSpeedThresholds.Y)
             {
                 return characterVariables.AirGravity;
             }
-            else if (verticalVelocity >= characterVariables.AirSpeedThresholds.X)
+            else if (verticalVelocity <= characterVariables.AirSpeedThresholds.X)
             {
                 return characterVariables.AirApexGravity;
             }

@@ -12,8 +12,9 @@ namespace BushyCore
 
         protected MovementComponent movementComponent;
         protected CharacterVariables characterVariables;
-        
         protected ActionsComponent actionsComponent;
+
+        protected bool IsActive { get; private set; }
 
         public void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac) {
             this.movementComponent = mc;
@@ -35,10 +36,14 @@ namespace BushyCore
 
         public virtual void StateEnter(params StateConfig.IBaseStateConfig[] configs) 
         {
+            IsActive = true;
             TimeSinceStateStart = 0;
         }
 
-        public virtual void StateExit() {}
+        public virtual void StateExit() 
+        {
+            IsActive = false;
+        }
 
         public void BaseOnRigidBodyEnter(Node node) 
         {

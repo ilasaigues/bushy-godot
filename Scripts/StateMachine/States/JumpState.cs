@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Godot;
 using GodotUtilities;
 using static MovementComponent;
@@ -47,7 +48,7 @@ namespace BushyCore
             // CheckSwing();
             movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
             movementComponent.Velocities[VelocityType.MainMovement] = (float) horizontalVelocity * Vector2.Right;
-            // CheckTransitions();
+            CheckTransitions();
         }
         void HandleHorizontalMovement(double deltaTime)
         {
@@ -98,6 +99,8 @@ namespace BushyCore
 
         void DurationTimerTimeout()
         {
+            if (!this.IsActive) return;
+
             RunAndEndState(() => actionsComponent.Fall(new Vector2(0, characterVariables.JumpSpeed)));
         }
     }

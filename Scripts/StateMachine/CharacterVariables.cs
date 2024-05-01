@@ -10,6 +10,8 @@ namespace BushyCore
         [Export] 
         public int GroundHorizontalDeceleration { get; private set; }
         [Export] 
+        public int GroundHorizontalTurnDeceleration { get; private set; }
+        [Export] 
         public int GroundHorizontalMovementSpeed { get; private set; }
 
         [Export]

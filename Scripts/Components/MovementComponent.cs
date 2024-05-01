@@ -8,10 +8,23 @@ using System.Linq;
 [Scene]
 public partial class MovementComponent : Node2D
 {
+	// IsOnFloor references whether the node collider is actually touching the floor
 	public bool IsOnFloor { get; private set; } 
+	// SnappedToFloor references whether the node collider is within snapping distance from the floor
 	public bool SnappedToFloor { get; private set; }
-	public Vector2 FloorNormal { get; private set; }
+	// Lowest point of collision between the component and the floor
 	public float? FloorHeight { get; private set; }
+	// Normal between the component and the lowest point of collision with the ground (only relevant if controller is on floor)
+	public Vector2 FloorNormal { get; private set; }
+	// Angle between Vector2.UP and the Floor normal calculated clockwise
+	public float FloorAngle 
+	{
+		get { 
+			return FloorNormal.Y != 0 
+				? Mathf.Sign(FloorNormal.X) * Mathf.Atan(Mathf.Abs(FloorNormal.X)/Mathf.Abs(FloorNormal.Y)) 
+				: Mathf.Pi/2 * Mathf.Sign(FloorNormal.X); 
+		} 
+	}
 	
 	[Node]
 	private RayCast2D GroundRayCastL;
@@ -44,7 +57,7 @@ public partial class MovementComponent : Node2D
 	
 	public void UpdateState(CharacterBody2D characterBody2D)
 	{
-		IsOnFloor = characterBody2D.IsOnFloor();
+		IsOnFloor = SnappedToFloor = characterBody2D.IsOnFloor();
 
 		if (!IsOnFloor) 
 		{
@@ -63,18 +76,16 @@ public partial class MovementComponent : Node2D
 				.Min();
 		}
 
-		// Doesnt fix that the CB2D is no longer on floor but does snap the player when falling into a slope
-		// characterBody2D.FloorSnapLength = 50.0f;
-		// characterBody2D.FloorStopOnSlope = false;
+		// Helps player stay snapped to the floor while going down slopes
+		characterBody2D.FloorSnapLength = 50.0f;
+		characterBody2D.FloorStopOnSlope = false;
 		
+		// Not really sure about this. No rays are casted when controller is on the edge of a slope
 		if (!IsOnFloor)
 		{
-			Debug.WriteLine("raycast check ground");
 			CheckRaycastFloor(GroundRayCastL);
 			CheckRaycastFloor(GroundRayCastR);
 		}
-
-		Debug.WriteLine($"Ground height: {FloorHeight}, normal: {FloorNormal}");
 	}
 	
 	private void CheckRaycastFloor(RayCast2D rayCast2D)
@@ -82,14 +93,10 @@ public partial class MovementComponent : Node2D
 		rayCast2D.ForceRaycastUpdate();
 
 		GodotObject collider = rayCast2D.GetCollider();
-		Debug.WriteLine($"collider: {collider}");
+
 		if (collider != null && collider is TileMap tileMap) 
 		{
-		
-			Debug.WriteLine($"collider is tilemap");
 			Vector2 point = rayCast2D.GetCollisionPoint();
-			Debug.WriteLine($"point: {point}");
-			Debug.WriteLine($"Floor height: {FloorHeight}");
 			if (FloorHeight == null || point.Y < FloorHeight) 
 			{
 				FloorHeight = point.Y;
