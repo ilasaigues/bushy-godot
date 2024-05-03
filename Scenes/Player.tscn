@@ -55,4 +55,4 @@ actionsComponent = NodePath("../ActionsComponent")
 JumpBufferTime = 350.0
 
 [node name="LineTrail" parent="." instance=ExtResource("10_dffrb")]
-maxPoints = 24
+maxPoints = 70

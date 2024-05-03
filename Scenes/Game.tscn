@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=13 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Script" path="res://bgm_test.gd" id="1_jka76"]
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="2_0axgj"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
+[ext_resource type="Script" path="res://Scripts/camera_placeholder.cs" id="5_li343"]
 [ext_resource type="PackedScene" uid="uid://bi7n7u1b7brmt" path="res://Scenes/Bigger_Level.tscn" id="7_wk4s5"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pptmd"]
@@ -143,9 +144,6 @@ text = "Death
 light_mask = 2
 position = Vector2(198, 233)
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
-position = Vector2(0, -50)
-
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)
 color = Color(1, 0.360784, 0.239216, 1)
@@ -156,6 +154,17 @@ texture_scale = 1.5
 
 [node name="Bigger_Level" parent="." instance=ExtResource("7_wk4s5")]
 position = Vector2(-2062, -1983)
+
+[node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("target")]
+position = Vector2(198, 204)
+offset = Vector2(0, -64)
+process_callback = 0
+position_smoothing_enabled = true
+position_smoothing_speed = 4.0
+script = ExtResource("5_li343")
+target = NodePath("../Player")
+speed = 1.0
+deadZone = Vector2(120, 120)
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Finisher" to="Audio Manager" method="_on_finisher_button_down"]

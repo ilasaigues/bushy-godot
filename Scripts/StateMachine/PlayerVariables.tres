@@ -4,21 +4,21 @@
 
 [resource]
 script = ExtResource("1_7vx6x")
-GroundHorizontalAcceleration = 200
-GroundHorizontalDeceleration = 400
+GroundHorizontalAcceleration = 600
+GroundHorizontalDeceleration = 700
 GroundHorizontalTurnDeceleration = 1000
 GroundHorizontalMovementSpeed = 120
-JumpSpeed = -100.0
-JumpDuration = 0.3
-AirHorizontalDeceleration = 300.0
+JumpSpeed = -210.0
+JumpDuration = 0.1
+AirHorizontalDeceleration = 450.0
 AirHorizontalMovementSpeed = 120.0
-AirHorizontalAcceleration = 160.0
+AirHorizontalAcceleration = 450.0
 AirHorizontalOvercappedDeceleration = 900.0
 JumpShortHopSpeed = -60.0
-AirTerminalVelocity = 150.0
-AirGravity = 400.0
-AirSpeedThresholds = Vector2(25, -60)
-AirApexGravity = 300.0
+AirTerminalVelocity = 400.0
+AirGravity = 750.0
+AirSpeedThresholds = Vector2(45, -45)
+AirApexGravity = 350.0
 DashVelocity = 300.0
 DashDistance = 35.0
 DashCooldown = 600.0

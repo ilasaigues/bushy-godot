@@ -6,7 +6,6 @@
 script = ExtResource("1_ajjs0")
 
 [node name="DurationTimer" type="Timer" parent="."]
-process_callback = 0
 one_shot = true
 
 [connection signal="timeout" from="DurationTimer" to="." method="DurationTimerTimeout"]

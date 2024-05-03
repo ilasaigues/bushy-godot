@@ -137,6 +137,7 @@ namespace BushyCore
             {
                 if (actionsComponent.IsJumpRequested) 
                     actionsComponent.Jump();
+                GD.Print(verticalVelocity);
                 actionsComponent.Land();
             }
         }
