@@ -1,12 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=12 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Script" path="res://bgm_test.gd" id="1_jka76"]
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="2_0axgj"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
-[ext_resource type="Texture2D" uid="uid://ef1lva2h8gum" path="res://Assets/Background/Forest5.png" id="4_6jnyl"]
-[ext_resource type="Texture2D" uid="uid://qgf8xkxh2e1h" path="res://Assets/Background/Forest3.png" id="5_56jh0"]
-[ext_resource type="Texture2D" uid="uid://bonmdqqp0og3d" path="res://Assets/Background/Forest1.png" id="6_7dx7c"]
-[ext_resource type="PackedScene" uid="uid://c76qag31rbyof" path="res://Scenes/Level Slopes.tscn" id="8_t35ss"]
+[ext_resource type="PackedScene" uid="uid://bi7n7u1b7brmt" path="res://Scenes/Bigger_Level.tscn" id="7_wk4s5"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pptmd"]
 
@@ -79,6 +76,13 @@ fill_from = Vector2(0.5, 0.5)
 [node name="Game" type="Node2D"]
 position = Vector2(185, 24)
 
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -1911.0
+offset_top = -1857.0
+offset_right = 1089.0
+offset_bottom = 1143.0
+color = Color(0.219608, 0.34902, 0.341176, 1)
+
 [node name="Audio Manager" type="Node" parent="."]
 script = ExtResource("1_jka76")
 
@@ -135,37 +139,6 @@ action_mode = 0
 text = "Death
 "
 
-[node name="Level Slopes" parent="." instance=ExtResource("8_t35ss")]
-light_mask = 3
-z_index = 1
-texture_filter = 1
-position = Vector2(-431, -447)
-
-[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
-
-[node name="ParallaxLayer4" type="ParallaxLayer" parent="ParallaxBackground"]
-motion_scale = Vector2(0.33, 0.5)
-
-[node name="Forest5" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer4"]
-texture_filter = 1
-position = Vector2(337, 28)
-texture = ExtResource("4_6jnyl")
-
-[node name="ParallaxLayer3" type="ParallaxLayer" parent="ParallaxBackground"]
-motion_scale = Vector2(0.66, 0.75)
-
-[node name="Forest3" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer3"]
-texture_filter = 1
-position = Vector2(337, 28)
-texture = ExtResource("5_56jh0")
-
-[node name="Forest1" type="Sprite2D" parent="."]
-modulate = Color(0.784314, 0.784314, 0.784314, 1)
-light_mask = 3
-texture_filter = 1
-position = Vector2(337, 28)
-texture = ExtResource("6_7dx7c")
-
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
 position = Vector2(198, 233)
@@ -180,6 +153,9 @@ energy = 2.0
 range_item_cull_mask = 2
 texture = SubResource("GradientTexture2D_f4u52")
 texture_scale = 1.5
+
+[node name="Bigger_Level" parent="." instance=ExtResource("7_wk4s5")]
+position = Vector2(-2062, -1983)
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Finisher" to="Audio Manager" method="_on_finisher_button_down"]
