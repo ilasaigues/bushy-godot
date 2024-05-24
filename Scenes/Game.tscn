@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=13 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Script" path="res://bgm_test.gd" id="1_jka76"]
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="2_0axgj"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
+[ext_resource type="Script" path="res://Scenes/camera_placeholder.cs" id="3_xnah0"]
 [ext_resource type="PackedScene" uid="uid://bi7n7u1b7brmt" path="res://Scenes/Bigger_Level.tscn" id="7_wk4s5"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pptmd"]
@@ -139,12 +140,17 @@ action_mode = 0
 text = "Death
 "
 
+[node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("cam", "target")]
+position = Vector2(198, 183)
+offset = Vector2(0, -32)
+position_smoothing_enabled = true
+script = ExtResource("3_xnah0")
+cam = NodePath(".")
+target = NodePath("../Player")
+
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
 position = Vector2(198, 233)
-
-[node name="Camera2D" type="Camera2D" parent="Player"]
-position = Vector2(0, -50)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)
