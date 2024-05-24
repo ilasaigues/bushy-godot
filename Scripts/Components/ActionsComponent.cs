@@ -12,9 +12,41 @@ public partial class ActionsComponent : Node
 	public bool CanDash { get; set; }
 	public double LastDashTime { get; set; }
 
+	[Signal]
+	public delegate void JumpActionStartEventHandler();
+	[Signal]
+	public delegate void JumpActionEndEventHandler();
+	[Signal]
+	public delegate void DashActionStartEventHandler();
+	[Signal]
+	public delegate void DashActionEndEventHandler();
+
 	public Vector2 MovementDirection { get; set; }
-	public bool IsJumpRequested { get; set; }
-	public bool IsDashRequested { get; set; }
+
+	private bool _IsJumpRequested;
+	public bool IsJumpRequested { 
+		get { return _IsJumpRequested; } 
+		set {
+			_IsJumpRequested = value;
+
+			if (_IsJumpRequested) 
+				EmitSignal(SignalName.JumpActionStart);
+			else
+				EmitSignal(SignalName.JumpActionEnd);
+		} 
+	}
+	private bool _IsDashRequested;
+	public bool IsDashRequested { 
+		get { return _IsDashRequested; } 
+		set {
+			_IsDashRequested = value;
+			
+			if (_IsDashRequested) 
+				EmitSignal(SignalName.DashActionStart);
+			else
+				EmitSignal(SignalName.DashActionEnd);
+		} 
+	}
 
 	private StateMachine stateMachine;
 

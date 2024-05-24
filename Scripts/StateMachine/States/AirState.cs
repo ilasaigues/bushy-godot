@@ -10,13 +10,14 @@ namespace BushyCore
         private double horizontalVelocity;
 
 
-        public override void StateEnter(params StateConfig.IBaseStateConfig[] configs)
+        protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
         {
-            base.StateEnter(configs);
             // _directionInputSubscription = _input.DirectionInput.Subscribe(UpdateFacingDirection);
             horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
             verticalVelocity = 0;
             SetupFromConfigs(configs);
+
+			actionsComponent.DashActionStart += DashActionRequested;
         }
         
         private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
@@ -37,6 +38,8 @@ namespace BushyCore
 
         public override void StateExit()
         {
+			actionsComponent.DashActionStart -= DashActionRequested;
+            
             base.StateExit();
             // _directionInputSubscription?.Dispose();
         }
@@ -48,9 +51,7 @@ namespace BushyCore
             HandleHorizontalMovement(delta);
             CheckTransitions();
             // CheckSwing();
-            
-            movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
-            movementComponent.Velocities[VelocityType.MainMovement] = (float) horizontalVelocity * Vector2.Right;
+            VelocityUpdate();
         }
 
         // void UpdateFacingDirection(Vector2 dir)
@@ -128,15 +129,10 @@ namespace BushyCore
 
         void CheckTransitions() 
         {
-            if (actionsComponent.IsDashRequested && actionsComponent.CanDash)
-                actionsComponent.Dash(this.IntendedDirection);
-
             if (!movementComponent.IsOnFloor) return;
             
             if (verticalVelocity > 0) 
             {
-                if (actionsComponent.IsJumpRequested) 
-                    actionsComponent.Jump();
                 actionsComponent.Land();
             }
         }
@@ -169,5 +165,19 @@ namespace BushyCore
             // _charController.Velocities[CharacterController.VelocityType.Gravity] = new Vector2(0, _verticalVelocity);
             // _charController.Velocities[CharacterController.VelocityType.MainMovement] = _horizontalVelocity * Vector2.right;
         }
+
+        protected override void VelocityUpdate()
+        {
+            movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
+            movementComponent.Velocities[VelocityType.MainMovement] = (float) horizontalVelocity * Vector2.Right;
+        }
+
+		public void DashActionRequested()
+		{
+			if (actionsComponent.CanDash)
+			{
+				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
+			}
+		} 
     }
 }

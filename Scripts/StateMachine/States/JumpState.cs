@@ -24,32 +24,42 @@ namespace BushyCore
             }
         }
 
-	    public override void StateEnter(params StateConfig.IBaseStateConfig[] configs)
+	    protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
-			base.StateEnter(configs);
-
             // _directionInputSubscription = _input.DirectionInput.Subscribe(UpdateFacingDirection);
             horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
             verticalVelocity = characterVariables.JumpSpeed;
+
             earlyDrop = false;
+
             DurationTimer.WaitTime = characterVariables.JumpDuration;
             DurationTimer.Start();
+
             actionsComponent.CanJump = false;
+
+			actionsComponent.DashActionStart += DashActionRequested;
 		}
         public override void StateExit()
         {
+			actionsComponent.DashActionStart -= DashActionRequested;
             base.StateExit();
             // _directionInputSubscription?.Dispose();
         }
         public override void StateUpdateInternal(double delta)
         {
             HandleHorizontalMovement(delta);
+            this.VelocityUpdate();
             // CheckDash();
             // CheckSwing();
-            movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
-            movementComponent.Velocities[VelocityType.MainMovement] = (float) horizontalVelocity * Vector2.Right;
+
             CheckTransitions();
         }
+        protected override void VelocityUpdate()
+        {
+            movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
+            movementComponent.Velocities[VelocityType.MainMovement] = (float) horizontalVelocity * Vector2.Right;
+        }
+
         void HandleHorizontalMovement(double deltaTime)
         {
 
@@ -101,8 +111,15 @@ namespace BushyCore
         void DurationTimerTimeout()
         {
             if (!this.IsActive) return;
-
             RunAndEndState(() => actionsComponent.Fall(new Vector2(0, characterVariables.JumpSpeed)));
         }
+
+		public void DashActionRequested()
+		{
+			if (actionsComponent.CanDash)
+			{
+				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
+			}
+		} 
     }
 }

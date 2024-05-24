@@ -23,22 +23,22 @@ namespace BushyCore
             this.WireNodes();
 		}
 
-		public override void StateEnter(params StateConfig.IBaseStateConfig[] configs)
+		protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
-			base.StateEnter(configs);
-
 			SetCanDash();
 			actionsComponent.CanJump = true;
-				
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-
 			horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
+			actionsComponent.JumpActionStart += JumpActionRequested;
+			actionsComponent.DashActionStart += DashActionRequested;
 		}
 
         public override void StateExit()
         {
             base.StateExit();
 
+			actionsComponent.JumpActionStart -= JumpActionRequested;
+			actionsComponent.DashActionStart -= DashActionRequested;
 			actionsComponent.CanDash = true;
         }
         public override void StateUpdateInternal(double delta)
@@ -49,29 +49,32 @@ namespace BushyCore
 
 			HandleMovement(delta);
 			CheckTransitions();
-
-			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) horizontalVelocity;
-			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal * (float) verticalVelocity * 10;
-			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)horizontalVelocity, slopeVerticalComponent);
+			VelocityUpdate();
 		}
 
 		void CheckTransitions()
 		{
-			if (actionsComponent.IsJumpRequested)
-			{
-				actionsComponent.Jump();
-			}
-
-			if (actionsComponent.CanDash && actionsComponent.IsDashRequested)
-			{
-				actionsComponent.Dash(this.IntendedDirection);
-			}
-		
 			if (movementComponent.SnappedToFloor) return;
 			
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 			actionsComponent.Fall();
 		}
+
+		public void DashActionRequested()
+		{
+			if (actionsComponent.CanDash)
+			{
+				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
+			}
+		} 
+
+		public void JumpActionRequested()
+		{
+			if (actionsComponent.CanJump)
+			{
+				RunAndEndState(() => actionsComponent.Jump());
+			}
+		} 
 
 		void HandleMovement(double deltaTime)
 		{
@@ -119,6 +122,13 @@ namespace BushyCore
 
 			actionsComponent.CanDash = true;
         }
-	}
+
+        protected override void VelocityUpdate()
+        {
+			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) horizontalVelocity;
+			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal * (float) verticalVelocity * 10;
+			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)horizontalVelocity, slopeVerticalComponent);
+        }
+    }
 
 }

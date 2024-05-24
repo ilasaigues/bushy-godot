@@ -7,13 +7,11 @@ public partial class DashState : BaseState
 {
 	private Vector2 constantVelocity;
 	private Vector2 startPoint;
-	public override void StateEnter(params StateConfig.IBaseStateConfig[] configs)
+	
+	protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 	{
-		base.StateEnter(configs);
 		SetupFromConfigs(configs);
-
 		actionsComponent.CanDash = false;
-
 		startPoint = movementComponent.GlobalPosition;
 		movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 	}
@@ -37,4 +35,6 @@ public partial class DashState : BaseState
 			actionsComponent.Fall();
 		}
     }
+
+    protected override void VelocityUpdate() {}
 }

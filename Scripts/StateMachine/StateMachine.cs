@@ -32,11 +32,6 @@ namespace BushyCore
 			currentState = states.Values.First();
 		}
 
-		public override void _Notification(int what)
-		{
-			
-		}
-
 		public override void _Process(double delta)
 		{
 			currentState.StateUpdate(delta);

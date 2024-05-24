@@ -8,6 +8,8 @@ namespace BushyCore
     [Scene]
     public abstract partial class BaseState : Node {
 
+        [Signal]
+        public delegate void EnteredStateEventHandler();
         public double TimeSinceStateStart { get; private set; }
         public Vector2 IntendedDirection { get; private set; }
 
@@ -30,22 +32,30 @@ namespace BushyCore
                 SetIntendedDirection();
                 StateUpdateInternal(delta);
             }
-            catch (StateEndedException e) {}
+            catch (StateEndedException) { }
 
             TimeSinceStateStart += delta;
         }
         public abstract void StateUpdateInternal(double delta);
 
-        public virtual void StateEnter(params StateConfig.IBaseStateConfig[] configs) 
+        public void StateEnter(params StateConfig.IBaseStateConfig[] configs) 
         {
             IsActive = true;
             TimeSinceStateStart = 0;
+
+            StateEnterInternal(configs);
+
+            VelocityUpdate();
         }
+
+        protected virtual void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs) {}
 
         public virtual void StateExit() 
         {
             IsActive = false;
         }
+
+        protected abstract void VelocityUpdate(); 
 
         public void BaseOnRigidBodyEnter(Node node) 
         {
