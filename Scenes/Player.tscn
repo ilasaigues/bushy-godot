@@ -12,8 +12,8 @@
 [ext_resource type="Script" path="res://Scripts/Components/InputsComponent.cs" id="9_03rmc"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AirState.cs" id="9_dpvnb"]
 [ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
-[ext_resource type="PackedScene" uid="uid://cxifo6li16jtt" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
-[ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
+[ext_resource type="PackedScene" uid="uid://ikw2snd4s3rd" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
+[ext_resource type="PackedScene" path="res://Scenes/light.tscn" id="14_a60b8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3yif5"]
 size = Vector2(8, 13)
@@ -185,4 +185,4 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.1, 1.1)
+scale = Vector2(1, 1)

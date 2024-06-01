@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://cxifo6li16jtt"]
+[gd_scene load_steps=2 format=3 uid="uid://ikw2snd4s3rd"]
 
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/DashState.cs" id="1_kg0i6"]
 
