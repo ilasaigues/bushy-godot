@@ -9,7 +9,6 @@ namespace BushyCore
         private double verticalVelocity;
         private double horizontalVelocity;
 
-
         protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
         {
             // _directionInputSubscription = _input.DirectionInput.Subscribe(UpdateFacingDirection);

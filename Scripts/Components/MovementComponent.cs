@@ -81,7 +81,7 @@ public partial class MovementComponent : Node2D
 		}
 
 		// Helps player stay snapped to the floor while going down slopes
-		characterBody2D.FloorSnapLength = 50.0f;
+		characterBody2D.FloorSnapLength = 5.0f;
 		characterBody2D.FloorStopOnSlope = false;
 		
 		// Not really sure about this. No rays are casted when controller is on the edge of a slope

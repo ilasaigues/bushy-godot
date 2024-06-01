@@ -54,6 +54,11 @@ namespace BushyCore
 
 		void CheckTransitions()
 		{
+			if (actionsComponent.IsJumpRequested && actionsComponent.CanJump)
+			{
+				actionsComponent.Jump();
+			}
+
 			if (movementComponent.SnappedToFloor) return;
 			
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
@@ -66,7 +71,7 @@ namespace BushyCore
 			{
 				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
 			}
-		} 
+		}
 
 		public void JumpActionRequested()
 		{
