@@ -47,7 +47,6 @@ namespace BushyCore
             {
                 if(config is StateConfig.InitialVelocityVectorConfig velocityConfig)
                 {
-                    GD.Print(MathF.Abs(velocityConfig.Velocity.X));
                     targetVelocity = MathF.Abs(velocityConfig.Velocity.X);
                 }
             }

@@ -76,7 +76,6 @@ namespace BushyCore
 
 		void _on_duration_timer_timeout()
 		{
-			GD.Print("time");
 			switch(state)
 			{
 			case 0:
