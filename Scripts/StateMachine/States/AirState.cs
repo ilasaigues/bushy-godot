@@ -8,6 +8,7 @@ namespace BushyCore
     {
         private double verticalVelocity;
         private double horizontalVelocity;
+        private float targetVelocity;
 
 
         protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
@@ -32,6 +33,7 @@ namespace BushyCore
                 if (config is StateConfig.InitialVelocityVectorConfig velocityConfig)
                 {
                     verticalVelocity = velocityConfig.Velocity.Y;
+                    targetVelocity = velocityConfig.Velocity.X;
                 }
             }
         }
@@ -52,6 +54,7 @@ namespace BushyCore
             CheckTransitions();
             // CheckSwing();
             VelocityUpdate();
+            if(movementComponent.CurrentVelocity.Y > 0)animationComponent.Play("fall");
         }
 
         // void UpdateFacingDirection(Vector2 dir)
@@ -92,39 +95,31 @@ namespace BushyCore
 
         void HandleHorizontalMovement(double deltaTime)
         {
-            Vector2 direction = actionsComponent.MovementDirection;
-            if (direction.X != 0) // If we're doing any input
-            {
-
-                //if the input direction is opposite of the current direction, we also add a deceleration
-                if (direction.X * horizontalVelocity < 0)
-                {
-                    horizontalVelocity += direction.X * characterVariables.AirHorizontalDeceleration * deltaTime;
-                }
-
-                if (Mathf.Abs(horizontalVelocity) <= Mathf.Abs(characterVariables.AirHorizontalMovementSpeed))
-                {
-                    horizontalVelocity += direction.X * characterVariables.AirHorizontalAcceleration * deltaTime;
-                    horizontalVelocity = Mathf.Clamp(horizontalVelocity, -characterVariables.AirHorizontalMovementSpeed, characterVariables.AirHorizontalMovementSpeed);
-                }
-                else
-                {
-                    horizontalVelocity += characterVariables.AirHorizontalOvercappedDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
-                }
-
-            }
-            else //if we're not doing any input, we decelerate to 0
-            {
-                if (Mathf.Abs(horizontalVelocity) <= Mathf.Abs(characterVariables.AirHorizontalMovementSpeed))
-                {
-                    var deceleration = characterVariables.AirHorizontalDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
-                    horizontalVelocity = Mathf.Max(0f, Mathf.Sign(horizontalVelocity) * Mathf.Abs(horizontalVelocity + deceleration));
-                }
-                else
-                {
-                    horizontalVelocity += characterVariables.AirHorizontalOvercappedDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
-                }
-            }
+            
+			Vector2 direction = actionsComponent.MovementDirection;
+			var vars = characterVariables;
+			if (direction.X != 0)
+			{
+				horizontalVelocity += direction.X * vars.AirHorizontalAcceleration * deltaTime;
+				//if the input direction is opposite of the current direction, we also add a deceleration
+				if (direction.X * horizontalVelocity < 0)
+				{
+					horizontalVelocity += direction.X * vars.GroundHorizontalTurnDeceleration * deltaTime;
+				}
+			}
+			else //if we're not doing any input, we decelerate to 0
+			{
+				var deceleration = vars.AirHorizontalDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
+				if (Mathf.Abs(deceleration) < Mathf.Abs(horizontalVelocity))
+				{
+					horizontalVelocity += deceleration;
+				}
+				else
+				{
+					horizontalVelocity = 0;
+				}
+			}
+			horizontalVelocity = Mathf.Clamp(horizontalVelocity, -targetVelocity, targetVelocity);
         }
 
         void CheckTransitions() 

@@ -14,6 +14,8 @@ namespace BushyCore
 		private CharacterVariables characterVariables;
 		[Export]
 		private ActionsComponent actionsComponent;
+		[Export]
+		private AnimationPlayer animationComponent;
 
 		private Dictionary<System.Type, BaseState> states;
 		private BaseState currentState;
@@ -24,7 +26,7 @@ namespace BushyCore
 				.Where(n => n is BaseState)
 				.Select(bs => {
 					var baseState = (BaseState) bs;
-					baseState.InitState(movementComponent, characterVariables, actionsComponent);
+					baseState.InitState(movementComponent, characterVariables, actionsComponent, animationComponent);
 					return baseState;
 				})
 				.ToDictionary(s => s.GetType());

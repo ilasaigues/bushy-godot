@@ -1,0 +1,75 @@
+[gd_scene load_steps=11 format=3 uid="uid://dajw6wecjujr8"]
+
+[ext_resource type="Shader" path="res://light.gdshader" id="1_ujgpk"]
+[ext_resource type="Texture2D" uid="uid://d3kbhfsxjqv7b" path="res://Scripts/StateMachine/States/Forest Pallete.png" id="2_hjond"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fpbqj"]
+shader = ExtResource("1_ujgpk")
+shader_parameter/default_light = Color(1, 1, 1, 1)
+shader_parameter/pallete = ExtResource("2_hjond")
+
+[sub_resource type="Gradient" id="Gradient_5slnd"]
+offsets = PackedFloat32Array(0, 0.079258, 0.67285)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_0pk2p"]
+gradient = SubResource("Gradient_5slnd")
+width = 100
+height = 100
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 1)
+
+[sub_resource type="Animation" id="Animation_c68js"]
+resource_name = "light"
+length = 1.33337
+loop_mode = 1
+step = 0.166667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.333333, 0.5, 0.666667, 0.833333, 1, 1.16667, 2.33333),
+"transitions": PackedFloat32Array(2, 1, 0.5, 1, 2, 1, 0.5, 1, 1),
+"update": 1,
+"values": [Vector2(1, 1), Vector2(1.0125, 1.0125), Vector2(1.05, 1.05), Vector2(1.0875, 1.0875), Vector2(1.1, 1.1), Vector2(1.0875, 1.0875), Vector2(1.05, 1.05), Vector2(1.0125, 1.0125), Vector2(1.0125, 1.0125)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ovwyd"]
+_data = {
+"light": SubResource("Animation_c68js")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0kf8i"]
+animation = &"light"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ak4ke"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_nadtl"]
+states/light/node = SubResource("AnimationNodeAnimation_0kf8i")
+states/light/position = Vector2(524, 95)
+transitions = ["Start", "light", SubResource("AnimationNodeStateMachineTransition_ak4ke")]
+
+[node name="Sprite2D" type="Sprite2D"]
+z_index = -1
+material = SubResource("ShaderMaterial_fpbqj")
+position = Vector2(2, 5)
+scale = Vector2(1.05, 1.05)
+texture = SubResource("GradientTexture2D_0pk2p")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_ovwyd")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="AnimationPlayer"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_ovwyd")
+}
+tree_root = SubResource("AnimationNodeStateMachine_nadtl")
+anim_player = NodePath("..")

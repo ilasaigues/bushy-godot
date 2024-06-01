@@ -60,6 +60,11 @@ public partial class ActionsComponent : Node
 	{
 		this.stateMachine.ChangeState<JumpState>(configs);
 	}
+
+	public void Jump(float horizontalVelocity)
+	{
+		this.stateMachine.ChangeState<JumpState>(StateConfig.InitialVelocityVector(new Vector2(horizontalVelocity,0)));
+	}
 	// State machine changes WILL throw state end exceptions. After this method is called, state will end immediately
 	public void Fall()
 	{

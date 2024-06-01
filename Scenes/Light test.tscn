@@ -1,0 +1,198 @@
+[gd_scene load_steps=23 format=3 uid="uid://c8fhmgmolp7by"]
+
+[ext_resource type="Texture2D" uid="uid://m3y00yel1d44" path="res://Scripts/StateMachine/States/bushy dat.png" id="1_bi2fn"]
+[ext_resource type="Texture2D" uid="uid://baqb8u2tj8ql5" path="res://Assets/Player/Idle Test.png" id="2_7b6sm"]
+[ext_resource type="Shader" path="res://light.gdshader" id="3_r2hyt"]
+[ext_resource type="Texture2D" uid="uid://d3kbhfsxjqv7b" path="res://Scripts/StateMachine/States/Forest Pallete.png" id="4_fejph"]
+[ext_resource type="Texture2D" uid="uid://bs7wuia1gspve" path="res://Scripts/StateMachine/States/bushy dat2.png" id="5_c16qj"]
+[ext_resource type="Script" path="res://Scenes/circle.cs" id="6_6yykf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fpbqj"]
+shader = ExtResource("3_r2hyt")
+shader_parameter/default_light = Color(0.988235, 0.901961, 0.776471, 1)
+shader_parameter/pallete = ExtResource("4_fejph")
+
+[sub_resource type="Gradient" id="Gradient_5slnd"]
+offsets = PackedFloat32Array(0, 0.079258, 0.67285)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_0pk2p"]
+gradient = SubResource("Gradient_5slnd")
+width = 100
+height = 100
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 1)
+
+[sub_resource type="Animation" id="Animation_c68js"]
+resource_name = "light"
+length = 1.33337
+loop_mode = 1
+step = 0.166667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.333333, 0.5, 0.666667, 0.833333, 1, 1.16667, 2.33333),
+"transitions": PackedFloat32Array(2, 1, 0.5, 1, 2, 1, 0.5, 1, 1),
+"update": 1,
+"values": [Vector2(1, 1), Vector2(1.0125, 1.0125), Vector2(1.05, 1.05), Vector2(1.0875, 1.0875), Vector2(1.1, 1.1), Vector2(1.0875, 1.0875), Vector2(1.05, 1.05), Vector2(1.0125, 1.0125), Vector2(1.0125, 1.0125)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ovwyd"]
+_data = {
+"light": SubResource("Animation_c68js")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0kf8i"]
+animation = &"light"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ak4ke"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_nadtl"]
+states/light/node = SubResource("AnimationNodeAnimation_0kf8i")
+states/light/position = Vector2(524, 95)
+transitions = ["Start", "light", SubResource("AnimationNodeStateMachineTransition_ak4ke")]
+
+[sub_resource type="Animation" id="Animation_mi0st"]
+resource_name = "Idle"
+length = 0.666683
+loop_mode = 1
+step = 0.166667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.333333, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_5cny7"]
+_data = {
+"Idle": SubResource("Animation_mi0st")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_qx2g3"]
+animation = &"Idle"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_dutyy"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_6vebf"]
+states/Idle/node = SubResource("AnimationNodeAnimation_qx2g3")
+states/Idle/position = Vector2(347, 100)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_dutyy")]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8jdkq"]
+shader = ExtResource("3_r2hyt")
+shader_parameter/default_light = Color(0.988235, 0.901961, 0.776471, 1)
+shader_parameter/pallete = ExtResource("4_fejph")
+
+[sub_resource type="Gradient" id="Gradient_7hkim"]
+offsets = PackedFloat32Array(0, 0.163575, 0.419899)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_macxd"]
+gradient = SubResource("Gradient_7hkim")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[node name="Node2D" type="Node2D"]
+position = Vector2(-27, -23)
+
+[node name="BushyDat" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(267, 158)
+texture = ExtResource("1_bi2fn")
+
+[node name="IdleTest" type="Sprite2D" parent="."]
+z_index = 5
+texture_filter = 1
+position = Vector2(269, 251)
+texture = ExtResource("2_7b6sm")
+hframes = 2
+vframes = 2
+frame = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="IdleTest"]
+z_index = -1
+material = SubResource("ShaderMaterial_fpbqj")
+position = Vector2(2, 5)
+scale = Vector2(1.0125, 1.0125)
+texture = SubResource("GradientTexture2D_0pk2p")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="IdleTest/Sprite2D"]
+libraries = {
+"": SubResource("AnimationLibrary_ovwyd")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="IdleTest/Sprite2D/AnimationPlayer"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_ovwyd")
+}
+tree_root = SubResource("AnimationNodeStateMachine_nadtl")
+anim_player = NodePath("..")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="IdleTest"]
+libraries = {
+"": SubResource("AnimationLibrary_5cny7")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="IdleTest/AnimationPlayer"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_5cny7")
+}
+tree_root = SubResource("AnimationNodeStateMachine_6vebf")
+anim_player = NodePath("..")
+
+[node name="BushyDat2" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(267, 158)
+texture = ExtResource("5_c16qj")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = 148.0
+offset_top = 175.0
+offset_right = 149.0
+offset_bottom = 176.0
+color = Color(0.423529, 0.639216, 0, 1)
+script = ExtResource("6_6yykf")
+
+[node name="Timer" type="Timer" parent="ColorRect"]
+wait_time = 0.083
+autostart = true
+
+[node name="Sprite2D" type="Sprite2D" parent="ColorRect"]
+material = SubResource("ShaderMaterial_8jdkq")
+texture = SubResource("GradientTexture2D_macxd")
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+offset_left = 343.0
+offset_top = 183.0
+offset_right = 344.0
+offset_bottom = 184.0
+color = Color(0.423529, 0.639216, 0, 1)
+script = ExtResource("6_6yykf")
+offset = 0.5
+
+[node name="Timer" type="Timer" parent="ColorRect2"]
+wait_time = 0.083
+autostart = true
+
+[node name="Sprite2D" type="Sprite2D" parent="ColorRect2"]
+material = SubResource("ShaderMaterial_8jdkq")
+texture = SubResource("GradientTexture2D_macxd")
+
+[connection signal="timeout" from="ColorRect/Timer" to="ColorRect" method="_on_timer_timeout"]
+[connection signal="timeout" from="ColorRect2/Timer" to="ColorRect2" method="_on_timer_timeout"]

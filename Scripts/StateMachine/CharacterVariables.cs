@@ -39,11 +39,19 @@ namespace BushyCore
         public float AirApexGravity { get; private set; }
 
         [Export]
+        public float DashInitTime { get; private set; }
+        [Export]
+        public float DashTime { get; private set; }
+        [Export]
+        public float DashExitTime { get; private set; }
+        [Export]
         public float DashVelocity { get; private set; }
         [Export]
-        public float DashDistance { get; private set; }
+        public float DashExitVelocity { get; private set; }
         [Export]
         public float DashCooldown { get; private set; }
+        [Export]
+        public float DashJumpSpeed { get; private set; }
         
 
         public CharacterVariables() {}

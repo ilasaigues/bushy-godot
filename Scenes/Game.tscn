@@ -1,6 +1,7 @@
-[gd_scene load_steps=13 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=14 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Script" path="res://bgm_test.gd" id="1_jka76"]
+[ext_resource type="Texture2D" uid="uid://m3y00yel1d44" path="res://Scripts/StateMachine/States/bushy dat.png" id="1_qweff"]
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="2_0axgj"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
 [ext_resource type="Script" path="res://Scenes/camera_placeholder.cs" id="3_xnah0"]
@@ -77,12 +78,11 @@ fill_from = Vector2(0.5, 0.5)
 [node name="Game" type="Node2D"]
 position = Vector2(185, 24)
 
-[node name="Background" type="ColorRect" parent="."]
-offset_left = -1911.0
-offset_top = -1857.0
-offset_right = 1089.0
-offset_bottom = 1143.0
-color = Color(0.219608, 0.34902, 0.341176, 1)
+[node name="BushyDat" type="Sprite2D" parent="."]
+z_index = -6
+texture_filter = 1
+position = Vector2(197, 169)
+texture = ExtResource("1_qweff")
 
 [node name="Audio Manager" type="Node" parent="."]
 script = ExtResource("1_jka76")
@@ -161,6 +161,7 @@ texture = SubResource("GradientTexture2D_f4u52")
 texture_scale = 1.5
 
 [node name="Bigger_Level" parent="." instance=ExtResource("7_wk4s5")]
+z_index = -5
 position = Vector2(-2062, -1983)
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]

@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Godot;
 using GodotUtilities;
@@ -11,6 +12,7 @@ namespace BushyCore
         private double horizontalVelocity;
 		private double verticalVelocity;
         private bool earlyDrop;
+        private float targetVelocity;
 
         [Node]
         private Timer DurationTimer;
@@ -27,6 +29,8 @@ namespace BushyCore
 	    protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
             // _directionInputSubscription = _input.DirectionInput.Subscribe(UpdateFacingDirection);
+            animationComponent.Play("jump");
+            targetVelocity = characterVariables.AirHorizontalMovementSpeed;
             horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
             verticalVelocity = characterVariables.JumpSpeed;
 
@@ -38,6 +42,15 @@ namespace BushyCore
             actionsComponent.CanJump = false;
 
 			actionsComponent.DashActionStart += DashActionRequested;
+
+            foreach (var config in configs)
+            {
+                if(config is StateConfig.InitialVelocityVectorConfig velocityConfig)
+                {
+                    GD.Print(MathF.Abs(velocityConfig.Velocity.X));
+                    targetVelocity = MathF.Abs(velocityConfig.Velocity.X);
+                }
+            }
 		}
         public override void StateExit()
         {
@@ -72,10 +85,10 @@ namespace BushyCore
                     horizontalVelocity += direction.X * characterVariables.AirHorizontalDeceleration * deltaTime;
                 }
 
-                if (Mathf.Abs(horizontalVelocity) <= Mathf.Abs(characterVariables.AirHorizontalMovementSpeed))
+                if (Mathf.Abs(horizontalVelocity) <= Mathf.Abs(targetVelocity))
                 {
                     horizontalVelocity += direction.X * characterVariables.AirHorizontalAcceleration * deltaTime;
-                    horizontalVelocity = Mathf.Clamp(horizontalVelocity, -characterVariables.AirHorizontalMovementSpeed, characterVariables.AirHorizontalMovementSpeed);
+                    horizontalVelocity = Mathf.Clamp(horizontalVelocity, -targetVelocity, targetVelocity);
                 }
                 else
                 {
@@ -102,7 +115,7 @@ namespace BushyCore
             earlyDrop |= !actionsComponent.IsJumpRequested;
             
             if (earlyDrop)
-                actionsComponent.Fall(new Vector2(0, characterVariables.JumpShortHopSpeed));
+                actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed));
 
             if (actionsComponent.IsDashRequested && actionsComponent.CanDash)
                 actionsComponent.Dash(this.IntendedDirection);
@@ -111,7 +124,7 @@ namespace BushyCore
         void DurationTimerTimeout()
         {
             if (!this.IsActive) return;
-            RunAndEndState(() => actionsComponent.Fall(new Vector2(0, characterVariables.JumpSpeed)));
+            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpSpeed)));
         }
 
 		public void DashActionRequested()

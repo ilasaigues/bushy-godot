@@ -55,6 +55,11 @@ namespace BushyCore
 				actionsComponent.IsDashRequested = false;
 			}
 		}
+
+		private bool DashHeldCheck()
+		{
+			return Input.IsActionPressed("left_shift");
+		}
 	}
 
 }
