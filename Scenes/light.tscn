@@ -9,7 +9,7 @@ shader_parameter/default_light = Color(1, 1, 1, 1)
 shader_parameter/pallete = ExtResource("2_hjond")
 
 [sub_resource type="Gradient" id="Gradient_5slnd"]
-offsets = PackedFloat32Array(0, 0.079258, 0.67285)
+offsets = PackedFloat32Array(0, 0.272381, 0.72)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_0pk2p"]

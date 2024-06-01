@@ -66,7 +66,7 @@ namespace BushyCore
 
 		public void JumpActionRequested()
 		{
-			if (actionsComponent.CanJump)
+			if (actionsComponent.CanJump && state < 1)
 			{
 				DurationTimer.Stop();
 				movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);

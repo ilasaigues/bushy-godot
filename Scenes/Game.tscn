@@ -1,11 +1,13 @@
-[gd_scene load_steps=14 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=16 format=3 uid="uid://jqayura2cnu7"]
 
+[ext_resource type="Texture2D" uid="uid://b1uq3n6md5wce" path="res://Assets/Background/forest_background_1.png" id="1_02yv3"]
 [ext_resource type="Script" path="res://bgm_test.gd" id="1_jka76"]
-[ext_resource type="Texture2D" uid="uid://m3y00yel1d44" path="res://Scripts/StateMachine/States/bushy dat.png" id="1_qweff"]
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="2_0axgj"]
+[ext_resource type="Texture2D" uid="uid://c5jcpcfoarc0m" path="res://Assets/Background/Forest/test_forest_background_1.png" id="2_hwlqv"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
+[ext_resource type="Texture2D" uid="uid://toa0twuk32dm" path="res://Assets/Background/Forest/test_forest_background_0.png" id="3_ukntx"]
 [ext_resource type="Script" path="res://Scenes/camera_placeholder.cs" id="3_xnah0"]
-[ext_resource type="PackedScene" uid="uid://bi7n7u1b7brmt" path="res://Scenes/Bigger_Level.tscn" id="7_wk4s5"]
+[ext_resource type="PackedScene" path="res://Scenes/Levels/test_forest.tscn" id="8_m158k"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pptmd"]
 
@@ -78,11 +80,36 @@ fill_from = Vector2(0.5, 0.5)
 [node name="Game" type="Node2D"]
 position = Vector2(185, 24)
 
-[node name="BushyDat" type="Sprite2D" parent="."]
-z_index = -6
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+position = Vector2(185, 24)
+motion_scale = Vector2(0.1, 0.2)
+motion_mirroring = Vector2(480, 0)
+
+[node name="ForestBackground1" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer"]
 texture_filter = 1
-position = Vector2(197, 169)
-texture = ExtResource("1_qweff")
+texture_repeat = 2
+position = Vector2(198, 5)
+texture = ExtResource("1_02yv3")
+
+[node name="ParallaxLayer2" type="ParallaxLayer" parent="ParallaxBackground"]
+position = Vector2(199, 33)
+motion_scale = Vector2(0.9, 1)
+
+[node name="ForestBackground0" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer2"]
+texture_filter = 1
+position = Vector2(-476, -392)
+texture = ExtResource("2_hwlqv")
+
+[node name="ParallaxLayer3" type="ParallaxLayer" parent="ParallaxBackground"]
+texture_filter = 1
+position = Vector2(199, 33)
+
+[node name="ForestBackground0" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer3"]
+texture_filter = 1
+position = Vector2(-476, -392)
+texture = ExtResource("3_ukntx")
 
 [node name="Audio Manager" type="Node" parent="."]
 script = ExtResource("1_jka76")
@@ -94,6 +121,7 @@ bank_paths = ["res://FMOD/Bushy/Build/Desktop/Master.strings.bank", "res://FMOD/
 event_name = "event:/BGM"
 event_guid = "{97e0fe84-3030-44a8-9649-59cc891ff2ea}"
 autoplay = true
+volume = 0.0
 event_parameter/Boss/id = 4722891300036718185
 event_parameter/Boss/value = 0.0
 event_parameter/Boss/min_value = 0.0
@@ -106,6 +134,7 @@ event_parameter/Boss/default_value = 0.0
 "event_parameter/Boss Status/default_value" = 0.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="Control" type="Control" parent="CanvasLayer"]
 layout_mode = 3
@@ -141,16 +170,21 @@ text = "Death
 "
 
 [node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("cam", "target")]
-position = Vector2(198, 183)
+position = Vector2(196, 248)
 offset = Vector2(0, -32)
 position_smoothing_enabled = true
+position_smoothing_speed = 3.0
 script = ExtResource("3_xnah0")
 cam = NodePath(".")
 target = NodePath("../Player")
 
+[node name="test_forest" parent="." instance=ExtResource("8_m158k")]
+texture_filter = 1
+position = Vector2(-2062, -1983)
+
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
-position = Vector2(198, 233)
+position = Vector2(195, 249)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)
@@ -159,10 +193,6 @@ energy = 2.0
 range_item_cull_mask = 2
 texture = SubResource("GradientTexture2D_f4u52")
 texture_scale = 1.5
-
-[node name="Bigger_Level" parent="." instance=ExtResource("7_wk4s5")]
-z_index = -5
-position = Vector2(-2062, -1983)
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Finisher" to="Audio Manager" method="_on_finisher_button_down"]

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b682vh6eqgk8r"
-path="res://.godot/imported/placeholder.png-9f58fcf67efa75b658baf69c695be03e.ctex"
+uid="uid://n7dtb1pr48rw"
+path="res://.godot/imported/forest_background_0.png-6d717dd4dddbaa1be10a82fa76c6cb5e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/WorldTiles/placeholder.png"
-dest_files=["res://.godot/imported/placeholder.png-9f58fcf67efa75b658baf69c695be03e.ctex"]
+source_file="res://Assets/Background/forest_background_0.png"
+dest_files=["res://.godot/imported/forest_background_0.png-6d717dd4dddbaa1be10a82fa76c6cb5e.ctex"]
 
 [params]
 
