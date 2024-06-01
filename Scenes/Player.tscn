@@ -1,7 +1,7 @@
-[gd_scene load_steps=15 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=23 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
-[ext_resource type="Texture2D" uid="uid://chsgw2f0w0xf8" path="res://Assets/Player/bushy_t_pose.png" id="1_qlc4m"]
+[ext_resource type="Texture2D" uid="uid://kb10o0qoh0oe" path="res://Assets/Player/Test_Spritesheet.png" id="2_c3m6v"]
 [ext_resource type="Script" path="res://Scripts/Components/Sprite2DComponent.cs" id="3_2v3uq"]
 [ext_resource type="PackedScene" uid="uid://cnkptwq4h84kk" path="res://Scenes/MovementComponent.tscn" id="3_wt20f"]
 [ext_resource type="PackedScene" uid="uid://seeco12ddgj7" path="res://Scenes/StateMachine.tscn" id="4_wtgcq"]
@@ -9,33 +9,154 @@
 [ext_resource type="PackedScene" uid="uid://bm6r2edmdx3an" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
 [ext_resource type="PackedScene" uid="uid://btpni3inhihi7" path="res://Scenes/States/GroundedState.tscn" id="7_jmv6p"]
 [ext_resource type="PackedScene" uid="uid://dv74lq75rbnkf" path="res://Scenes/States/JumpState.tscn" id="8_e1xim"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/DashState.cs" id="9_1kvyy"]
 [ext_resource type="Script" path="res://Scripts/Components/InputsComponent.cs" id="9_03rmc"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AirState.cs" id="9_dpvnb"]
 [ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
+[ext_resource type="PackedScene" uid="uid://cxifo6li16jtt" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
+[ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3yif5"]
-size = Vector2(11.5, 15.5)
+size = Vector2(8, 13)
+
+[sub_resource type="Animation" id="Animation_dq7ya"]
+resource_name = "dash_end"
+length = 0.250008
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [9]
+}
+
+[sub_resource type="Animation" id="Animation_0av21"]
+resource_name = "dash_start"
+length = 0.0833417
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+
+[sub_resource type="Animation" id="Animation_digef"]
+resource_name = "fall"
+length = 0.250008
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [11]
+}
+
+[sub_resource type="Animation" id="Animation_6ovo3"]
+resource_name = "idle"
+length = 0.666683
+loop_mode = 1
+step = 0.166667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.333333, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_v6fop"]
+resource_name = "jump"
+length = 0.250008
+loop_mode = 1
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [10]
+}
+
+[sub_resource type="Animation" id="Animation_ake6q"]
+resource_name = "run"
+length = 0.333342
+loop_mode = 1
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0833333, 0.166667, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [4, 5, 6, 7]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_uncl2"]
+_data = {
+"dash_end": SubResource("Animation_dq7ya"),
+"dash_start": SubResource("Animation_0av21"),
+"fall": SubResource("Animation_digef"),
+"idle": SubResource("Animation_6ovo3"),
+"jump": SubResource("Animation_v6fop"),
+"run": SubResource("Animation_ake6q")
+}
 
 [node name="Player" type="CharacterBody2D"]
 z_index = 1
 script = ExtResource("1_1vn0y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1, 1.5)
 shape = SubResource("RectangleShape2D_3yif5")
 
 [node name="Sprite2DComponent" type="Sprite2D" parent="." node_paths=PackedStringArray("movementComponent")]
 texture_filter = 1
-texture = ExtResource("1_qlc4m")
+texture = ExtResource("2_c3m6v")
+hframes = 8
+vframes = 8
+frame = 9
 script = ExtResource("3_2v3uq")
 movementComponent = NodePath("../MovementComponent")
 
 [node name="MovementComponent" parent="." instance=ExtResource("3_wt20f")]
 
-[node name="StateMachine" parent="." node_paths=PackedStringArray("movementComponent", "actionsComponent") instance=ExtResource("4_wtgcq")]
+[node name="StateMachine" parent="." node_paths=PackedStringArray("movementComponent", "actionsComponent", "animationComponent") instance=ExtResource("4_wtgcq")]
 movementComponent = NodePath("../MovementComponent")
 characterVariables = ExtResource("6_pknnn")
 actionsComponent = NodePath("../ActionsComponent")
+animationComponent = NodePath("../AnimationComponent")
 
 [node name="GroundedState" parent="StateMachine" instance=ExtResource("7_jmv6p")]
 
@@ -44,10 +165,14 @@ actionsComponent = NodePath("../ActionsComponent")
 [node name="AirState" type="Node" parent="StateMachine"]
 script = ExtResource("9_dpvnb")
 
-[node name="DashState" type="Node" parent="StateMachine"]
-script = ExtResource("9_1kvyy")
+[node name="DashState" parent="StateMachine" instance=ExtResource("10_hkenu")]
 
 [node name="ActionsComponent" parent="." instance=ExtResource("7_2bflq")]
+
+[node name="AnimationComponent" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_uncl2")
+}
 
 [node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
 script = ExtResource("9_03rmc")
@@ -55,4 +180,9 @@ actionsComponent = NodePath("../ActionsComponent")
 JumpBufferTime = 350.0
 
 [node name="LineTrail" parent="." instance=ExtResource("10_dffrb")]
+visible = false
 maxPoints = 24
+
+[node name="Light" parent="." instance=ExtResource("14_a60b8")]
+position = Vector2(0, 0)
+scale = Vector2(1.1, 1.1)

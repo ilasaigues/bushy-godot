@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b682vh6eqgk8r"
-path="res://.godot/imported/placeholder.png-9f58fcf67efa75b658baf69c695be03e.ctex"
+uid="uid://baqb8u2tj8ql5"
+path="res://.godot/imported/Idle Test.png-35d15c363d257ab1798293ce24c3c24f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/WorldTiles/placeholder.png"
-dest_files=["res://.godot/imported/placeholder.png-9f58fcf67efa75b658baf69c695be03e.ctex"]
+source_file="res://Assets/Player/Idle Test.png"
+dest_files=["res://.godot/imported/Idle Test.png-35d15c363d257ab1798293ce24c3c24f.ctex"]
 
 [params]
 

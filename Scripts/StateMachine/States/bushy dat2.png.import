@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b682vh6eqgk8r"
-path="res://.godot/imported/placeholder.png-9f58fcf67efa75b658baf69c695be03e.ctex"
+uid="uid://bs7wuia1gspve"
+path="res://.godot/imported/bushy dat2.png-b78485a0b1c729676a83c3b9ff58b6b7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/WorldTiles/placeholder.png"
-dest_files=["res://.godot/imported/placeholder.png-9f58fcf67efa75b658baf69c695be03e.ctex"]
+source_file="res://Scripts/StateMachine/States/bushy dat2.png"
+dest_files=["res://.godot/imported/bushy dat2.png-b78485a0b1c729676a83c3b9ff58b6b7.ctex"]
 
 [params]
 

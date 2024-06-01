@@ -75,9 +75,11 @@ namespace BushyCore
 
 		public void JumpActionRequested()
 		{
+			GD.Print("QUE PINGO PASAAAAAA");
 			if (actionsComponent.CanJump)
 			{
-				RunAndEndState(() => actionsComponent.Jump());
+				if(Input.IsActionPressed("left_shift"))RunAndEndState(() => actionsComponent.Jump(characterVariables.DashJumpSpeed));
+				else RunAndEndState(() => actionsComponent.Jump());
 			}
 		} 
 
@@ -87,6 +89,7 @@ namespace BushyCore
 			var vars = characterVariables;
 			if (direction.X != 0)
 			{
+				animationComponent.Play("run");
 				horizontalVelocity += direction.X * vars.GroundHorizontalAcceleration * deltaTime;
 				//if the input direction is opposite of the current direction, we also add a deceleration
 				if (direction.X * horizontalVelocity < 0)
@@ -96,6 +99,7 @@ namespace BushyCore
 			}
 			else //if we're not doing any input, we decelerate to 0
 			{
+				animationComponent.Play("idle");
 				var deceleration = vars.GroundHorizontalDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
 				if (Mathf.Abs(deceleration) < Mathf.Abs(horizontalVelocity))
 				{

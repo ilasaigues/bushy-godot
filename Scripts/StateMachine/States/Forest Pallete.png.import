@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b682vh6eqgk8r"
-path="res://.godot/imported/placeholder.png-9f58fcf67efa75b658baf69c695be03e.ctex"
+uid="uid://d3kbhfsxjqv7b"
+path="res://.godot/imported/Forest Pallete.png-2751179594e28c04dd81ffc5e2edf15d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/WorldTiles/placeholder.png"
-dest_files=["res://.godot/imported/placeholder.png-9f58fcf67efa75b658baf69c695be03e.ctex"]
+source_file="res://Scripts/StateMachine/States/Forest Pallete.png"
+dest_files=["res://.godot/imported/Forest Pallete.png-2751179594e28c04dd81ffc5e2edf15d.ctex"]
 
 [params]
 
