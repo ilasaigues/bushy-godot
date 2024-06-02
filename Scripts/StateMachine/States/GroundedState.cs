@@ -77,8 +77,10 @@ namespace BushyCore
 		{
 			if (actionsComponent.CanJump)
 			{
-				if(Input.IsActionPressed("left_shift"))RunAndEndState(() => actionsComponent.Jump(characterVariables.DashJumpSpeed));
-				else RunAndEndState(() => actionsComponent.Jump());
+				if(Input.IsActionPressed("left_shift"))
+					RunAndEndState(() => actionsComponent.Jump(characterVariables.DashJumpSpeed));
+				else 
+					RunAndEndState(() => actionsComponent.Jump());
 			}
 		} 
 

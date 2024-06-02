@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://btpni3inhihi7" path="res://Scenes/States/GroundedState.tscn" id="7_jmv6p"]
 [ext_resource type="PackedScene" uid="uid://dv74lq75rbnkf" path="res://Scenes/States/JumpState.tscn" id="8_e1xim"]
 [ext_resource type="Script" path="res://Scripts/Components/InputsComponent.cs" id="9_03rmc"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/AirState.cs" id="9_dpvnb"]
+[ext_resource type="PackedScene" uid="uid://bxnlnnba3b4fj" path="res://Scenes/States/AirState.tscn" id="9_n3pxo"]
 [ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
 [ext_resource type="PackedScene" uid="uid://ikw2snd4s3rd" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
 [ext_resource type="PackedScene" uid="uid://dbpsdypj0882o" path="res://Scenes/light.tscn" id="14_a60b8"]
@@ -162,8 +162,7 @@ animationComponent = NodePath("../AnimationComponent")
 
 [node name="JumpState" parent="StateMachine" instance=ExtResource("8_e1xim")]
 
-[node name="AirState" type="Node" parent="StateMachine"]
-script = ExtResource("9_dpvnb")
+[node name="AirState" parent="StateMachine" instance=ExtResource("9_n3pxo")]
 
 [node name="DashState" parent="StateMachine" instance=ExtResource("10_hkenu")]
 
@@ -177,7 +176,7 @@ libraries = {
 [node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
 script = ExtResource("9_03rmc")
 actionsComponent = NodePath("../ActionsComponent")
-JumpBufferTime = 400.0
+JumpBufferTime = 200.0
 
 [node name="LineTrail" parent="." instance=ExtResource("10_dffrb")]
 maxPoints = 24

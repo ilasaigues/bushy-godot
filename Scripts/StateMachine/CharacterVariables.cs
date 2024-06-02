@@ -19,6 +19,8 @@ namespace BushyCore
         [Export]
         public float JumpDuration { get; private set; }
         [Export]
+        public float JumpCoyoteTime { get; private set; }
+        [Export]
         public float AirHorizontalDeceleration { get; private set; }
         [Export]
         public float AirHorizontalMovementSpeed { get; private set; }

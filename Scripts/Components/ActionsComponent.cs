@@ -49,7 +49,7 @@ public partial class ActionsComponent : Node
 			if (value) EmitSignal(SignalName.JumpActionEnd);
 		}
 	}
-	
+
 	private bool _IsDashRequested;
 	public bool IsDashRequested { 
 		get { return _IsDashRequested; } 

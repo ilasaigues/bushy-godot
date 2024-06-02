@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxnlnnba3b4fj"]
+
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AirState.cs" id="1_nek1v"]
+
+[node name="AirState" type="Node"]
+script = ExtResource("1_nek1v")
+
+[node name="JumpCoyoteTimer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="JumpCoyoteTimer" to="." method="OnJumpCoyoteTimerTimeout"]

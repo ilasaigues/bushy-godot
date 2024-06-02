@@ -10,6 +10,7 @@ GroundHorizontalTurnDeceleration = 1000
 GroundHorizontalMovementSpeed = 120
 JumpSpeed = -210.0
 JumpDuration = 0.12
+JumpCoyoteTime = 0.09
 AirHorizontalDeceleration = 400.0
 AirHorizontalMovementSpeed = 120.0
 AirHorizontalAcceleration = 650.0
