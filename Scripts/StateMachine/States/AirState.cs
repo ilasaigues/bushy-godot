@@ -153,35 +153,6 @@ namespace BushyCore
                 actionsComponent.Land();
             }
         }
-        public override void OnRigidBodyEnter(Node node) 
-        {
-            // foreach (var contact in collision.contacts)
-            // {
-            //     var isPlatform = contact.collider.GetComponent<PlatformEffector2D>();
-            //     //if contact normal is up and contact is under me
-            //     var dot = Vector2.Dot(contact.normal, Vector2.up);
-            //     if (dot > 0.1f && contact.point.y < _charController.transform.position.y)
-            //     {
-            //         if (_verticalVelocity < 0) //if I'm going down,
-            //             _charController.ChangeState<GroundedState>();
-            //     }
-
-            //     //if contact normal is down (exception added in case we're colliding with a one-way platform)
-            //     if (dot < -0.5f)
-            //     {
-            //         if (isPlatform) continue;
-            //         _verticalVelocity = 0;
-            //     }
-            //     //if contact normal is not vertical and is opposite of movement (exception added in case we're colliding with a one-way platform)
-            //     if (Mathf.Abs(dot) < 0.5 && contact.normal.x * _horizontalVelocity < 0)
-            //     {
-            //         if (isPlatform) continue;
-            //         _horizontalVelocity = 0;
-            //     }
-            // }
-            // _charController.Velocities[CharacterController.VelocityType.Gravity] = new Vector2(0, _verticalVelocity);
-            // _charController.Velocities[CharacterController.VelocityType.MainMovement] = _horizontalVelocity * Vector2.right;
-        }
 
         protected override void VelocityUpdate()
         {

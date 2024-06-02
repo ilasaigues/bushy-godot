@@ -28,7 +28,6 @@ namespace BushyCore
 
 	    protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
-            // _directionInputSubscription = _input.DirectionInput.Subscribe(UpdateFacingDirection);
             animationComponent.Play("jump");
             targetVelocity = characterVariables.AirHorizontalMovementSpeed;
             horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
@@ -57,13 +56,11 @@ namespace BushyCore
 			actionsComponent.DashActionStart -= DashActionRequested;
 			actionsComponent.JumpActionEnd -= JumpActionEnded;
             base.StateExit();
-            // _directionInputSubscription?.Dispose();
         }
         public override void StateUpdateInternal(double delta)
         {
             HandleHorizontalMovement(delta);
             this.VelocityUpdate();
-            // CheckDash();
             // CheckSwing();
 
             CheckTransitions();

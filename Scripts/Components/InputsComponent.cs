@@ -20,11 +20,12 @@ namespace BushyCore
 		public bool IsJumpRequested => (Time.GetTicksMsec() - JumpInputTime) <= JumpBufferTime;
 		public bool IsDashRequested => (Time.GetTicksMsec() - DashnputTime) <= DashBufferTime;
 
+		// VERY IMPORTANT: the order in which these checks are done, impact the order of which action signals are fired
         public override void _Process(double delta)
         {
 			this.DirectionCheck();
-			this.JumpCheck();
 			this.DashCheck();
+			this.JumpCheck();
         }
 
 		private void DirectionCheck()

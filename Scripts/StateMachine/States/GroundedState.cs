@@ -77,10 +77,7 @@ namespace BushyCore
 		{
 			if (actionsComponent.CanJump)
 			{
-				if(Input.IsActionPressed("left_shift"))
-					RunAndEndState(() => actionsComponent.Jump(characterVariables.DashJumpSpeed));
-				else 
-					RunAndEndState(() => actionsComponent.Jump());
+				RunAndEndState(() => actionsComponent.Jump());
 			}
 		} 
 
@@ -117,7 +114,7 @@ namespace BushyCore
 		void SetCanDash()
 		{
 			var dashCdRemaining = this.characterVariables.DashCooldown - (Time.GetTicksMsec() - actionsComponent.LastDashTime);
-			if (dashCdRemaining < 0)
+			if (dashCdRemaining <= 0)
 				actionsComponent.CanDash = true;
 			else
 				DashCooldownTimer.WaitTime = dashCdRemaining / 1000;
@@ -138,8 +135,6 @@ namespace BushyCore
 			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) horizontalVelocity;
 			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal * (float) verticalVelocity * 10;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)horizontalVelocity, slopeVerticalComponent);
-			Debug.WriteLine($"grounded vel: {movementComponent.Velocities[VelocityType.MainMovement]}");
-			Debug.WriteLine($"gravity vel: {movementComponent.Velocities[VelocityType.Gravity]}");
         }
     }
 

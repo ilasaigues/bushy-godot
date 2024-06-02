@@ -59,6 +59,9 @@ namespace BushyCore
 		}
     	public override void StateUpdateInternal(double delta)
     	{
+			if (actionsComponent.IsJumpRequested)
+				JumpActionRequested();
+				
 			VelocityUpdate();
 		}
 
@@ -79,7 +82,7 @@ namespace BushyCore
 				RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed));
 			}
 		} 
-
+	
 		void _on_duration_timer_timeout()
 		{
 			switch(state)
