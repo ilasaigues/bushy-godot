@@ -69,7 +69,7 @@ namespace BushyCore
 		{
 			if (state == 0) return;
 			
-			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * constantVelocity.X;
+			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * constantVelocity.X * direction;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(constantVelocity.X * direction, slopeVerticalComponent);
 		}
 
