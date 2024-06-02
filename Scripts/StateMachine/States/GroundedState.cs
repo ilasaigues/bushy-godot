@@ -138,6 +138,8 @@ namespace BushyCore
 			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) horizontalVelocity;
 			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal * (float) verticalVelocity * 10;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)horizontalVelocity, slopeVerticalComponent);
+			Debug.WriteLine($"grounded vel: {movementComponent.Velocities[VelocityType.MainMovement]}");
+			Debug.WriteLine($"gravity vel: {movementComponent.Velocities[VelocityType.Gravity]}");
         }
     }
 

@@ -91,7 +91,9 @@ public partial class MovementComponent : Node2D
 			CheckRaycastFloor(GroundRayCastR);
 		}
 
-		FacingDirection = characterBody2D.Velocity.X == 0f ? FacingDirection : characterBody2D.Velocity * Vector2.Right;
+		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f 
+			? FacingDirection 
+			: this.Velocities[VelocityType.MainMovement].X * Vector2.Right;
 	}
 	
 	private void CheckRaycastFloor(RayCast2D rayCast2D)
