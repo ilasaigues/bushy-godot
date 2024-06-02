@@ -42,6 +42,7 @@ namespace BushyCore
             actionsComponent.CanJump = false;
 
 			actionsComponent.DashActionStart += DashActionRequested;
+			actionsComponent.JumpActionEnd += JumpActionEnded;
 
             foreach (var config in configs)
             {
@@ -54,6 +55,7 @@ namespace BushyCore
         public override void StateExit()
         {
 			actionsComponent.DashActionStart -= DashActionRequested;
+			actionsComponent.JumpActionEnd -= JumpActionEnded;
             base.StateExit();
             // _directionInputSubscription?.Dispose();
         }
@@ -111,9 +113,7 @@ namespace BushyCore
 
         void CheckTransitions()
         {
-            earlyDrop |= !actionsComponent.IsJumpRequested;
-            
-            if (earlyDrop)
+            if (actionsComponent.IsJumpCancelled)
                 actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed));
 
             if (actionsComponent.IsDashRequested && actionsComponent.CanDash)
@@ -133,5 +133,10 @@ namespace BushyCore
 				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
 			}
 		} 
+
+        public void JumpActionEnded()
+        {
+            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed)));
+        }
     }
 }

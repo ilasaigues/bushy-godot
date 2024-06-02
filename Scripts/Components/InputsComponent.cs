@@ -17,15 +17,32 @@ namespace BushyCore
 		private double JumpInputTime;
 		private double DashnputTime;
 
-		public bool IsJumpRequested => Input.IsActionPressed("ui_accept") && (Time.GetTicksMsec() - JumpInputTime) <= JumpBufferTime;
-		public bool IsDashRequested => Input.IsActionPressed("left_shift") && (Time.GetTicksMsec() - DashnputTime) <= DashBufferTime;
+		public bool IsJumpRequested => (Time.GetTicksMsec() - JumpInputTime) <= JumpBufferTime;
+		public bool IsDashRequested => (Time.GetTicksMsec() - DashnputTime) <= DashBufferTime;
 
         public override void _Process(double delta)
         {
+			this.DirectionCheck();
 			this.JumpCheck();
 			this.DashCheck();
-			actionsComponent.MovementDirection = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
         }
+
+		private void DirectionCheck()
+		{
+			bool anyDirJustChanged = Input.IsActionJustPressed("ui_left") ||
+				Input.IsActionJustPressed("ui_right") ||
+				Input.IsActionJustPressed("ui_up") ||
+				Input.IsActionJustPressed("ui_down") ||
+				Input.IsActionJustReleased("ui_left") ||
+				Input.IsActionJustReleased("ui_right") ||
+				Input.IsActionJustReleased("ui_up") ||
+				Input.IsActionJustReleased("ui_down");
+
+			if (anyDirJustChanged)
+			{
+				actionsComponent.MovementDirection = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
+			}
+		}
 
 		private void JumpCheck()
 		{
@@ -33,6 +50,12 @@ namespace BushyCore
 			{
 				this.JumpInputTime = Time.GetTicksMsec();
 				actionsComponent.IsJumpRequested = true;
+				actionsComponent.IsJumpCancelled = false;
+			}
+
+			if (this.JumpInputTime > 0 && Input.IsActionJustReleased("ui_accept"))
+			{
+				actionsComponent.IsJumpCancelled = true;
 			}
 				
 			if (this.JumpInputTime > 0 && !IsJumpRequested) 

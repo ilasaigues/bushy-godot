@@ -20,8 +20,16 @@ public partial class ActionsComponent : Node
 	public delegate void DashActionStartEventHandler();
 	[Signal]
 	public delegate void DashActionEndEventHandler();
-
-	public Vector2 MovementDirection { get; set; }
+	[Signal]
+	public delegate void MovementDirectionChangeEventHandler(Vector2 vector2);
+	private Vector2 _MovementDirection;
+	public Vector2 MovementDirection { 
+		get { return _MovementDirection; }
+		set { 
+			_MovementDirection = value;
+			EmitSignal(SignalName.MovementDirectionChange, value);
+		} 
+	}
 
 	private bool _IsJumpRequested;
 	public bool IsJumpRequested { 
@@ -31,10 +39,17 @@ public partial class ActionsComponent : Node
 
 			if (_IsJumpRequested) 
 				EmitSignal(SignalName.JumpActionStart);
-			else
-				EmitSignal(SignalName.JumpActionEnd);
 		} 
 	}
+	private bool _IsJumpCancelled;
+	public bool IsJumpCancelled {
+		get { return _IsJumpCancelled; }
+		set {
+			_IsJumpCancelled = value;
+			if (value) EmitSignal(SignalName.JumpActionEnd);
+		}
+	}
+	
 	private bool _IsDashRequested;
 	public bool IsDashRequested { 
 		get { return _IsDashRequested; } 

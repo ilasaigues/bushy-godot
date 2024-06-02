@@ -55,7 +55,7 @@ namespace BushyCore
 		void CheckTransitions()
 		{
 			if (actionsComponent.IsJumpRequested && actionsComponent.CanJump)
-			{
+			{	
 				actionsComponent.Jump();
 			}
 
@@ -75,7 +75,6 @@ namespace BushyCore
 
 		public void JumpActionRequested()
 		{
-			GD.Print("QUE PINGO PASAAAAAA");
 			if (actionsComponent.CanJump)
 			{
 				if(Input.IsActionPressed("left_shift"))RunAndEndState(() => actionsComponent.Jump(characterVariables.DashJumpSpeed));
