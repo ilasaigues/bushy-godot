@@ -14,7 +14,7 @@ namespace BushyCore
 
 		private double horizontalVelocity;
 		private double verticalVelocity;
-
+		private bool canBufferJump;
 		public override void _Ready()
 		{
 			base._Ready();
@@ -25,12 +25,25 @@ namespace BushyCore
 
 		protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
+			canBufferJump = true;
 			SetCanDash();
 			actionsComponent.CanJump = true;
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 			horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
 			actionsComponent.JumpActionStart += JumpActionRequested;
 			actionsComponent.DashActionStart += DashActionRequested;
+
+			SetupFromConfigs(configs);
+		}
+		private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
+		{
+			foreach (var config in configs)
+			{
+				if (config is StateConfig.InitialGroundedConfig groundedConfig)
+				{
+					canBufferJump = groundedConfig.CanBufferJump;
+				}
+			}
 		}
 
         public override void StateExit()
@@ -54,7 +67,7 @@ namespace BushyCore
 
 		void CheckTransitions()
 		{
-			if (actionsComponent.IsJumpRequested && actionsComponent.CanJump)
+			if (canBufferJump && actionsComponent.IsJumpRequested && actionsComponent.CanJump)
 			{	
 				actionsComponent.Jump();
 			}

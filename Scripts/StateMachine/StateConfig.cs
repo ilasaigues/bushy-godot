@@ -43,5 +43,16 @@ namespace BushyCore
         {
             return new InitialSwingHookConfig(hitPoint, earlyRelease);
         }
+
+        public struct InitialGroundedConfig : IBaseStateConfig
+        {
+            public bool CanBufferJump;
+            public InitialGroundedConfig(bool canBufferJump = true) { CanBufferJump = canBufferJump; }
+        }
+        public static InitialGroundedConfig InitialGroundedJumpBuffer(bool canBufferJump)
+        {
+            return new InitialGroundedConfig(canBufferJump);
+        }
+
     }
 }

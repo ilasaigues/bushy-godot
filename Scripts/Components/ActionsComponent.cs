@@ -96,8 +96,8 @@ public partial class ActionsComponent : Node
 		this.LastDashTime = Time.GetTicksMsec();
 		this.stateMachine.ChangeState<DashState>(StateConfig.InitialVelocityVector(dashDir));
 	}
-	public void Land()
+	public void Land(params StateConfig.IBaseStateConfig[] configs)
 	{
-		this.stateMachine.ChangeState<GroundedState>();
+		this.stateMachine.ChangeState<GroundedState>(configs);
 	}
 }

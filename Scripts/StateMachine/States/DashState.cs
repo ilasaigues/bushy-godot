@@ -41,12 +41,6 @@ namespace BushyCore
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
 		}
-
-		public override void StateExit()
-        {
-            base.StateExit();
-			actionsComponent.JumpActionStart -= JumpActionRequested;
-        }
 		private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
 		{
 			foreach (var config in configs)
@@ -57,11 +51,16 @@ namespace BushyCore
 				}
 			}
 		}
+		public override void StateExit()
+        {
+            base.StateExit();
+			actionsComponent.JumpActionStart -= JumpActionRequested;
+        }
     	public override void StateUpdateInternal(double delta)
     	{
 			if (actionsComponent.IsJumpRequested)
 				JumpActionRequested();
-				
+
 			VelocityUpdate();
 		}
 
@@ -102,7 +101,11 @@ namespace BushyCore
 						break;
 				case 2:
 						DurationTimer.Stop();
-						RunAndEndState(() => actionsComponent.Fall());
+						RunAndEndState(() => {
+							if (movementComponent.IsOnFloor)
+								actionsComponent.Land(StateConfig.InitialGroundedJumpBuffer(false));
+							actionsComponent.Fall();
+						});
 						break;
 			}
 			state ++;
