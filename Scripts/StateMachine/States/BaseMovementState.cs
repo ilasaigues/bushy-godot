@@ -40,10 +40,8 @@ namespace BushyCore
                 }
                 else
                 {
-                    Debug.WriteLine($"horizontal decelerating {horizontalVelocity}");
                     horizontalVelocity += HorizontalOvercappedDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
                     horizontalVelocity = Mathf.Max(targetVelocity, Mathf.Abs(horizontalVelocity)) * Mathf.Sign(horizontalVelocity);
-                    Debug.WriteLine($"overshoot reduced horizontal vel {horizontalVelocity}");
                 }
 			}
 			else //if we're not doing any input, we decelerate to 0

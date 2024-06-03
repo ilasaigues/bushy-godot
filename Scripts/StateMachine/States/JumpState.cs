@@ -81,6 +81,9 @@ namespace BushyCore
             if (actionsComponent.IsJumpCancelled)
                 actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed));
 
+            if (movementComponent.IsOnCeiling)
+                actionsComponent.Fall();
+
             if (actionsComponent.IsDashRequested && actionsComponent.CanDash)
                 actionsComponent.Dash(this.IntendedDirection);
         }
