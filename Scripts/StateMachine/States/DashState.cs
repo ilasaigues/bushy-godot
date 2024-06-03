@@ -11,6 +11,7 @@ namespace BushyCore
 	public partial class DashState : BaseState
 	{
 		private Vector2 constantVelocity;
+		private bool postDashJump;
 		private float direction;
 		[Node]
     	private Timer DurationTimer;
@@ -38,6 +39,7 @@ namespace BushyCore
 			state = 0;
 			actionsComponent.JumpActionStart += JumpActionRequested;
 			actionsComponent.CanDash = false;
+			postDashJump = false;
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
 		}
@@ -74,11 +76,19 @@ namespace BushyCore
 
 		public void JumpActionRequested()
 		{
-			if (actionsComponent.CanJump && state == 0)
+			if (actionsComponent.CanJump)
 			{
-				DurationTimer.Stop();
-				movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);
-				RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed));
+				switch(state)
+				{
+					case 0:
+					DurationTimer.Stop();
+					movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);
+					RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed));
+					break;
+					case 2:
+					postDashJump = true;
+					break;
+				}
 			}
 		} 
 	
@@ -103,7 +113,7 @@ namespace BushyCore
 						DurationTimer.Stop();
 						RunAndEndState(() => {
 							if (movementComponent.IsOnFloor)
-								actionsComponent.Land(StateConfig.InitialGroundedJumpBuffer(false));
+								actionsComponent.Land(StateConfig.InitialGroundedJumpBuffer(postDashJump));
 							actionsComponent.Fall();
 						});
 						break;
