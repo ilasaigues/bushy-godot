@@ -15,16 +15,17 @@ namespace BushyCore
         public struct InitialVelocityVectorConfig : IBaseStateConfig
         {
             public Vector2 Velocity;
-            public InitialVelocityVectorConfig(Vector2 velocity) { Velocity = velocity; }
+            public bool IsConstant;
+            public InitialVelocityVectorConfig(Vector2 velocity, bool isConstant = false) { Velocity = velocity; IsConstant = isConstant; }
         }
 
         public static InitialVerticalVelocityConfig InitialVerticalVelocity(float velocity)
         {
             return new InitialVerticalVelocityConfig(velocity);
         }
-        public static InitialVelocityVectorConfig InitialVelocityVector(Vector2 velocity)
+        public static InitialVelocityVectorConfig InitialVelocityVector(Vector2 velocity, bool isConstant = false)
         {
-            return new InitialVelocityVectorConfig(velocity);
+            return new InitialVelocityVectorConfig(velocity, isConstant);
         }
 
         public struct StartJumpConfig : IBaseStateConfig { }

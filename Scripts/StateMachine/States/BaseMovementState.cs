@@ -12,6 +12,7 @@ namespace BushyCore
         protected int HorizontalDeceleration;
         protected int HorizontalMovementSpeed;
         protected float HorizontalOvercappedDeceleration;
+        protected bool IsConstantHorizontal;
         public override void StateUpdateInternal(double delta)
         {
             HandleHorizontalMovement((float )delta);
@@ -38,7 +39,7 @@ namespace BushyCore
                     horizontalVelocity += direction.X * characterVariables.AirHorizontalAcceleration * deltaTime;
                     horizontalVelocity = Mathf.Clamp(horizontalVelocity, -targetVelocity, targetVelocity);
                 }
-                else
+                else if (!IsConstantHorizontal)
                 {
                     horizontalVelocity += HorizontalOvercappedDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
                     horizontalVelocity = Mathf.Max(targetVelocity, Mathf.Abs(horizontalVelocity)) * Mathf.Sign(horizontalVelocity);

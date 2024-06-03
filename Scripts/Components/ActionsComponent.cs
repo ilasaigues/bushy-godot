@@ -76,9 +76,9 @@ public partial class ActionsComponent : Node
 		this.stateMachine.ChangeState<JumpState>(configs);
 	}
 
-	public void Jump(float horizontalVelocity)
+	public void Jump(float horizontalVelocity, bool isConstantVel = false)
 	{
-		this.stateMachine.ChangeState<JumpState>(StateConfig.InitialVelocityVector(new Vector2(horizontalVelocity,0)));
+		this.stateMachine.ChangeState<JumpState>(StateConfig.InitialVelocityVector(new Vector2(horizontalVelocity,0), isConstantVel));
 	}
 	// State machine changes WILL throw state end exceptions. After this method is called, state will end immediately
 	public void Fall()
@@ -86,9 +86,9 @@ public partial class ActionsComponent : Node
 		this.stateMachine.ChangeState<AirState>(StateConfig.InitialVerticalVelocity(0));
 	}
 	// State machine changes WILL throw state end exceptions. After this method is called, state will end immediately
-	public void Fall(Vector2 previousVel)
+	public void Fall(Vector2 previousVel, bool isConstantHorizontal = false)
 	{
-		this.stateMachine.ChangeState<AirState>(StateConfig.InitialVelocityVector(previousVel));
+		this.stateMachine.ChangeState<AirState>(StateConfig.InitialVelocityVector(previousVel, isConstantHorizontal));
 	}
 	// State machine changes WILL throw state and axceptions. After this method is called, state will end immediately
 	public void Dash(Vector2 dashDir)

@@ -27,8 +27,14 @@ namespace BushyCore
 			this.DashCheck();
 			this.JumpCheck();
         }
-
-		private void DirectionCheck()
+        public override void _Input(InputEvent @event)
+        {
+			if (@event.IsActionReleased("ui_accept"))
+			{
+				actionsComponent.IsJumpCancelled = true;
+			}
+        }
+        private void DirectionCheck()
 		{
 			bool anyDirJustChanged = Input.IsActionJustPressed("ui_left") ||
 				Input.IsActionJustPressed("ui_right") ||
@@ -54,11 +60,6 @@ namespace BushyCore
 				actionsComponent.IsJumpCancelled = false;
 			}
 
-			if (Input.IsActionJustReleased("ui_accept"))
-			{
-				actionsComponent.IsJumpCancelled = true;
-			}
-				
 			if (this.JumpInputTime > 0 && !IsJumpRequested) 
 			{
 				actionsComponent.IsJumpRequested = false;

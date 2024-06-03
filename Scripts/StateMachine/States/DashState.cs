@@ -11,7 +11,7 @@ namespace BushyCore
 	public partial class DashState : BaseState
 	{
 		private Vector2 constantVelocity;
-		private bool postDashJump;
+		private bool bufferJump;
 		private float direction;
 		[Node]
     	private Timer DurationTimer;
@@ -39,7 +39,7 @@ namespace BushyCore
 			state = 0;
 			actionsComponent.JumpActionStart += JumpActionRequested;
 			actionsComponent.CanDash = false;
-			postDashJump = false;
+			bufferJump = false;
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
 		}
@@ -81,13 +81,13 @@ namespace BushyCore
 				switch(state)
 				{
 					case 0:
-					DurationTimer.Stop();
-					movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);
-					RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed));
-					break;
+						DurationTimer.Stop();
+						movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);
+						RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed, true));
+						break;
 					case 2:
-					postDashJump = true;
-					break;
+						bufferJump = true;
+						break;
 				}
 			}
 		} 
@@ -97,26 +97,26 @@ namespace BushyCore
 			switch(state)
 			{
 				case 0:
-						DurationTimer.Stop();
-						DurationTimer.WaitTime = characterVariables.DashTime;
-						constantVelocity.X = characterVariables.DashVelocity;
-						animationComponent.Play("dash_end");
-						DurationTimer.Start();
-						break;
+					DurationTimer.Stop();
+					DurationTimer.WaitTime = characterVariables.DashTime;
+					constantVelocity.X = characterVariables.DashVelocity;
+					animationComponent.Play("dash_end");
+					DurationTimer.Start();
+					break;
 				case 1:
-						DurationTimer.Stop();
-						constantVelocity.X = characterVariables.DashExitVelocity;
-						DurationTimer.WaitTime = characterVariables.DashExitTime;
-						DurationTimer.Start();
-						break;
+					DurationTimer.Stop();
+					constantVelocity.X = characterVariables.DashExitVelocity;
+					DurationTimer.WaitTime = characterVariables.DashExitTime;
+					DurationTimer.Start();
+					break;
 				case 2:
-						DurationTimer.Stop();
-						RunAndEndState(() => {
-							if (movementComponent.IsOnFloor)
-								actionsComponent.Land(StateConfig.InitialGroundedJumpBuffer(postDashJump));
-							actionsComponent.Fall();
-						});
-						break;
+					DurationTimer.Stop();
+					RunAndEndState(() => {
+						if (movementComponent.IsOnFloor)
+							actionsComponent.Land(StateConfig.InitialGroundedJumpBuffer(bufferJump));
+						actionsComponent.Fall();
+					});
+					break;
 			}
 			state ++;
 		}

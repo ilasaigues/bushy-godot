@@ -48,6 +48,7 @@ namespace BushyCore
                 if(config is StateConfig.InitialVelocityVectorConfig velocityConfig)
                 {
                     targetVelocity = (int) MathF.Abs(velocityConfig.Velocity.X);
+                    IsConstantHorizontal = velocityConfig.IsConstant;
                 }
             }
 
@@ -79,19 +80,16 @@ namespace BushyCore
         void CheckTransitions()
         {
             if (actionsComponent.IsJumpCancelled)
-                actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed));
+                actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), IsConstantHorizontal);
 
             if (movementComponent.IsOnCeiling)
                 actionsComponent.Fall();
-
-            if (actionsComponent.IsDashRequested && actionsComponent.CanDash)
-                actionsComponent.Dash(this.IntendedDirection);
         }
 
         void DurationTimerTimeout()
         {
             if (!this.IsActive) return;
-            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpSpeed)));
+            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpSpeed), IsConstantHorizontal));
         }
 
 		public void DashActionRequested()
@@ -108,3 +106,4 @@ namespace BushyCore
         }
     }
 }
+

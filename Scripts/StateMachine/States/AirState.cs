@@ -59,6 +59,7 @@ namespace BushyCore
                 {
                     verticalVelocity = velocityConfig.Velocity.Y;
                     targetVelocity = velocityConfig.Velocity.X;
+                    IsConstantHorizontal = velocityConfig.IsConstant;
                 }
             }
         }
