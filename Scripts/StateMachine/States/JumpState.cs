@@ -43,6 +43,12 @@ namespace BushyCore
 			actionsComponent.DashActionStart += DashActionRequested;
 			actionsComponent.JumpActionEnd += JumpActionEnded;
 
+			base.HorizontalAcceleration = characterVariables.AirHorizontalAcceleration;
+			base.HorizontalDeceleration = characterVariables.AirHorizontalDeceleration;
+			base.HorizontalOvercappedDeceleration = characterVariables.AirHorizontalOvercappedDeceleration;
+			base.HorizontalMovementSpeed = targetVelocity;
+            base.IsConstantHorizontal = false;
+
             foreach (var config in configs)
             {
                 if(config is StateConfig.InitialVelocityVectorConfig velocityConfig)
@@ -51,11 +57,6 @@ namespace BushyCore
                     IsConstantHorizontal = velocityConfig.IsConstant;
                 }
             }
-
-			base.HorizontalAcceleration = characterVariables.AirHorizontalAcceleration;
-			base.HorizontalDeceleration = characterVariables.AirHorizontalDeceleration;
-			base.HorizontalOvercappedDeceleration = characterVariables.AirHorizontalOvercappedDeceleration;
-			base.HorizontalMovementSpeed = targetVelocity;
 		}
         public override void StateExit()
         {

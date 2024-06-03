@@ -38,6 +38,7 @@ namespace BushyCore
 			base.HorizontalDeceleration = characterVariables.AirHorizontalDeceleration;
 			base.HorizontalOvercappedDeceleration = characterVariables.AirHorizontalOvercappedDeceleration;
 			base.HorizontalMovementSpeed = characterVariables.AirHorizontalMovementSpeed;
+            base.IsConstantHorizontal = false;
 
             SetupFromConfigs(configs);
 
