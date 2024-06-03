@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Godot;
 using GodotUtilities;
 using static MovementComponent;
@@ -5,10 +6,9 @@ using static MovementComponent;
 namespace BushyCore 
 {
     [Scene]
-    public partial class AirState : BaseState
+    public partial class AirState : BaseMovementState
     {
         private double verticalVelocity;
-        private double horizontalVelocity;
         private float targetVelocity;
         private bool canCoyoteJump;
 
@@ -34,9 +34,15 @@ namespace BushyCore
             JumpCoyoteTimer.WaitTime = characterVariables.JumpCoyoteTime;
             JumpCoyoteTimer.Start();
 
+			base.HorizontalAcceleration = characterVariables.AirHorizontalAcceleration;
+			base.HorizontalDeceleration = characterVariables.AirHorizontalDeceleration;
+			base.HorizontalOvercappedDeceleration = characterVariables.AirHorizontalOvercappedDeceleration;
+			base.HorizontalMovementSpeed = characterVariables.AirHorizontalMovementSpeed;
+
             SetupFromConfigs(configs);
 
 			actionsComponent.DashActionStart += DashActionRequested;
+			actionsComponent.JumpActionEnd += JumpActionEnded;
         }
         
         private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
@@ -60,6 +66,7 @@ namespace BushyCore
         public override void StateExit()
         {
 			actionsComponent.DashActionStart -= DashActionRequested;
+			actionsComponent.JumpActionEnd -= JumpActionEnded;
             
             base.StateExit();
             // _directionInputSubscription?.Dispose();
@@ -69,32 +76,18 @@ namespace BushyCore
         {
             // if (TryCoyoteJump()) return;
             HandleGravity(delta);
-            HandleHorizontalMovement(delta);
+            base.StateUpdateInternal(delta);
+
             CheckTransitions();
-            // CheckSwing();
             VelocityUpdate();
+            
             if(movementComponent.CurrentVelocity.Y > 0)animationComponent.Play("fall");
         }
 
-        // void UpdateFacingDirection(Vector2 dir)
-        // {
-        //     _charController.FacingDirection = dir.x != 0 ?
-        //         new Vector2(dir.x, 0) :
-        //         _charController.FacingDirection;
-        // }
         void HandleGravity(double deltaTime)
         {
             verticalVelocity = Mathf.Min(characterVariables.AirTerminalVelocity, verticalVelocity + GetGravity() * (float) deltaTime);
         }
-        // bool TryCoyoteJump()
-        // {
-        //     if (actionsComponent.CanJump && TimeSinceStateStart <= _charVariables.CoyoteJumpTime && _charController.JumpPressed)
-        //     {
-        //         _charController.ChangeState<JumpState>();
-        //         return   true;
-        //     }
-        //     return false;
-        // }
 
         float GetGravity()
         {
@@ -110,35 +103,6 @@ namespace BushyCore
             {
                 return characterVariables.AirGravity;
             }
-        }
-
-        void HandleHorizontalMovement(double deltaTime)
-        {
-            
-			Vector2 direction = actionsComponent.MovementDirection;
-			var vars = characterVariables;
-			if (direction.X != 0)
-			{
-				horizontalVelocity += direction.X * vars.AirHorizontalAcceleration * deltaTime;
-				//if the input direction is opposite of the current direction, we also add a deceleration
-				if (direction.X * horizontalVelocity < 0)
-				{
-					horizontalVelocity += direction.X * vars.GroundHorizontalTurnDeceleration * deltaTime;
-				}
-			}
-			else //if we're not doing any input, we decelerate to 0
-			{
-				var deceleration = vars.AirHorizontalDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
-				if (Mathf.Abs(deceleration) < Mathf.Abs(horizontalVelocity))
-				{
-					horizontalVelocity += deceleration;
-				}
-				else
-				{
-					horizontalVelocity = 0;
-				}
-			}
-			horizontalVelocity = Mathf.Clamp(horizontalVelocity, -targetVelocity, targetVelocity);
         }
 
         void CheckTransitions() 
@@ -171,6 +135,12 @@ namespace BushyCore
         public void OnJumpCoyoteTimerTimeout()
         {
             canCoyoteJump = false;
+        }
+
+        public void JumpActionEnded()
+        {
+            if (verticalVelocity < 0)
+                verticalVelocity = characterVariables.JumpShortHopSpeed;
         }
     }
 }

@@ -10,24 +10,28 @@ namespace BushyCore
         [Export] 
         public int GroundHorizontalDeceleration { get; private set; }
         [Export] 
-        public int GroundHorizontalTurnDeceleration { get; private set; }
+        public int HorizontalTurnDeceleration { get; private set; }
         [Export] 
         public int GroundHorizontalMovementSpeed { get; private set; }
+        [Export]
+        public int GroundHorizontalOvercappedDeceleration { get; private set; }
+        [Export]
+        public int MaxOnWallHorizontalMovementSpeed { get; private set; }
 
         [Export]
-        public float JumpSpeed { get; private set; }
+        public int JumpSpeed { get; private set; }
         [Export]
         public float JumpDuration { get; private set; }
         [Export]
         public float JumpCoyoteTime { get; private set; }
         [Export]
-        public float AirHorizontalDeceleration { get; private set; }
+        public int AirHorizontalDeceleration { get; private set; }
         [Export]
-        public float AirHorizontalMovementSpeed { get; private set; }
+        public int AirHorizontalMovementSpeed { get; private set; }
         [Export]
-        public float AirHorizontalAcceleration { get; private set; }
+        public int AirHorizontalAcceleration { get; private set; }
         [Export]
-        public float AirHorizontalOvercappedDeceleration { get; private set; }
+        public int AirHorizontalOvercappedDeceleration { get; private set; }
         [Export]
         public float JumpShortHopSpeed { get; private set; }
         [Export]

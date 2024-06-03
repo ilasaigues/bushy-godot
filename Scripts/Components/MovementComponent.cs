@@ -12,6 +12,10 @@ public partial class MovementComponent : Node2D
 	public Vector2 FacingDirection { get; private set; }
 	// IsOnFloor references whether the node collider is actually touching the floor
 	public bool IsOnFloor { get; private set; } 
+	// IsOnRoof references whether the node collider is actually touching the roof
+	public bool IsOnCeiling { get; private set; } 
+	// IsOnRoof references whether the node collider is next to wall in the facing direction
+	public bool IsOnWall { get; private set; } 
 	// SnappedToFloor references whether the node collider is within snapping distance from the floor
 	public bool SnappedToFloor { get; private set; }
 	// Lowest point of collision between the component and the floor
@@ -68,6 +72,9 @@ public partial class MovementComponent : Node2D
 			SnappedToFloor = false;
 			FloorHeight = null;
 		}
+
+		IsOnCeiling = characterBody2D.IsOnCeiling();
+		IsOnWall = characterBody2D.IsOnWall();
 		
 		FloorNormal = characterBody2D.GetFloorNormal();
 
@@ -94,6 +101,7 @@ public partial class MovementComponent : Node2D
 		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f 
 			? FacingDirection 
 			: this.Velocities[VelocityType.MainMovement].X * Vector2.Right;
+
 	}
 	
 	private void CheckRaycastFloor(RayCast2D rayCast2D)

@@ -7,12 +7,11 @@ using static MovementComponent;
 namespace BushyCore 
 {
     [Scene]
-    public partial class JumpState : BaseState
+    public partial class JumpState : BaseMovementState
     {
-        private double horizontalVelocity;
 		private double verticalVelocity;
         private bool earlyDrop;
-        private float targetVelocity;
+        private int targetVelocity;
 
         [Node]
         private Timer DurationTimer;
@@ -29,6 +28,7 @@ namespace BushyCore
 	    protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
             animationComponent.Play("jump");
+
             targetVelocity = characterVariables.AirHorizontalMovementSpeed;
             horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
             verticalVelocity = characterVariables.JumpSpeed;
@@ -47,9 +47,14 @@ namespace BushyCore
             {
                 if(config is StateConfig.InitialVelocityVectorConfig velocityConfig)
                 {
-                    targetVelocity = MathF.Abs(velocityConfig.Velocity.X);
+                    targetVelocity = (int) MathF.Abs(velocityConfig.Velocity.X);
                 }
             }
+
+			base.HorizontalAcceleration = characterVariables.AirHorizontalAcceleration;
+			base.HorizontalDeceleration = characterVariables.AirHorizontalDeceleration;
+			base.HorizontalOvercappedDeceleration = characterVariables.AirHorizontalOvercappedDeceleration;
+			base.HorizontalMovementSpeed = targetVelocity;
 		}
         public override void StateExit()
         {
@@ -59,7 +64,7 @@ namespace BushyCore
         }
         public override void StateUpdateInternal(double delta)
         {
-            HandleHorizontalMovement(delta);
+            base.StateUpdateInternal(delta);
             this.VelocityUpdate();
             // CheckSwing();
 
@@ -69,43 +74,6 @@ namespace BushyCore
         {
             movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
             movementComponent.Velocities[VelocityType.MainMovement] = (float) horizontalVelocity * Vector2.Right;
-        }
-
-        void HandleHorizontalMovement(double deltaTime)
-        {
-
-            Vector2 direction = actionsComponent.MovementDirection;
-            if (direction.X != 0) // If we're doing any input
-            {
-                //if the input direction is opposite of the current direction, we also add a deceleration
-                if (direction.X * horizontalVelocity < 0)
-                {
-                    horizontalVelocity += direction.X * characterVariables.AirHorizontalDeceleration * deltaTime;
-                }
-
-                if (Mathf.Abs(horizontalVelocity) <= Mathf.Abs(targetVelocity))
-                {
-                    horizontalVelocity += direction.X * characterVariables.AirHorizontalAcceleration * deltaTime;
-                    horizontalVelocity = Mathf.Clamp(horizontalVelocity, -targetVelocity, targetVelocity);
-                }
-                else
-                {
-                    horizontalVelocity += characterVariables.AirHorizontalOvercappedDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
-                }
-
-            }
-            else //if we're not doing any input, we decelerate to 0
-            {
-                var deceleration = characterVariables.AirHorizontalDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
-                if (Mathf.Abs(deceleration) < Mathf.Abs(horizontalVelocity))
-                {
-                    horizontalVelocity += deceleration;
-                }
-                else
-                {
-                    horizontalVelocity = 0;
-                }
-            }
         }
 
         void CheckTransitions()

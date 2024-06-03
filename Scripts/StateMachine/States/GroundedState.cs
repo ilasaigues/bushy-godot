@@ -1,5 +1,6 @@
 using Godot;
 using GodotUtilities;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Diagnostics;
 using static MovementComponent;
@@ -7,12 +8,10 @@ using static MovementComponent;
 namespace BushyCore 
 {
 	[Scene]
-	public partial class GroundedState : BaseState
+	public partial class GroundedState : BaseMovementState
 	{
 		[Node]
 		private Timer DashCooldownTimer;
-
-		private double horizontalVelocity;
 		private double verticalVelocity;
 		private bool canBufferJump;
 		public override void _Ready()
@@ -32,6 +31,11 @@ namespace BushyCore
 			horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
 			actionsComponent.JumpActionStart += JumpActionRequested;
 			actionsComponent.DashActionStart += DashActionRequested;
+
+			base.HorizontalAcceleration = characterVariables.GroundHorizontalAcceleration;
+			base.HorizontalDeceleration = characterVariables.GroundHorizontalDeceleration;
+			base.HorizontalMovementSpeed = characterVariables.GroundHorizontalMovementSpeed;
+			base.HorizontalOvercappedDeceleration = characterVariables.GroundHorizontalOvercappedDeceleration;
 
 			SetupFromConfigs(configs);
 		}
@@ -60,6 +64,7 @@ namespace BushyCore
 			// We have to keep in mind that while using move and slide this WILL impact the characterś movement horizontally
 			verticalVelocity = -10f;
 
+			base.StateUpdateInternal(delta);
 			HandleMovement(delta);
 			CheckTransitions();
 			VelocityUpdate();
@@ -94,34 +99,12 @@ namespace BushyCore
 			}
 		} 
 
-		void HandleMovement(double deltaTime)
+		void HandleMovement(double _deltaTime)
 		{
-			Vector2 direction = actionsComponent.MovementDirection;
-			var vars = characterVariables;
-			if (direction.X != 0)
-			{
+			if (actionsComponent.MovementDirection.X != 0)
 				animationComponent.Play("run");
-				horizontalVelocity += direction.X * vars.GroundHorizontalAcceleration * deltaTime;
-				//if the input direction is opposite of the current direction, we also add a deceleration
-				if (direction.X * horizontalVelocity < 0)
-				{
-					horizontalVelocity += direction.X * vars.GroundHorizontalTurnDeceleration * deltaTime;
-				}
-			}
-			else //if we're not doing any input, we decelerate to 0
-			{
+			else 
 				animationComponent.Play("idle");
-				var deceleration = vars.GroundHorizontalDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
-				if (Mathf.Abs(deceleration) < Mathf.Abs(horizontalVelocity))
-				{
-					horizontalVelocity += deceleration;
-				}
-				else
-				{
-					horizontalVelocity = 0;
-				}
-			}
-			horizontalVelocity = Mathf.Clamp(horizontalVelocity, -vars.GroundHorizontalMovementSpeed, vars.GroundHorizontalMovementSpeed);
 		}
 
 		void SetCanDash()

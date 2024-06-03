@@ -54,7 +54,7 @@ namespace BushyCore
 				actionsComponent.IsJumpCancelled = false;
 			}
 
-			if (this.JumpInputTime > 0 && Input.IsActionJustReleased("ui_accept"))
+			if (Input.IsActionJustReleased("ui_accept"))
 			{
 				actionsComponent.IsJumpCancelled = true;
 			}
