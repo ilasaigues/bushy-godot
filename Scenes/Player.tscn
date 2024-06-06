@@ -1,6 +1,7 @@
-[gd_scene load_steps=23 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=26 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
+[ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
 [ext_resource type="Texture2D" uid="uid://kb10o0qoh0oe" path="res://Assets/Player/Test_Spritesheet.png" id="2_c3m6v"]
 [ext_resource type="Script" path="res://Scripts/Components/Sprite2DComponent.cs" id="3_2v3uq"]
 [ext_resource type="PackedScene" uid="uid://cnkptwq4h84kk" path="res://Scenes/MovementComponent.tscn" id="3_wt20f"]
@@ -15,8 +16,15 @@
 [ext_resource type="PackedScene" uid="uid://ikw2snd4s3rd" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
 [ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3yif5"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_raavv"]
 size = Vector2(8, 13)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dshrg"]
+radius = 5.0
+height = 13.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dwjyl"]
+radius = 5.0
 
 [sub_resource type="Animation" id="Animation_dq7ya"]
 resource_name = "dash_end"
@@ -139,7 +147,11 @@ script = ExtResource("1_1vn0y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-1, 1.5)
-shape = SubResource("RectangleShape2D_3yif5")
+shape = SubResource("RectangleShape2D_raavv")
+script = ExtResource("2_7fxs0")
+RectShape = SubResource("RectangleShape2D_raavv")
+CilinderShape = SubResource("CapsuleShape2D_dshrg")
+CircleShape = SubResource("CircleShape2D_dwjyl")
 
 [node name="Sprite2DComponent" type="Sprite2D" parent="." node_paths=PackedStringArray("movementComponent")]
 texture_filter = 1
@@ -152,11 +164,12 @@ movementComponent = NodePath("../MovementComponent")
 
 [node name="MovementComponent" parent="." instance=ExtResource("3_wt20f")]
 
-[node name="StateMachine" parent="." node_paths=PackedStringArray("movementComponent", "actionsComponent", "animationComponent") instance=ExtResource("4_wtgcq")]
+[node name="StateMachine" parent="." node_paths=PackedStringArray("movementComponent", "actionsComponent", "animationComponent", "collisionComponent") instance=ExtResource("4_wtgcq")]
 movementComponent = NodePath("../MovementComponent")
 characterVariables = ExtResource("6_pknnn")
 actionsComponent = NodePath("../ActionsComponent")
 animationComponent = NodePath("../AnimationComponent")
+collisionComponent = NodePath("../CollisionShape2D")
 
 [node name="GroundedState" parent="StateMachine" instance=ExtResource("7_jmv6p")]
 
@@ -183,4 +196,4 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.0125, 1.0125)
+scale = Vector2(1, 1)
