@@ -116,7 +116,7 @@ namespace BushyCore
             
             if (verticalVelocity > 0) 
             {
-                actionsComponent.Land(StateConfig.InitialGroundedNoDeceleration());
+                actionsComponent.Land(StateConfig.InitialGrounded(base.HasOvershootDeceleration));
             }
         }
 

@@ -63,9 +63,9 @@ namespace BushyCore
         {
             return new InitialGroundedConfig(canBufferJump);
         }
-        public static InitialGroundedConfig InitialGroundedNoDeceleration()
+        public static InitialGroundedConfig InitialGrounded(bool doesDecelerate)
         {
-            return new InitialGroundedConfig(doesDecelerate: false);
+            return new InitialGroundedConfig(doesDecelerate: doesDecelerate);
         }
 
     }
