@@ -46,6 +46,7 @@ namespace BushyCore
 				if (config is StateConfig.InitialGroundedConfig groundedConfig)
 				{
 					canBufferJump = groundedConfig.CanBufferJump;
+					HasOvershootDeceleration = groundedConfig.DoesDecelerate;
 				}
 			}
 		}

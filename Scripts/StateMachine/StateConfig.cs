@@ -15,17 +15,21 @@ namespace BushyCore
         public struct InitialVelocityVectorConfig : IBaseStateConfig
         {
             public Vector2 Velocity;
-            public bool IsConstant;
-            public InitialVelocityVectorConfig(Vector2 velocity, bool isConstant = false) { Velocity = velocity; IsConstant = isConstant; }
+            public bool DoesDecelerate;
+            public InitialVelocityVectorConfig(Vector2 velocity, bool doesDecelerate = true) 
+            { 
+                Velocity = velocity; 
+                DoesDecelerate = doesDecelerate; 
+            }
         }
 
         public static InitialVerticalVelocityConfig InitialVerticalVelocity(float velocity)
         {
             return new InitialVerticalVelocityConfig(velocity);
         }
-        public static InitialVelocityVectorConfig InitialVelocityVector(Vector2 velocity, bool isConstant = false)
+        public static InitialVelocityVectorConfig InitialVelocityVector(Vector2 velocity, bool doesDecelerate = true)
         {
-            return new InitialVelocityVectorConfig(velocity, isConstant);
+            return new InitialVelocityVectorConfig(velocity, doesDecelerate);
         }
 
         public struct StartJumpConfig : IBaseStateConfig { }
@@ -48,11 +52,20 @@ namespace BushyCore
         public struct InitialGroundedConfig : IBaseStateConfig
         {
             public bool CanBufferJump;
-            public InitialGroundedConfig(bool canBufferJump = true) { CanBufferJump = canBufferJump; }
+            public bool DoesDecelerate;
+            public InitialGroundedConfig(bool canBufferJump = true, bool doesDecelerate = true) 
+            {
+                CanBufferJump = canBufferJump; 
+                DoesDecelerate = doesDecelerate;
+            }
         }
         public static InitialGroundedConfig InitialGroundedJumpBuffer(bool canBufferJump)
         {
             return new InitialGroundedConfig(canBufferJump);
+        }
+        public static InitialGroundedConfig InitialGroundedNoDeceleration()
+        {
+            return new InitialGroundedConfig(doesDecelerate: false);
         }
 
     }

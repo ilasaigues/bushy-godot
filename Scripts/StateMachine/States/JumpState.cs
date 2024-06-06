@@ -47,14 +47,14 @@ namespace BushyCore
 			base.HorizontalDeceleration = characterVariables.AirHorizontalDeceleration;
 			base.HorizontalOvercappedDeceleration = characterVariables.AirHorizontalOvercappedDeceleration;
 			base.HorizontalMovementSpeed = targetVelocity;
-            base.IsConstantHorizontal = false;
+            base.HasOvershootDeceleration = true;
 
             foreach (var config in configs)
             {
                 if(config is StateConfig.InitialVelocityVectorConfig velocityConfig)
                 {
                     targetVelocity = (int) MathF.Abs(velocityConfig.Velocity.X);
-                    IsConstantHorizontal = velocityConfig.IsConstant;
+                    HasOvershootDeceleration = velocityConfig.DoesDecelerate;
                 }
             }
 		}
@@ -81,7 +81,7 @@ namespace BushyCore
         void CheckTransitions()
         {
             if (actionsComponent.IsJumpCancelled)
-                actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), IsConstantHorizontal);
+                actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), HasOvershootDeceleration);
 
             if (movementComponent.IsOnCeiling)
                 actionsComponent.Fall();
@@ -90,7 +90,7 @@ namespace BushyCore
         void DurationTimerTimeout()
         {
             if (!this.IsActive) return;
-            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpSpeed), IsConstantHorizontal));
+            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpSpeed), HasOvershootDeceleration));
         }
 
 		public void DashActionRequested()
