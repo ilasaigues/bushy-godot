@@ -37,6 +37,8 @@ namespace BushyCore
 			base.HorizontalMovementSpeed = characterVariables.GroundHorizontalMovementSpeed;
 			base.HorizontalOvercappedDeceleration = characterVariables.GroundHorizontalOvercappedDeceleration;
 
+            base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
+
 			SetupFromConfigs(configs);
 		}
 		private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)

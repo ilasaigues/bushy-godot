@@ -17,14 +17,16 @@ namespace BushyCore
         protected CharacterVariables characterVariables;
         protected ActionsComponent actionsComponent;
         protected AnimationPlayer animationComponent;
+        protected CharacterCollisionComponent collisionComponent;
 
         protected bool IsActive { get; private set; }
 
-        public void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationPlayer anim) {
+        public void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationPlayer anim, CharacterCollisionComponent col) {
             this.movementComponent = mc;
             this.characterVariables = cv;
             this.actionsComponent = ac;
             this.animationComponent = anim;
+            this.collisionComponent = col;
         }
         
         public void StateUpdate(double delta)

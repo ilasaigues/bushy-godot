@@ -42,7 +42,11 @@ namespace BushyCore
 			bufferJump = false;
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
+
+			if (!movementComponent.IsOnFloor)
+            	collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CIRCLE);
 		}
+		
 		private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
 		{
 			foreach (var config in configs)

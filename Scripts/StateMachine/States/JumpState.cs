@@ -49,6 +49,8 @@ namespace BushyCore
 			base.HorizontalMovementSpeed = targetVelocity;
             base.IsConstantHorizontal = false;
 
+            base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
+
             foreach (var config in configs)
             {
                 if(config is StateConfig.InitialVelocityVectorConfig velocityConfig)

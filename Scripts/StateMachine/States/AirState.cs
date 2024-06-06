@@ -40,6 +40,8 @@ namespace BushyCore
 			base.HorizontalMovementSpeed = characterVariables.AirHorizontalMovementSpeed;
             base.IsConstantHorizontal = false;
 
+            base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
+
             SetupFromConfigs(configs);
 
 			actionsComponent.DashActionStart += DashActionRequested;
@@ -83,7 +85,11 @@ namespace BushyCore
             CheckTransitions();
             VelocityUpdate();
             
-            if(movementComponent.CurrentVelocity.Y > 0)animationComponent.Play("fall");
+            if(movementComponent.CurrentVelocity.Y > 0) 
+            {
+                animationComponent.Play("fall");
+                collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
+            }
         }
 
         void HandleGravity(double deltaTime)
