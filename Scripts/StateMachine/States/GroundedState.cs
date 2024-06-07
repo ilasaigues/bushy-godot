@@ -26,6 +26,7 @@ namespace BushyCore
 		{
 			canBufferJump = true;
 			SetCanDash();
+			
 			actionsComponent.CanJump = true;
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 			horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
@@ -36,7 +37,8 @@ namespace BushyCore
 			base.HorizontalDeceleration = characterVariables.GroundHorizontalDeceleration;
 			base.HorizontalMovementSpeed = characterVariables.GroundHorizontalMovementSpeed;
 			base.HorizontalOvercappedDeceleration = characterVariables.GroundHorizontalOvercappedDeceleration;
-
+			base.HasOvershootDeceleration = true;
+			
             base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 
 			SetupFromConfigs(configs);
@@ -48,6 +50,7 @@ namespace BushyCore
 				if (config is StateConfig.InitialGroundedConfig groundedConfig)
 				{
 					canBufferJump = groundedConfig.CanBufferJump;
+					HasOvershootDeceleration = groundedConfig.DoesDecelerate;
 				}
 			}
 		}

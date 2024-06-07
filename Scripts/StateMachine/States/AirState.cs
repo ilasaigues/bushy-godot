@@ -38,7 +38,7 @@ namespace BushyCore
 			base.HorizontalDeceleration = characterVariables.AirHorizontalDeceleration;
 			base.HorizontalOvercappedDeceleration = characterVariables.AirHorizontalOvercappedDeceleration;
 			base.HorizontalMovementSpeed = characterVariables.AirHorizontalMovementSpeed;
-            base.IsConstantHorizontal = false;
+            base.HasOvershootDeceleration = true;
 
             base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
 
@@ -62,7 +62,7 @@ namespace BushyCore
                 {
                     verticalVelocity = velocityConfig.Velocity.Y;
                     targetVelocity = velocityConfig.Velocity.X;
-                    IsConstantHorizontal = velocityConfig.IsConstant;
+                    HasOvershootDeceleration = velocityConfig.DoesDecelerate;
                 }
             }
         }
@@ -122,7 +122,7 @@ namespace BushyCore
             
             if (verticalVelocity > 0) 
             {
-                actionsComponent.Land();
+                actionsComponent.Land(StateConfig.InitialGrounded(base.HasOvershootDeceleration));
             }
         }
 

@@ -87,7 +87,7 @@ namespace BushyCore
 					case 0:
 						DurationTimer.Stop();
 						movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);
-						RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed, true));
+						RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed, false));
 						break;
 					case 2:
 						bufferJump = true;

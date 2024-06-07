@@ -196,4 +196,4 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.0875, 1.0875)
+scale = Vector2(1, 1)
