@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://cvihx0b7fk6dc"]
+
+[ext_resource type="Texture2D" uid="uid://c1tamjtx1wuhp" path="res://Assets/WorldTiles/treealt.png" id="top"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0"]
+texture = ExtResource("top")
+texture_region_size = Vector2i(480, 270)
+0:0/0 = 0
+0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-149, 68, -70, 68, -64, 69, -37, 69, -31, 68, 51, 68, 57, 69, 92, 69, 98, 68, 142, 68, 142, 11, 175, 11, 175, 135, -180, 135, -180, 0, -149, 0)
+
+[sub_resource type="TileSet" id="TileSet_0"]
+tile_size = Vector2i(480, 270)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_0")
+
+[node name="tree_top" type="TileMap"]
+tile_set = SubResource("TileSet_0")
+format = 2
+layer_0/name = "Tile Layer 1"
+layer_0/tile_data = PackedInt32Array(0, 0, 0)

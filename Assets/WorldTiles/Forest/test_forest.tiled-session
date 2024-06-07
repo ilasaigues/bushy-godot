@@ -1,8 +1,21 @@
 {
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
     "activeFile": "",
     "expandedProjectPaths": [
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "Q:/Git/bushy-godot/Assets/WorldTiles/tree_top.tmx": {
+            "scale": 11,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 177.22727272727275,
+                "y": 189.63636363636363
+            }
+        },
         "rules.tmx": {
             "scale": 2.0622916666666664,
             "selectedLayer": 0,
@@ -20,23 +33,32 @@
             }
         },
         "test_forest_terrain.tmx": {
-            "scale": 8,
-            "selectedLayer": -1,
+            "scale": 1.5,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 867,
-                "y": 2390.875
+                "x": 999,
+                "y": 2276
             }
         }
     },
     "last.exportedFilePath": "Q:/Git/bushy-godot/Scenes/Levels",
     "last.externalTilesetPath": "Q:/Git/bushy-godot/Assets/WorldTiles/Forest",
-    "last.imagePath": "Q:/Git/bushy-godot/Assets/WorldTiles/Forest",
+    "last.imagePath": "Q:/Git/bushy-godot/Assets/WorldTiles",
+    "map.height": 1,
     "map.lastUsedExportFilter": "Godot 4 Scene files (*.tscn)",
     "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 270,
+    "map.tileWidth": 480,
+    "map.width": 1,
     "openFiles": [
     ],
     "project": "test_forest.tiled-project",
     "recentFiles": [
     ],
-    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)"
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 270,
+        "width": 480
+    }
 }
