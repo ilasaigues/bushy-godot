@@ -36,6 +36,10 @@ public partial class MovementComponent : Node2D
 	private RayCast2D GroundRayCastL;
 	[Node]
 	private RayCast2D GroundRayCastR;
+	[Node]
+	private RayCast2D SideRayCastL;
+	[Node]
+	private RayCast2D SideRayCastR;
 
 	public enum VelocityType
 	{
@@ -124,7 +128,6 @@ public partial class MovementComponent : Node2D
 	}
 	public void Move(CharacterBody2D characterBody2D)
 	{
-		Debug.WriteLine($"curr vel {CurrentVelocity}");
 		characterBody2D.Velocity = CurrentVelocity;
 		characterBody2D.MoveAndSlide();
 	}

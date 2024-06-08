@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace BushyCore
 {
-	public partial class StateMachine : Node
+	public partial class StateMachine : Node2D
 	{
 		[Export]
 		private MovementComponent movementComponent;

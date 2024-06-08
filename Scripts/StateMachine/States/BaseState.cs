@@ -6,7 +6,7 @@ using GodotUtilities;
 namespace BushyCore 
 {
     [Scene]
-    public abstract partial class BaseState : Node {
+    public abstract partial class BaseState : Node2D {
 
         [Signal]
         public delegate void EnteredStateEventHandler();

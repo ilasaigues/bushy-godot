@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=27 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
@@ -25,6 +25,9 @@ height = 13.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dwjyl"]
 radius = 5.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_j2efp"]
+radius = 2.0
 
 [sub_resource type="Animation" id="Animation_dq7ya"]
 resource_name = "dash_end"
@@ -146,15 +149,16 @@ z_index = 1
 script = ExtResource("1_1vn0y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-1, 1.5)
 shape = SubResource("RectangleShape2D_raavv")
 script = ExtResource("2_7fxs0")
 RectShape = SubResource("RectangleShape2D_raavv")
 CilinderShape = SubResource("CapsuleShape2D_dshrg")
 CircleShape = SubResource("CircleShape2D_dwjyl")
+PointShape = SubResource("CircleShape2D_j2efp")
 
 [node name="Sprite2DComponent" type="Sprite2D" parent="." node_paths=PackedStringArray("movementComponent")]
 texture_filter = 1
+position = Vector2(3, -1.5)
 texture = ExtResource("2_c3m6v")
 hframes = 8
 vframes = 8
@@ -196,4 +200,4 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1, 1)
+scale = Vector2(1.1, 1.1)

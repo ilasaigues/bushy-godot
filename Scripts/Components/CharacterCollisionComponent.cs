@@ -8,7 +8,8 @@ namespace BushyCore
 		{
 			RECTANGULAR,
 			CILINDER,
-			CIRCLE
+			CIRCLE,
+			POINT
 		}
 
 		[Export]
@@ -17,6 +18,8 @@ namespace BushyCore
 		public Shape2D CilinderShape;
 		[Export]
 		public Shape2D CircleShape;
+		[Export]
+		public Shape2D PointShape;
 
 		public override void _Ready()
 		{
@@ -40,6 +43,9 @@ namespace BushyCore
 					break;
 				case ShapeMode.CIRCLE:
 					this.Shape = CircleShape;
+					break;
+				case ShapeMode.POINT:
+					this.Shape = PointShape;
 					break;
 			}
 		}

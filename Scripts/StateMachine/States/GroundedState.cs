@@ -18,8 +18,8 @@ namespace BushyCore
 		{
 			base._Ready();
 
-            this.AddToGroup();
-            this.WireNodes();
+			this.AddToGroup();
+			this.WireNodes();
 		}
 
 		protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
@@ -39,7 +39,7 @@ namespace BushyCore
 			base.HorizontalOvercappedDeceleration = characterVariables.GroundHorizontalOvercappedDeceleration;
 			base.HasOvershootDeceleration = true;
 			
-            base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
+			base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 
 			SetupFromConfigs(configs);
 		}
@@ -55,15 +55,15 @@ namespace BushyCore
 			}
 		}
 
-        public override void StateExit()
-        {
-            base.StateExit();
+		public override void StateExit()
+		{
+			base.StateExit();
 
 			actionsComponent.JumpActionStart -= JumpActionRequested;
 			actionsComponent.DashActionStart -= DashActionRequested;
 			actionsComponent.CanDash = true;
-        }
-        public override void StateUpdateInternal(double delta)
+		}
+		public override void StateUpdateInternal(double delta)
 		{
 			// Having a downwards velocity constantly helps snapping the character to the ground
 			// We have to keep in mind that while using move and slide this WILL impact the characterś movement horizontally
@@ -124,19 +124,19 @@ namespace BushyCore
 				DashCooldownTimer.Start();
 		}
 
-        void DashCooldownTimerTimeout()
-        {
+		void DashCooldownTimerTimeout()
+		{
 			if (!this.IsActive) return;
 
 			actionsComponent.CanDash = true;
-        }
+		}
 
-        protected override void VelocityUpdate()
-        {
+		protected override void VelocityUpdate()
+		{
 			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) horizontalVelocity;
 			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal * (float) verticalVelocity * 10;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)horizontalVelocity, slopeVerticalComponent);
-        }
-    }
+		}
+	}
 
 }

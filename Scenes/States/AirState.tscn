@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AirState.cs" id="1_nek1v"]
 
-[node name="AirState" type="Node"]
+[node name="AirState" type="Node2D"]
 script = ExtResource("1_nek1v")
 
 [node name="JumpCoyoteTimer" type="Timer" parent="."]

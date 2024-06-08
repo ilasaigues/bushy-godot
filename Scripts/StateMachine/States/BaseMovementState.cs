@@ -31,7 +31,7 @@ namespace BushyCore
 				//if the input direction is opposite of the current direction, we also add a deceleration
                 if (direction.X * horizontalVelocity < 0)
 				{
-					horizontalVelocity += direction.X * vars.HorizontalTurnDeceleration * deltaTime;
+                    horizontalVelocity += direction.X * vars.HorizontalTurnDeceleration * deltaTime;
 				}
                 else if (Mathf.Abs(horizontalVelocity) < Mathf.Abs(targetVelocity))
                 {
@@ -40,7 +40,6 @@ namespace BushyCore
                 }
                 else if (HasOvershootDeceleration || movementComponent.IsOnWall)
                 {
-                    Debug.WriteLine("deceleration overshooot");
                     horizontalVelocity += HorizontalOvercappedDeceleration * deltaTime * (horizontalVelocity > 0 ? -1 : 1);
                     horizontalVelocity = Mathf.Max(targetVelocity, Mathf.Abs(horizontalVelocity)) * Mathf.Sign(movementComponent.FacingDirection.X);
                 }
