@@ -87,9 +87,18 @@ namespace BushyCore
             
             if(movementComponent.CurrentVelocity.Y > 0) 
             {
-                animationComponent.Play("fall");
                 collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
             }
+        }
+
+        protected override void AnimationUpdate()
+        {
+            if(movementComponent.CurrentVelocity.Y > 0 && animationComponent.CurrentAnimation != "fall") 
+            {
+                animationComponent.ClearQueue();
+                animationComponent.Play("peak");
+                animationComponent.Queue("fall"); 
+            }            
         }
 
         void HandleGravity(double deltaTime)
@@ -122,6 +131,8 @@ namespace BushyCore
             
             if (verticalVelocity > 0) 
             {
+                animationComponent.Play("land");
+                GD.Print("land");
                 actionsComponent.Land(StateConfig.InitialGrounded(base.HasOvershootDeceleration));
             }
         }

@@ -27,7 +27,9 @@ namespace BushyCore
 
 	    protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
+            animationComponent.ClearQueue();
             animationComponent.Play("jump");
+            animationComponent.Queue("ascent");
 
             targetVelocity = characterVariables.AirHorizontalMovementSpeed;
             horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;

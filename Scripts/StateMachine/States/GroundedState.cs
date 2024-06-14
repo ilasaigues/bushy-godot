@@ -75,6 +75,40 @@ namespace BushyCore
 			VelocityUpdate();
 		}
 
+		protected override void AnimationUpdate()
+		{
+			float direction = actionsComponent.MovementDirection.X;
+
+			if(direction != 0)
+			{
+				if(direction * horizontalVelocity < 0)
+				{
+					animationComponent.Play("turn");
+					animationComponent.ClearQueue();
+					animationComponent.Queue("run_start");
+					animationComponent.Queue("run");
+				}
+				else if(animationComponent.CurrentAnimation != "run")
+				{
+					if (animationComponent.CurrentAnimation == "idle") animationComponent.Play("run_start");
+					else  animationComponent.Queue("run_start");
+					animationComponent.ClearQueue();
+					animationComponent.Queue("run");
+				}
+				
+			}
+			else if(animationComponent.CurrentAnimation == "run")
+			{
+				animationComponent.Play("turn");
+				animationComponent.ClearQueue();
+				animationComponent.Queue("idle");
+			}
+			else
+			{
+				animationComponent.Queue("idle");
+			}
+		}
+
 		void CheckTransitions()
 		{
 			if (canBufferJump && actionsComponent.IsJumpRequested && actionsComponent.CanJump)
@@ -104,13 +138,7 @@ namespace BushyCore
 			}
 		} 
 
-		void HandleMovement(double _deltaTime)
-		{
-			if (actionsComponent.MovementDirection.X != 0)
-				animationComponent.Play("run");
-			else 
-				animationComponent.Play("idle");
-		}
+		void HandleMovement(double _deltaTime){}
 
 		void SetCanDash()
 		{
@@ -134,7 +162,7 @@ namespace BushyCore
 		protected override void VelocityUpdate()
 		{
 			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) horizontalVelocity;
-			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal * (float) verticalVelocity * 10;
+			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal * (float) verticalVelocity * 15;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)horizontalVelocity, slopeVerticalComponent);
 		}
 	}

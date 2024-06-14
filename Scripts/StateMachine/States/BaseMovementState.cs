@@ -15,10 +15,13 @@ namespace BushyCore
         protected bool HasOvershootDeceleration;
         public override void StateUpdateInternal(double delta)
         {
+            base.StateUpdateInternal(delta);
             HandleHorizontalMovement((float )delta);
         }
 
         protected override void VelocityUpdate() {}
+
+        protected override void AnimationUpdate() {}
 
         protected void HandleHorizontalMovement(float deltaTime)
         {

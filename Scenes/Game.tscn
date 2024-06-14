@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=18 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Texture2D" uid="uid://b1uq3n6md5wce" path="res://Assets/Background/forest_background_1.png" id="1_02yv3"]
 [ext_resource type="Script" path="res://bgm_test.gd" id="1_jka76"]
@@ -6,7 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://c5jcpcfoarc0m" path="res://Assets/Background/Forest/test_forest_background_1.png" id="2_hwlqv"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
 [ext_resource type="Texture2D" uid="uid://toa0twuk32dm" path="res://Assets/Background/Forest/test_forest_background_0.png" id="3_ukntx"]
-[ext_resource type="PackedScene" path="res://Scenes/Levels/tree_top.tscn" id="8_28kkd"]
+[ext_resource type="Script" path="res://Scenes/camera_placeholder.cs" id="6_g0hwt"]
+[ext_resource type="PackedScene" uid="uid://cvihx0b7fk6dc" path="res://Scenes/Levels/tree_top.tscn" id="8_28kkd"]
 [ext_resource type="PackedScene" uid="uid://bco5h8a4p3ito" path="res://Scenes/Levels/test_forest.tscn" id="8_m158k"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pptmd"]
@@ -178,11 +179,14 @@ action_mode = 0
 text = "Death
 "
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("cam", "target")]
 position = Vector2(1873, 321)
 offset = Vector2(0, -32)
 position_smoothing_enabled = true
 position_smoothing_speed = 3.0
+script = ExtResource("6_g0hwt")
+cam = NodePath(".")
+target = NodePath("../Player")
 
 [node name="test_forest" parent="." instance=ExtResource("8_m158k")]
 texture_filter = 1
@@ -190,7 +194,7 @@ position = Vector2(-2062, -1983)
 
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
-position = Vector2(1869, 332)
+position = Vector2(179, 248)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)

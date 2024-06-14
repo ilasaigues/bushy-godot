@@ -33,6 +33,8 @@ namespace BushyCore
             }
         }
 
+		protected override void AnimationUpdate() {}
+
 		protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
 			SetupFromConfigs(configs);
@@ -208,6 +210,7 @@ namespace BushyCore
 					DurationTimer.Stop();
 					RunAndEndState(() => {
 						if (movementComponent.IsOnFloor)
+							animationComponent.Play("turn");
 							actionsComponent.Land(StateConfig.InitialGroundedJumpBuffer(bufferJump));
 						actionsComponent.Fall();
 					});

@@ -40,7 +40,10 @@ namespace BushyCore
 
             TimeSinceStateStart += delta;
         }
-        public abstract void StateUpdateInternal(double delta);
+        public virtual void StateUpdateInternal(double delta)
+        {
+            AnimationUpdate();
+        }
 
         public void StateEnter(params StateConfig.IBaseStateConfig[] configs) 
         {
@@ -60,6 +63,8 @@ namespace BushyCore
         }
 
         protected abstract void VelocityUpdate(); 
+
+        protected abstract void AnimationUpdate(); 
 
         public void BaseOnRigidBodyEnter(Node node) 
         {
