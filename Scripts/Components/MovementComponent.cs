@@ -130,6 +130,19 @@ public partial class MovementComponent : Node2D
 	{
 		characterBody2D.Velocity = CurrentVelocity;
 		characterBody2D.MoveAndSlide();
+
+		if (Time.GetTicksMsec() % 100 == 0)
+		{
+			var count = characterBody2D.GetSlideCollisionCount();
+			Debug.WriteLine($"Counting collisions {count}");
+			for (int i = 0; i < count; i++)
+			{
+				var collision = characterBody2D.GetSlideCollision(i);	
+		     	Debug.WriteLine("Collided with: ", (collision.GetCollider() as Node).Name);
+				
+		     	Debug.WriteLine($"- position: {collision.GetPosition()}");
+			}
+		}
 	}
 
 	public void SetRaycastPosition(CollisionShape2D collisionShape2D)
