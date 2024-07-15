@@ -51,10 +51,9 @@ namespace BushyCore
 			verticalVelCorrector = 0;
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
+			movementComponent.CourseCorrectionEnabled = true;
 
-			if (!movementComponent.IsOnFloor)
-            	collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CIRCLE);
-			else 
+			if (movementComponent.IsOnFloor)
 				collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
 		}
 		
@@ -72,6 +71,7 @@ namespace BushyCore
         {
             base.StateExit();
 			
+			movementComponent.CourseCorrectionEnabled = false;
 			actionsComponent.JumpActionStart -= JumpActionRequested;
 
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(
@@ -109,63 +109,6 @@ namespace BushyCore
 
 				SlopeRaycast2D.TargetPosition = raycastDirection;
 			} 
-			
-			// Check whether the dash collides against a corner of a wall. If so, add a vertical vel corrector
-			//
-			// A lot of magic numbers:
-			// - the raycast vertical element to figure out whether Char is in a corner is set to 5 pixels 
-			// - the vertical velocity corrector set to 40 is how much yVel will be added to attempt and overcome a corner.
-			//		should be large enough to course correct, but small enough so the Char has an autistic seizure while hitting the corner
-			//      (we have a developer who's in the spectrum, thus we have the A word pass)
-			// - the dash is extended a bit using magic numbers. The dash exit time is arbitrarily selected, and we reduce it by 50/25% depending
-			// 		on how long we've been dashing already
-			// - to detect if we have to finish the course correct, we also have an arbitrarily set Y height for the raycast check (10f)
-			if (verticalVelCorrector == 0 && !movementComponent.SnappedToFloor && movementComponent.IsOnWall) 
-			{
-				var raycastDirection = SlopeRaycast2D.TargetPosition;
-				SlopeRaycast2D.TargetPosition = (raycastDirection * direction) + Vector2.Up * 5f;
-				SlopeRaycast2D.ForceRaycastUpdate();
-
-				if (SlopeRaycast2D.GetCollider() == null)
-				{
-					verticalVelCorrector = -40;	
-					var extendWaitTime = state > 1 ? characterVariables.DashExitTime * 3/4 : characterVariables.DashExitTime / 2;
-					DurationTimer.WaitTime = extendWaitTime;
-					DurationTimer.Start();
-				}			
-
-				SlopeRaycast2D.TargetPosition = (raycastDirection * direction) + Vector2.Down * 5f;
-				SlopeRaycast2D.ForceRaycastUpdate();
-
-				if (SlopeRaycast2D.GetCollider() == null)
-				{
-					verticalVelCorrector = 40;
-					var extendWaitTime = state > 1 ? characterVariables.DashExitTime * 3/4 : characterVariables.DashExitTime / 2;
-					DurationTimer.WaitTime = extendWaitTime;
-					DurationTimer.Start();
-				}
-
-				SlopeRaycast2D.TargetPosition = raycastDirection;
-				collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.POINT);
-			}
-			
-			// If theres a vertical velocity corrector (for when hitting corners), then apply until the character can go through
-			if (verticalVelCorrector != 0)
-			{
-				var raycastDirection = SlopeRaycast2D.TargetPosition;
-				SlopeRaycast2D.TargetPosition = (raycastDirection * direction) + Vector2.Up * Mathf.Sign(verticalVelCorrector) * 10f;
-				SlopeRaycast2D.ForceRaycastUpdate();
-
-				if (SlopeRaycast2D.GetCollider() != null)
-					verticalComponent = verticalVelCorrector;	
-				else 
-				{
-					collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CIRCLE);
-					constantVelocity.X = characterVariables.DashExitVelocity;
-				}
-				
-				SlopeRaycast2D.TargetPosition = raycastDirection;		
-			}
 
 			float horizontalComponent = constantVelocity.X * direction;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(horizontalComponent, verticalComponent);

@@ -183,11 +183,11 @@ target = NodePath("../Player")
 
 [node name="test_forest" parent="." instance=ExtResource("8_m158k")]
 texture_filter = 1
-position = Vector2(-2062, -1983)
+position = Vector2(-2076, -1983)
 
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
-position = Vector2(179, 248)
+position = Vector2(178, 248)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)

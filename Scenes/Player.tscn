@@ -27,7 +27,25 @@ height = 13.0
 radius = 5.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_j2efp"]
-radius = 2.0
+radius = 3.0
+
+[sub_resource type="Animation" id="Animation_32tpq"]
+resource_name = "ascent"
+length = 0.250008
+loop_mode = 1
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0833333, 0.166667),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [13, 14, 15]
+}
 
 [sub_resource type="Animation" id="Animation_dq7ya"]
 resource_name = "dash_end"
@@ -116,10 +134,9 @@ tracks/0/keys = {
 "values": [12]
 }
 
-[sub_resource type="Animation" id="Animation_ake6q"]
-resource_name = "run"
-length = 0.333342
-loop_mode = 1
+[sub_resource type="Animation" id="Animation_ejrbn"]
+resource_name = "land"
+length = 0.166675
 step = 0.0833333
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -128,45 +145,10 @@ tracks/0/path = NodePath("Sprite2DComponent:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.0833, 0.166667, 0.25),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.0833333),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [5, 6, 7, 8]
-}
-
-[sub_resource type="Animation" id="Animation_fylk2"]
-resource_name = "turn"
-length = 0.0833416
-step = 0.0833333
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2DComponent:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [9]
-}
-
-[sub_resource type="Animation" id="Animation_32tpq"]
-resource_name = "ascent"
-length = 0.250008
-loop_mode = 1
-step = 0.0833333
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2DComponent:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.0833333, 0.166667),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [13, 14, 15]
+"values": [20, 4]
 }
 
 [sub_resource type="Animation" id="Animation_o41i3"]
@@ -186,9 +168,10 @@ tracks/0/keys = {
 "values": [16]
 }
 
-[sub_resource type="Animation" id="Animation_ejrbn"]
-resource_name = "land"
-length = 0.166675
+[sub_resource type="Animation" id="Animation_ake6q"]
+resource_name = "run"
+length = 0.333342
+loop_mode = 1
 step = 0.0833333
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -197,10 +180,10 @@ tracks/0/path = NodePath("Sprite2DComponent:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.0833333),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0, 0.0833, 0.166667, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [20, 4]
+"values": [5, 6, 7, 8]
 }
 
 [sub_resource type="Animation" id="Animation_aniqq"]
@@ -218,6 +201,23 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [4]
+}
+
+[sub_resource type="Animation" id="Animation_fylk2"]
+resource_name = "turn"
+length = 0.0833416
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [9]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_uncl2"]
@@ -239,7 +239,7 @@ _data = {
 z_index = 1
 script = ExtResource("1_1vn0y")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionComponent" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_raavv")
 script = ExtResource("2_7fxs0")
 RectShape = SubResource("RectangleShape2D_raavv")
@@ -258,14 +258,15 @@ frame = 10
 script = ExtResource("3_2v3uq")
 movementComponent = NodePath("../MovementComponent")
 
-[node name="MovementComponent" parent="." instance=ExtResource("3_wt20f")]
+[node name="MovementComponent" parent="." node_paths=PackedStringArray("CollisionComponent") instance=ExtResource("3_wt20f")]
+CollisionComponent = NodePath("../CollisionComponent")
 
 [node name="StateMachine" parent="." node_paths=PackedStringArray("movementComponent", "actionsComponent", "animationComponent", "collisionComponent") instance=ExtResource("4_wtgcq")]
 movementComponent = NodePath("../MovementComponent")
 characterVariables = ExtResource("6_pknnn")
 actionsComponent = NodePath("../ActionsComponent")
 animationComponent = NodePath("../AnimationComponent")
-collisionComponent = NodePath("../CollisionShape2D")
+collisionComponent = NodePath("../CollisionComponent")
 
 [node name="GroundedState" parent="StateMachine" instance=ExtResource("7_jmv6p")]
 
@@ -292,4 +293,4 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.0125, 1.0125)
+scale = Vector2(1.05, 1.05)

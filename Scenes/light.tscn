@@ -58,7 +58,6 @@ transitions = ["Start", "light", SubResource("AnimationNodeStateMachineTransitio
 z_index = -1
 material = SubResource("ShaderMaterial_fpbqj")
 position = Vector2(2, 5)
-scale = Vector2(1.05, 1.05)
 texture = SubResource("GradientTexture2D_0pk2p")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

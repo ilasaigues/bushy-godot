@@ -1,6 +1,8 @@
+using BushyCore;
 using Godot;
 using GodotUtilities;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 
@@ -31,15 +33,25 @@ public partial class MovementComponent : Node2D
 				: Mathf.Pi/2 * Mathf.Sign(FloorNormal.X); 
 		} 
 	}
+	public bool CourseCorrectionEnabled;
 	
 	[Node]
 	private RayCast2D GroundRayCastL;
 	[Node]
 	private RayCast2D GroundRayCastR;
+
 	[Node]
-	private RayCast2D SideRayCastL;
+	private RayCast2D CourseCorrectRayXu;
 	[Node]
-	private RayCast2D SideRayCastR;
+	private RayCast2D CourseCorrectRayXd;
+	[Node]
+	private RayCast2D CourseCorrectRayYl;
+	[Node]
+	private RayCast2D CourseCorrectRayYr;
+
+
+	[Export]
+	private CollisionShape2D CollisionComponent;
 
 	public enum VelocityType
 	{
@@ -63,8 +75,14 @@ public partial class MovementComponent : Node2D
 
 		GroundRayCastL.Enabled = false;
 		GroundRayCastR.Enabled = false;
+		CourseCorrectRayXd.Enabled = false;
+		CourseCorrectRayXu.Enabled = false;
+		CourseCorrectRayYl.Enabled = false;
+		CourseCorrectRayYr.Enabled = false;
 
 		FacingDirection = Vector2.Right;
+
+		SetRaycastPosition();
 	}
 	
 	public void UpdateState(CharacterBody2D characterBody2D)
@@ -129,29 +147,80 @@ public partial class MovementComponent : Node2D
 	public void Move(CharacterBody2D characterBody2D)
 	{
 		characterBody2D.Velocity = CurrentVelocity;
-		characterBody2D.MoveAndSlide();
+		ApplyCourseCorrection(characterBody2D);
 
-		if (Time.GetTicksMsec() % 100 == 0)
+		characterBody2D.MoveAndSlide();
+	}
+
+	private void ApplyCourseCorrection(CharacterBody2D characterBody2D)
+	{
+		if (!CourseCorrectionEnabled) return; 
+
+		var count = characterBody2D.GetSlideCollisionCount();
+		if (count == 0) return;
+
+		if (IsOnCeiling || IsOnFloor) 
 		{
-			var count = characterBody2D.GetSlideCollisionCount();
-			Debug.WriteLine($"Counting collisions {count}");
-			for (int i = 0; i < count; i++)
+
+		}
+
+		for (int i = 0; i < count; i++)
+		{
+			var collision = characterBody2D.GetSlideCollision(i);	
+
+			if (Mathf.Sign(this.FacingDirection.X) != Mathf.Sign(collision.GetPosition().X - this.GlobalPosition.X))
+				continue;
+
+			if (!IsOnWall)
+				continue;
+
+			var colSize = this.CollisionComponent.Shape.GetRect().Size;
+			
+			this.CourseCorrectRayXd.TargetPosition = 10 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
+			this.CourseCorrectRayXu.TargetPosition = 10 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
+			
+			var extent = Mathf.Sign(this.FacingDirection.X) * colSize.X/2;
+			
+			this.CourseCorrectRayXu.Position = new Vector2(extent, -5f);
+			this.CourseCorrectRayXd.Position = new Vector2(extent, colSize.Y/2);
+
+			this.CourseCorrectRayXu.ForceRaycastUpdate();
+			this.CourseCorrectRayXd.ForceRaycastUpdate();
+
+			var colliderUp = this.CourseCorrectRayXu.GetCollider();
+			var colliderDown = this.CourseCorrectRayXd.GetCollider();
+
+			if (colliderUp is not TileMap && colliderDown is TileMap)
 			{
-				var collision = characterBody2D.GetSlideCollision(i);	
-		     	Debug.WriteLine("Collided with: ", (collision.GetCollider() as Node).Name);
-				
-		     	Debug.WriteLine($"- position: {collision.GetPosition()}");
+				this.GetParent<PlayerController>().GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y - 3f);
+			} 
+			
+			this.CourseCorrectRayXu.Position = new Vector2(extent, -colSize.Y/2);
+			this.CourseCorrectRayXd.Position = new Vector2(extent, 5f);
+
+			this.CourseCorrectRayXu.ForceRaycastUpdate();
+			this.CourseCorrectRayXd.ForceRaycastUpdate();
+
+			if (colliderDown is not TileMap && colliderUp is TileMap)
+			if (CourseCorrectRayXd.GetCollider() == null && CourseCorrectRayXu.GetCollider() != null)
+			{
+				this.GetParent<PlayerController>().GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y + 3f);
 			}
 		}
 	}
 
-	public void SetRaycastPosition(CollisionShape2D collisionShape2D)
+	public void SetRaycastPosition()
 	{
-		float colliderSizeX = collisionShape2D.Shape.GetRect().Size.X;
-		float colliderSizeY = collisionShape2D.Shape.GetRect().Size.Y;
+		float colliderSizeX = CollisionComponent.Shape.GetRect().Size.X;
+		float colliderSizeY = CollisionComponent.Shape.GetRect().Size.Y;
 
 		GroundRayCastL.Position = new Vector2(-colliderSizeX/2, colliderSizeY/2);
 		GroundRayCastR.Position = new Vector2(colliderSizeX/2, colliderSizeY/2);
+
+		CourseCorrectRayXu.Position = new Vector2(colliderSizeX/2,0);
+		CourseCorrectRayXd.Position = new Vector2(colliderSizeX/2,0);
+		CourseCorrectRayYl.Position = new Vector2(0,colliderSizeY/2);
+		CourseCorrectRayYr.Position = new Vector2(0,colliderSizeY/2);
 	}
 
 	public override void _Notification(int what)
@@ -162,5 +231,4 @@ public partial class MovementComponent : Node2D
 			this.WireNodes();
 		}
 	}
-
 }

@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
 using Godot;
 
 namespace BushyCore
 {
 	public partial class CharacterCollisionComponent : CollisionShape2D
 	{
+		public RayCast2D CourseCorrectRay1 { get; private set; }
+		public RayCast2D CourseCorrectRay2  { get; private set; }
 		public enum ShapeMode 
 		{
 			RECTANGULAR,
@@ -28,7 +31,6 @@ namespace BushyCore
 
         public override void _Process(double delta)
         {
-			
         }
 
         public void SwitchShape(ShapeMode mode)
