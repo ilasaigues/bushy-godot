@@ -153,8 +153,10 @@ namespace BushyCore
 					DurationTimer.Stop();
 					RunAndEndState(() => {
 						if (movementComponent.IsOnFloor)
+						{
 							animationComponent.Play("turn");
 							actionsComponent.Land(StateConfig.InitialGroundedJumpBuffer(bufferJump));
+						}
 						actionsComponent.Fall();
 					});
 					break;

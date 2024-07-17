@@ -1,6 +1,7 @@
 using BushyCore;
 using Godot;
 using GodotUtilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -156,56 +157,48 @@ public partial class MovementComponent : Node2D
 	{
 		if (!CourseCorrectionEnabled) return; 
 
-		var count = characterBody2D.GetSlideCollisionCount();
-		if (count == 0) return;
+		var colSize = this.CollisionComponent.Shape.GetRect().Size;
+		var extent = Mathf.Sign(this.FacingDirection.X) * colSize.X/2;
+		
+		// Lower corner check
+		this.CourseCorrectRayXd.TargetPosition = 20 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
+		this.CourseCorrectRayXu.TargetPosition = 20 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
+		
+		this.CourseCorrectRayXu.Position = new Vector2(extent, -3f);
+		this.CourseCorrectRayXd.Position = new Vector2(extent, colSize.Y/2);
 
-		if (IsOnCeiling || IsOnFloor) 
+		this.CourseCorrectRayXu.ForceRaycastUpdate();
+		this.CourseCorrectRayXd.ForceRaycastUpdate();
+
+		var colliderUp = this.CourseCorrectRayXu.GetCollider();
+		var colliderDown = this.CourseCorrectRayXd.GetCollider();
+
+		bool upcomingCorner = colliderUp is not TileMap && colliderDown is TileMap;
+		upcomingCorner &= (this.FacingDirection.Normalized() + this.CourseCorrectRayXd.GetCollisionNormal()).Length() < 0.00001f;
+
+		if (upcomingCorner)
 		{
-
+			this.GetParent<PlayerController>().GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y - 3f);
+			return;
 		}
+		
+		// Upper corner check
+		this.CourseCorrectRayXu.Position = new Vector2(extent, -colSize.Y/2);
+		this.CourseCorrectRayXd.Position = new Vector2(extent, 3f);
 
-		for (int i = 0; i < count; i++)
+		this.CourseCorrectRayXu.ForceRaycastUpdate();
+		this.CourseCorrectRayXd.ForceRaycastUpdate();
+
+		colliderUp = this.CourseCorrectRayXu.GetCollider();
+		colliderDown = this.CourseCorrectRayXd.GetCollider();
+
+		upcomingCorner = colliderUp is TileMap && colliderDown is not TileMap;
+		upcomingCorner &= (this.FacingDirection.Normalized() + this.CourseCorrectRayXu.GetCollisionNormal()).Length() < 0.00001f;
+
+		if (upcomingCorner)
 		{
-			var collision = characterBody2D.GetSlideCollision(i);	
-
-			if (Mathf.Sign(this.FacingDirection.X) != Mathf.Sign(collision.GetPosition().X - this.GlobalPosition.X))
-				continue;
-
-			if (!IsOnWall)
-				continue;
-
-			var colSize = this.CollisionComponent.Shape.GetRect().Size;
-			
-			this.CourseCorrectRayXd.TargetPosition = 10 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
-			this.CourseCorrectRayXu.TargetPosition = 10 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
-			
-			var extent = Mathf.Sign(this.FacingDirection.X) * colSize.X/2;
-			
-			this.CourseCorrectRayXu.Position = new Vector2(extent, -5f);
-			this.CourseCorrectRayXd.Position = new Vector2(extent, colSize.Y/2);
-
-			this.CourseCorrectRayXu.ForceRaycastUpdate();
-			this.CourseCorrectRayXd.ForceRaycastUpdate();
-
-			var colliderUp = this.CourseCorrectRayXu.GetCollider();
-			var colliderDown = this.CourseCorrectRayXd.GetCollider();
-
-			if (colliderUp is not TileMap && colliderDown is TileMap)
-			{
-				this.GetParent<PlayerController>().GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y - 3f);
-			} 
-			
-			this.CourseCorrectRayXu.Position = new Vector2(extent, -colSize.Y/2);
-			this.CourseCorrectRayXd.Position = new Vector2(extent, 5f);
-
-			this.CourseCorrectRayXu.ForceRaycastUpdate();
-			this.CourseCorrectRayXd.ForceRaycastUpdate();
-
-			if (colliderDown is not TileMap && colliderUp is TileMap)
-			if (CourseCorrectRayXd.GetCollider() == null && CourseCorrectRayXu.GetCollider() != null)
-			{
-				this.GetParent<PlayerController>().GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y + 3f);
-			}
+			this.GetParent<PlayerController>().GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y + 3f);
+			return;
 		}
 	}
 

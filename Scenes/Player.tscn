@@ -237,6 +237,8 @@ _data = {
 
 [node name="Player" type="CharacterBody2D"]
 z_index = 1
+position = Vector2(-2, 1)
+collision_mask = 3
 script = ExtResource("1_1vn0y")
 
 [node name="CollisionComponent" type="CollisionShape2D" parent="."]
@@ -293,4 +295,4 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.05, 1.05)
+scale = Vector2(1.0875, 1.0875)

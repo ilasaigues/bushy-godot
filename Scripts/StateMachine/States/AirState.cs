@@ -132,7 +132,6 @@ namespace BushyCore
             if (verticalVelocity > 0) 
             {
                 animationComponent.Play("land");
-                GD.Print("land");
                 actionsComponent.Land(StateConfig.InitialGrounded(base.HasOvershootDeceleration));
             }
         }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=19 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Texture2D" uid="uid://b1uq3n6md5wce" path="res://Assets/Background/forest_background_1.png" id="1_02yv3"]
 [ext_resource type="Script" path="res://bgm_test.gd" id="1_jka76"]
@@ -79,6 +79,9 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nsg2r"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5yj5n"]
+size = Vector2(40, 100)
 
 [node name="Game" type="Node2D"]
 position = Vector2(185, 24)
@@ -218,6 +221,22 @@ offset_bottom = 10.0
 [node name="tree_top" parent="." instance=ExtResource("8_28kkd")]
 texture_filter = 1
 position = Vector2(1633, 154)
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="."]
+position = Vector2(110, 223)
+collision_layer = 4
+collision_mask = 4
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D2"]
+offset_left = -20.0
+offset_top = -50.0
+offset_right = 20.0
+offset_bottom = 50.0
+color = Color(0.552941, 0.968627, 0.227451, 1)
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="StaticBody2D2"]
+position = Vector2(0, -1)
+shape = SubResource("RectangleShape2D_5yj5n")
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Finisher" to="Audio Manager" method="_on_finisher_button_down"]

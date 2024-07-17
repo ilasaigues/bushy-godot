@@ -61,6 +61,9 @@ namespace BushyCore
 
 			actionsComponent.JumpActionStart -= JumpActionRequested;
 			actionsComponent.DashActionStart -= DashActionRequested;
+
+			// Reconsider enabling this ALWAYS because we might have a really short dash CD if Bushy dashes close 
+			// to the ground, lands, quickily jumps and redash
 			actionsComponent.CanDash = true;
 		}
 		public override void StateUpdateInternal(double delta)
