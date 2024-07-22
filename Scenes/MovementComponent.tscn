@@ -6,40 +6,40 @@
 script = ExtResource("1_bppqt")
 
 [node name="GroundRayCastL" type="RayCast2D" parent="."]
-position = Vector2(6, 8)
+position = Vector2(5, 8)
 enabled = false
 target_position = Vector2(0, 7)
-collision_mask = 3
+collision_mask = 2
 
 [node name="GroundRayCastR" type="RayCast2D" parent="."]
-position = Vector2(-5, 8)
+position = Vector2(-6, 8)
 enabled = false
 target_position = Vector2(0, 7)
-collision_mask = 3
+collision_mask = 2
 
 [node name="CourseCorrectRayXu" type="RayCast2D" parent="."]
-position = Vector2(-17, 0)
+position = Vector2(-1, 0)
 enabled = false
 target_position = Vector2(7, 0)
 collision_mask = 2
 hit_from_inside = true
 
 [node name="CourseCorrectRayXd" type="RayCast2D" parent="."]
-position = Vector2(-17, 0)
+position = Vector2(-1, 0)
 enabled = false
 target_position = Vector2(7, 0)
 collision_mask = 2
 hit_from_inside = true
 
 [node name="CourseCorrectRayYl" type="RayCast2D" parent="."]
-position = Vector2(-17, 0)
+position = Vector2(-1, 0)
 enabled = false
 target_position = Vector2(7, 0)
 collision_mask = 2
 hit_from_inside = true
 
 [node name="CourseCorrectRayYr" type="RayCast2D" parent="."]
-position = Vector2(-17, 1)
+position = Vector2(-1, 1)
 enabled = false
 target_position = Vector2(7, 0)
 collision_mask = 2

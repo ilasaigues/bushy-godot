@@ -34,6 +34,11 @@ public partial class MovementComponent : Node2D
 				: Mathf.Pi/2 * Mathf.Sign(FloorNormal.X); 
 		} 
 	}
+	public bool IsOnEdge { get { return _raysOnFloor == 1; } }
+
+	private int _raysOnFloor;
+	
+
 	public bool CourseCorrectionEnabled;
 	
 	[Node]
@@ -114,12 +119,10 @@ public partial class MovementComponent : Node2D
 		characterBody2D.FloorSnapLength = 5.0f;
 		characterBody2D.FloorStopOnSlope = false;
 		
-		// Not really sure about this. No rays are casted when controller is on the edge of a slope
-		if (!IsOnFloor)
-		{
-			CheckRaycastFloor(GroundRayCastL);
-			CheckRaycastFloor(GroundRayCastR);
-		}
+		this._raysOnFloor = 0;
+
+		CheckRaycastFloor(GroundRayCastL);
+		CheckRaycastFloor(GroundRayCastR);
 
 		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f 
 			? FacingDirection 
@@ -143,6 +146,7 @@ public partial class MovementComponent : Node2D
 			}
 
 			SnappedToFloor = true;
+			this._raysOnFloor++;
 		}
 	}
 	public void Move(CharacterBody2D characterBody2D)

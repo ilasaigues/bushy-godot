@@ -122,6 +122,7 @@ namespace BushyCore
 			if (movementComponent.SnappedToFloor) return;
 			
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
+			
 			actionsComponent.Fall();
 		}
 
@@ -164,8 +165,9 @@ namespace BushyCore
 
 		protected override void VelocityUpdate()
 		{
+			var downwardVel = movementComponent.IsOnEdge ? 0 : 15;
 			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) horizontalVelocity;
-			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal * (float) verticalVelocity * 15;
+			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal *  (float) verticalVelocity * downwardVel;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)horizontalVelocity, slopeVerticalComponent);
 		}
 	}
