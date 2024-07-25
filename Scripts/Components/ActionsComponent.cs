@@ -100,4 +100,13 @@ public partial class ActionsComponent : Node
 	{
 		this.stateMachine.ChangeState<GroundedState>(configs);
 	}
+
+	public void EnterHedge(HedgeNode hedgeBody, Vector2 direction)
+	{
+		this.stateMachine.ChangeState<HedgeState>(StateConfig.InitialHedgeCollider(hedgeBody, direction));
+	}
+	public void EnterHedge(params StateConfig.IBaseStateConfig[] configs)
+	{
+		this.stateMachine.ChangeState<HedgeState>(configs);
+	}
 }

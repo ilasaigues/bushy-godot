@@ -1,8 +1,9 @@
-[gd_scene load_steps=32 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=34 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
 [ext_resource type="Texture2D" uid="uid://kb10o0qoh0oe" path="res://Assets/Player/Test_Spritesheet.png" id="2_c3m6v"]
+[ext_resource type="PackedScene" uid="uid://58asnhoao858" path="res://Scenes/AreaDetectionComponent.tscn" id="2_kbshe"]
 [ext_resource type="Script" path="res://Scripts/Components/Sprite2DComponent.cs" id="3_2v3uq"]
 [ext_resource type="PackedScene" uid="uid://cnkptwq4h84kk" path="res://Scenes/MovementComponent.tscn" id="3_wt20f"]
 [ext_resource type="PackedScene" uid="uid://seeco12ddgj7" path="res://Scenes/StateMachine.tscn" id="4_wtgcq"]
@@ -14,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://bxnlnnba3b4fj" path="res://Scenes/States/AirState.tscn" id="9_n3pxo"]
 [ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
 [ext_resource type="PackedScene" uid="uid://ikw2snd4s3rd" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
+[ext_resource type="PackedScene" uid="uid://pwejeh2nevkj" path="res://Scenes/States/HedgeState.tscn" id="12_sohlx"]
 [ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_raavv"]
@@ -238,16 +240,19 @@ _data = {
 [node name="Player" type="CharacterBody2D"]
 z_index = 1
 position = Vector2(-2, 1)
-collision_mask = 3
+collision_mask = 15
 script = ExtResource("1_1vn0y")
 
-[node name="CollisionComponent" type="CollisionShape2D" parent="."]
+[node name="AreaDetectionComponent" parent="." instance=ExtResource("2_kbshe")]
+
+[node name="CollisionComponent" type="CollisionShape2D" parent="." node_paths=PackedStringArray("AreaDetectionComponent")]
 shape = SubResource("RectangleShape2D_raavv")
 script = ExtResource("2_7fxs0")
 RectShape = SubResource("RectangleShape2D_raavv")
 CilinderShape = SubResource("CapsuleShape2D_dshrg")
 CircleShape = SubResource("CircleShape2D_dwjyl")
 PointShape = SubResource("CircleShape2D_j2efp")
+AreaDetectionComponent = NodePath("../AreaDetectionComponent")
 
 [node name="Sprite2DComponent" type="Sprite2D" parent="." node_paths=PackedStringArray("movementComponent")]
 texture_filter = 1
@@ -278,6 +283,8 @@ collisionComponent = NodePath("../CollisionComponent")
 
 [node name="DashState" parent="StateMachine" instance=ExtResource("10_hkenu")]
 
+[node name="HedgeState" parent="StateMachine" instance=ExtResource("12_sohlx")]
+
 [node name="ActionsComponent" parent="." instance=ExtResource("7_2bflq")]
 
 [node name="AnimationComponent" type="AnimationPlayer" parent="."]
@@ -295,4 +302,6 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.1, 1.1)
+scale = Vector2(1.0875, 1.0875)
+
+[connection signal="OnHedgeExit" from="AreaDetectionComponent" to="StateMachine/HedgeState" method="OnHedgeExit"]

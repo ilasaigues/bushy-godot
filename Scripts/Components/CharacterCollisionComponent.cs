@@ -7,7 +7,7 @@ namespace BushyCore
 	{
 		public RayCast2D CourseCorrectRay1 { get; private set; }
 		public RayCast2D CourseCorrectRay2  { get; private set; }
-		public enum ShapeMode 
+		public enum ShapeMode
 		{
 			RECTANGULAR,
 			CILINDER,
@@ -23,33 +23,39 @@ namespace BushyCore
 		public Shape2D CircleShape;
 		[Export]
 		public Shape2D PointShape;
+		[Export]
+		private AreaDetectionComponent AreaDetectionComponent;
 
 		public override void _Ready()
 		{
 			this.Shape = RectShape;
 		}
 
-        public override void _Process(double delta)
-        {
-        }
-
         public void SwitchShape(ShapeMode mode)
 		{
-			switch (mode)
+			SwitchShape((int) mode);
+		}
+		public void SwitchShape(int modeInt)
+		{
+			switch (modeInt)
 			{
-				case ShapeMode.RECTANGULAR:
+				case (int) ShapeMode.RECTANGULAR:
 					this.Shape = RectShape;
 					break;
-				case ShapeMode.CILINDER:
+				case (int) ShapeMode.CILINDER:
 					this.Shape = CilinderShape;
 					break;
-				case ShapeMode.CIRCLE:
+				case (int) ShapeMode.CIRCLE:
 					this.Shape = CircleShape;
 					break;
-				case ShapeMode.POINT:
+				case (int) ShapeMode.POINT:
 					this.Shape = PointShape;
 					break;
 			}
+
+			// I'm leaving this so we NEVER forget that changing the shape of an Area2D's CollisionShape2D
+			// triggers an _on_body_exit event. Never forget
+			// AreaDetectionComponent.SetShape(this.Shape);
 		}
 	}
 }

@@ -1,7 +1,4 @@
-using System.Diagnostics;
 using Godot;
-using GodotUtilities;
-using static MovementComponent;
 
 namespace BushyCore 
 {
@@ -28,6 +25,7 @@ namespace BushyCore
 			Vector2 direction = actionsComponent.MovementDirection;
 			var vars = characterVariables;
             
+            // Debug.Write($"Handle hor move {direction}, {horizontalVelocity}");
 			if (direction.X != 0)
 			{
                 var targetVelocity = movementComponent.IsOnWall ? vars.MaxOnWallHorizontalMovementSpeed : HorizontalMovementSpeed;

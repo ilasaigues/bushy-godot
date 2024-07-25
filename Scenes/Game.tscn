@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Scenes/camera_placeholder.cs" id="6_g0hwt"]
 [ext_resource type="PackedScene" uid="uid://cvihx0b7fk6dc" path="res://Scenes/Levels/tree_top.tscn" id="8_28kkd"]
 [ext_resource type="PackedScene" uid="uid://bco5h8a4p3ito" path="res://Scenes/Levels/test_forest.tscn" id="8_m158k"]
+[ext_resource type="PackedScene" uid="uid://cp0lnw8h4618y" path="res://Scenes/HedgeNode.tscn" id="10_qw50u"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pptmd"]
 
@@ -79,9 +80,6 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nsg2r"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5yj5n"]
-size = Vector2(40, 100)
 
 [node name="Game" type="Node2D"]
 position = Vector2(185, 24)
@@ -222,21 +220,8 @@ offset_bottom = 10.0
 texture_filter = 1
 position = Vector2(1633, 154)
 
-[node name="StaticBody2D2" type="StaticBody2D" parent="."]
-position = Vector2(110, 223)
-collision_layer = 4
-collision_mask = 4
-
-[node name="ColorRect" type="ColorRect" parent="StaticBody2D2"]
-offset_left = -20.0
-offset_top = -50.0
-offset_right = 20.0
-offset_bottom = 50.0
-color = Color(0.552941, 0.968627, 0.227451, 1)
-
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="StaticBody2D2"]
-position = Vector2(0, -1)
-shape = SubResource("RectangleShape2D_5yj5n")
+[node name="HedgeNode" parent="." instance=ExtResource("10_qw50u")]
+position = Vector2(112, 223)
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Finisher" to="Audio Manager" method="_on_finisher_button_down"]

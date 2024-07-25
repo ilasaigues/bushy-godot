@@ -26,7 +26,6 @@ namespace BushyCore
 
         protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
         {
-            // _directionInputSubscription = _input.DirectionInput.Subscribe(UpdateFacingDirection);
             horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
             verticalVelocity = 0;
             canCoyoteJump = actionsComponent.CanJump;
@@ -40,7 +39,9 @@ namespace BushyCore
 			base.HorizontalMovementSpeed = characterVariables.AirHorizontalMovementSpeed;
             base.HasOvershootDeceleration = true;
 
-            base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
+            base.collisionComponent.CallDeferred(
+                CharacterCollisionComponent.MethodName.SwitchShape, 
+                (int) CharacterCollisionComponent.ShapeMode.CILINDER);
 
             SetupFromConfigs(configs);
 

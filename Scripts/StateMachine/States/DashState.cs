@@ -13,16 +13,19 @@ namespace BushyCore
 		private Vector2 constantVelocity;
 		private bool bufferJump;
 		private float direction;
+		private HedgeNode hedgeNode;
 		[Node]
     	private Timer DurationTimer;
 		[Node]
 		private RayCast2D SlopeRaycast2D;
+		[Node]
+		private RayCast2D HedgeRaycastTop;
+		[Node]
+		private RayCast2D HedgeRaycastBot;
 
 
 		private int state;
 		private int verticalVelCorrector;
-		
-	
 		private int isOnSlopeCount;
 		public override void _Notification(int what)
         {
@@ -38,7 +41,7 @@ namespace BushyCore
 		protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
 			SetupFromConfigs(configs);
-
+			
 			direction = actionsComponent.MovementDirection.X != 0 
 				? Mathf.Sign(actionsComponent.MovementDirection.X)
 				: Mathf.Sign(movementComponent.FacingDirection.X);
@@ -52,12 +55,20 @@ namespace BushyCore
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
 			movementComponent.CourseCorrectionEnabled = true;
+			hedgeNode = null;
+
+			SetHedgeRaycasts(direction);
 
 			if (movementComponent.IsOnFloor)
 				collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
 		}
-		
-		private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
+
+        private void SetHedgeRaycasts(float direction)
+        {
+			HedgeRaycastBot.Enabled = false;
+        }
+
+        private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
 		{
 			foreach (var config in configs)
 			{
@@ -84,6 +95,7 @@ namespace BushyCore
 				JumpActionRequested();
 
 			VelocityUpdate();
+			CheckHedgeCollision();
 		}
 
     	protected override void VelocityUpdate() 
@@ -114,6 +126,26 @@ namespace BushyCore
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(horizontalComponent, verticalComponent);
 		}
 
+		private void CheckHedgeCollision()
+		{
+			if (!movementComponent.IsOnWall && !movementComponent.IsOnCeiling)
+				return;
+
+			HedgeRaycastBot.Position = Vector2.Zero;
+			HedgeRaycastBot.TargetPosition = Mathf.Sign(IntendedDirection.X) * Vector2.Right * 12;
+
+			HedgeRaycastBot.ForceRaycastUpdate();
+			var hedgeCollider = HedgeRaycastBot.GetCollider();
+			
+			if (hedgeCollider == null) 
+				return;
+
+			if (hedgeCollider is StaticBody2D sb && sb.GetParent() is HedgeNode hedgeCollision)
+			{
+				hedgeNode = hedgeCollision;
+				hedgeNode.ToggleHedgeCollision(false);
+			}
+		}
 		public void JumpActionRequested()
 		{
 			if (actionsComponent.CanJump)
@@ -134,6 +166,8 @@ namespace BushyCore
 	
 		void _on_duration_timer_timeout()
 		{
+			if (!IsActive) return;
+
 			switch(state)
 			{
 				case 0:
@@ -152,6 +186,11 @@ namespace BushyCore
 				case 2:
 					DurationTimer.Stop();
 					RunAndEndState(() => {
+						if (hedgeNode != null)
+						{
+							animationComponent.Play("turn");
+							actionsComponent.EnterHedge(hedgeNode, direction * Vector2.Right);
+						}
 						if (movementComponent.IsOnFloor)
 						{
 							animationComponent.Play("turn");

@@ -49,6 +49,22 @@ namespace BushyCore
             return new InitialSwingHookConfig(hitPoint, earlyRelease);
         }
 
+        public struct InitialHedgeConfig : IBaseStateConfig
+        {
+            public HedgeNode Hedge;
+            public Vector2 Direction;
+            public InitialHedgeConfig(HedgeNode hedge, Vector2 dir) 
+            {
+                Hedge = hedge; 
+                Direction = dir;
+            }
+        }
+
+        public static InitialHedgeConfig InitialHedgeCollider(HedgeNode hedge, Vector2 dir)
+        {
+            return new InitialHedgeConfig(hedge, dir);
+        }
+
         public struct InitialGroundedConfig : IBaseStateConfig
         {
             public bool CanBufferJump;

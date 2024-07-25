@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://pwejeh2nevkj"]
+
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/HedgeState.cs" id="1_ogfqp"]
+
+[node name="HedgeState" type="Node2D"]
+script = ExtResource("1_ogfqp")
