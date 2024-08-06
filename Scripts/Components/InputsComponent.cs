@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Diagnostics;
 
-namespace BushyCore 
+namespace BushyCore
 {
 	public partial class InputsComponent : Node
 	{
@@ -21,20 +21,20 @@ namespace BushyCore
 		public bool IsDashRequested => (Time.GetTicksMsec() - DashnputTime) <= DashBufferTime;
 
 		// VERY IMPORTANT: the order in which these checks are done, impact the order of which action signals are fired
-        public override void _Process(double delta)
-        {
+		public override void _Process(double delta)
+		{
 			this.DirectionCheck();
 			this.DashCheck();
 			this.JumpCheck();
-        }
-        public override void _Input(InputEvent @event)
-        {
+		}
+		public override void _UnhandledInput(InputEvent @event)
+		{
 			if (@event.IsActionReleased("ui_accept"))
 			{
 				actionsComponent.IsJumpCancelled = true;
 			}
-        }
-        private void DirectionCheck()
+		}
+		private void DirectionCheck()
 		{
 			bool anyDirJustChanged = Input.IsActionJustPressed("ui_left") ||
 				Input.IsActionJustPressed("ui_right") ||
@@ -60,7 +60,7 @@ namespace BushyCore
 				actionsComponent.IsJumpCancelled = false;
 			}
 
-			if (this.JumpInputTime > 0 && !IsJumpRequested) 
+			if (this.JumpInputTime > 0 && !IsJumpRequested)
 			{
 				actionsComponent.IsJumpRequested = false;
 				this.JumpInputTime = 0;
@@ -73,8 +73,8 @@ namespace BushyCore
 				this.DashnputTime = Time.GetTicksMsec();
 				actionsComponent.IsDashRequested = true;
 			}
-				
-			if (this.DashnputTime > 0 && !IsDashRequested) 
+
+			if (this.DashnputTime > 0 && !IsDashRequested)
 			{
 				this.DashnputTime = 0;
 				actionsComponent.IsDashRequested = false;

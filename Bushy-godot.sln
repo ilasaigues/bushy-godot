@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bushy-godot", "Bushy-godot.csproj", "{03457B2C-CB7F-4BDB-ABD6-472B98EA8762}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bushy-godot", "Bushy-godot.csproj", "{74DCA9D9-0623-4F16-875B-E00B7A8EE1C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,11 +9,11 @@ Global
 	ExportRelease|Any CPU = ExportRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{03457B2C-CB7F-4BDB-ABD6-472B98EA8762}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03457B2C-CB7F-4BDB-ABD6-472B98EA8762}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03457B2C-CB7F-4BDB-ABD6-472B98EA8762}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
-		{03457B2C-CB7F-4BDB-ABD6-472B98EA8762}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
-		{03457B2C-CB7F-4BDB-ABD6-472B98EA8762}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
-		{03457B2C-CB7F-4BDB-ABD6-472B98EA8762}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{74DCA9D9-0623-4F16-875B-E00B7A8EE1C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74DCA9D9-0623-4F16-875B-E00B7A8EE1C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74DCA9D9-0623-4F16-875B-E00B7A8EE1C3}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{74DCA9D9-0623-4F16-875B-E00B7A8EE1C3}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{74DCA9D9-0623-4F16-875B-E00B7A8EE1C3}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{74DCA9D9-0623-4F16-875B-E00B7A8EE1C3}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
 	EndGlobalSection
 EndGlobal
