@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Godot;
 
 namespace BushyCore
@@ -25,6 +25,8 @@ namespace BushyCore
 		public Shape2D PointShape;
 		[Export]
 		private AreaDetectionComponent AreaDetectionComponent;
+		
+		private PlayerController parentController;
 
 		public override void _Ready()
 		{
@@ -56,6 +58,12 @@ namespace BushyCore
 			// I'm leaving this so we NEVER forget that changing the shape of an Area2D's CollisionShape2D
 			// triggers an _on_body_exit event. Never forget
 			// AreaDetectionComponent.SetShape(this.Shape);
+		}
+
+		public void SetParentController(PlayerController val) { this.parentController = val; }
+		public void ToggleHedgeCollision(bool isOn)
+		{
+			parentController.SetCollisionMaskValue(CollisionLayerConsts.HEDGE, isOn);
 		}
 	}
 }

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ikw2snd4s3rd"]
+[gd_scene load_steps=3 format=3 uid="uid://ikw2snd4s3rd"]
 
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/DashState.cs" id="1_kg0i6"]
+[ext_resource type="PackedScene" uid="uid://cpb6x64s71e72" path="res://Scenes/HedgeStateCheck.tscn" id="2_vugcs"]
 
 [node name="DashState" type="Node2D"]
 script = ExtResource("1_kg0i6")
@@ -11,10 +12,7 @@ script = ExtResource("1_kg0i6")
 exclude_parent = false
 target_position = Vector2(8, 0)
 
-[node name="HedgeRaycastTop" type="RayCast2D" parent="."]
-collision_mask = 4
-
-[node name="HedgeRaycastBot" type="RayCast2D" parent="."]
-collision_mask = 4
+[node name="HedgeStateCheck" parent="." instance=ExtResource("2_vugcs")]
 
 [connection signal="timeout" from="DurationTimer" to="." method="_on_duration_timer_timeout"]
+[connection signal="OnHedgeEnter" from="HedgeStateCheck" to="." method="OnHedgeEnter"]

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Godot;
 using GodotUtilities;
 using static MovementComponent;
@@ -5,12 +6,14 @@ using static MovementComponent;
 namespace BushyCore 
 {
 	[Scene]
-	public partial class GroundedState : BaseMovementState
+	public partial class GroundedState : BaseState
 	{
 		[Node]
 		private Timer DashCooldownTimer;
 		private double verticalVelocity;
 		private bool canBufferJump;
+
+		private AxisMovement xAxisMovement;
 		public override void _Ready()
 		{
 			base._Ready();
@@ -19,22 +22,36 @@ namespace BushyCore
 			this.WireNodes();
 		}
 
+		public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationPlayer anim, CharacterCollisionComponent col)
+		{
+			base.InitState(mc, cv, ac, anim, col);
+
+			this.xAxisMovement = new AxisMovement.Builder()
+				.Acc(characterVariables.GroundHorizontalAcceleration)
+				.Dec(characterVariables.GroundHorizontalDeceleration)
+				.Speed(characterVariables.GroundHorizontalMovementSpeed)
+				.OverDec(characterVariables.GroundHorizontalOvercappedDeceleration)
+				.TurnDec(characterVariables.HorizontalTurnDeceleration)
+				.Movement(mc)
+				.Direction(() => { return ac.MovementDirection.X; })
+				.Variables(cv)
+				.Build();
+			
+		}
+
 		protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
 			canBufferJump = true;
 			SetCanDash();
 			
+			xAxisMovement.SetInitVel(movementComponent.Velocities[VelocityType.MainMovement].X);
+
 			actionsComponent.CanJump = true;
-			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-			horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
+			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;;
 			actionsComponent.JumpActionStart += JumpActionRequested;
 			actionsComponent.DashActionStart += DashActionRequested;
 
-			base.HorizontalAcceleration = characterVariables.GroundHorizontalAcceleration;
-			base.HorizontalDeceleration = characterVariables.GroundHorizontalDeceleration;
-			base.HorizontalMovementSpeed = characterVariables.GroundHorizontalMovementSpeed;
-			base.HorizontalOvercappedDeceleration = characterVariables.GroundHorizontalOvercappedDeceleration;
-			base.HasOvershootDeceleration = true;
+			xAxisMovement.OvershootDec(true);
 			
 			base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 
@@ -47,7 +64,7 @@ namespace BushyCore
 				if (config is StateConfig.InitialGroundedConfig groundedConfig)
 				{
 					canBufferJump = groundedConfig.CanBufferJump;
-					HasOvershootDeceleration = groundedConfig.DoesDecelerate;
+					xAxisMovement.OvershootDec(groundedConfig.DoesDecelerate);
 				}
 			}
 		}
@@ -70,6 +87,7 @@ namespace BushyCore
 			verticalVelocity = -10f;
 
 			base.StateUpdateInternal(delta);
+
 			HandleMovement(delta);
 			CheckTransitions();
 			VelocityUpdate();
@@ -81,7 +99,7 @@ namespace BushyCore
 
 			if(direction != 0)
 			{
-				if(direction * horizontalVelocity < 0)
+				if(direction * xAxisMovement.Velocity < 0)
 				{
 					animationComponent.Play("turn");
 					animationComponent.ClearQueue();
@@ -139,7 +157,10 @@ namespace BushyCore
 			}
 		} 
 
-		void HandleMovement(double _deltaTime){}
+		void HandleMovement(double deltaTime)
+		{
+			xAxisMovement.HandleMovement(deltaTime);
+		}
 
 		void SetCanDash()
 		{
@@ -163,9 +184,9 @@ namespace BushyCore
 		protected override void VelocityUpdate()
 		{
 			var downwardVel = movementComponent.IsOnEdge ? 0 : 15;
-			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) horizontalVelocity;
+			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) xAxisMovement.Velocity;
 			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal *  (float) verticalVelocity * downwardVel;
-			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)horizontalVelocity, slopeVerticalComponent);
+			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float) xAxisMovement.Velocity, slopeVerticalComponent);
 		}
 	}
 

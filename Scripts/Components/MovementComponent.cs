@@ -35,8 +35,11 @@ public partial class MovementComponent : Node2D
 		} 
 	}
 	public bool IsOnEdge { get { return _raysOnFloor == 1; } }
+	public HedgeNode HedgeEntered;
+	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge > 1; }}
 
 	private int _raysOnFloor;
+	private int _raysOnHedge;
 	
 
 	public bool CourseCorrectionEnabled;
@@ -58,6 +61,7 @@ public partial class MovementComponent : Node2D
 
 	[Export]
 	private CollisionShape2D CollisionComponent;
+	private PlayerController parentController;
 
 	public enum VelocityType
 	{
@@ -120,6 +124,7 @@ public partial class MovementComponent : Node2D
 		characterBody2D.FloorStopOnSlope = false;
 		
 		this._raysOnFloor = 0;
+		this._raysOnHedge = 0;
 
 		CheckRaycastFloor(GroundRayCastL);
 		CheckRaycastFloor(GroundRayCastR);
@@ -127,7 +132,6 @@ public partial class MovementComponent : Node2D
 		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f 
 			? FacingDirection 
 			: this.Velocities[VelocityType.MainMovement].X * Vector2.Right;
-
 	}
 	
 	private void CheckRaycastFloor(RayCast2D rayCast2D)
@@ -136,7 +140,7 @@ public partial class MovementComponent : Node2D
 
 		GodotObject collider = rayCast2D.GetCollider();
 
-		if (collider != null && collider is TileMap tileMap) 
+		if (collider != null) 
 		{
 			Vector2 point = rayCast2D.GetCollisionPoint();
 			if (FloorHeight == null || point.Y < FloorHeight) 
@@ -147,15 +151,21 @@ public partial class MovementComponent : Node2D
 
 			SnappedToFloor = true;
 			this._raysOnFloor++;
+
+			if (((Node2D) collider).GetParent() is HedgeNode)
+			{	
+				_raysOnHedge++;
+			}
 		}
 	}
 	public void Move(CharacterBody2D characterBody2D)
 	{
 		characterBody2D.Velocity = CurrentVelocity;
 		ApplyCourseCorrection(characterBody2D);
-
+	
 		characterBody2D.MoveAndSlide();
 	}
+	public void SetParentController(PlayerController val) { this.parentController = val; }
 
 	private void ApplyCourseCorrection(CharacterBody2D characterBody2D)
 	{
@@ -182,7 +192,7 @@ public partial class MovementComponent : Node2D
 
 		if (upcomingCorner)
 		{
-			this.GetParent<PlayerController>().GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y - 3f);
+			parentController.GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y - 3f);
 			return;
 		}
 		
@@ -201,7 +211,7 @@ public partial class MovementComponent : Node2D
 
 		if (upcomingCorner)
 		{
-			this.GetParent<PlayerController>().GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y + 3f);
+			parentController.GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y + 3f);
 			return;
 		}
 	}
@@ -218,6 +228,16 @@ public partial class MovementComponent : Node2D
 		CourseCorrectRayXd.Position = new Vector2(colliderSizeX/2,0);
 		CourseCorrectRayYl.Position = new Vector2(0,colliderSizeY/2);
 		CourseCorrectRayYr.Position = new Vector2(0,colliderSizeY/2);
+	}
+
+	public void OnHedgeEnter(HedgeNode hedgeNode)
+	{
+		this.HedgeEntered = hedgeNode;
+	}
+	
+	public void OnHedgeExit(HedgeNode hedgeNode)
+	{
+		this.HedgeEntered = null;
 	}
 
 	public override void _Notification(int what)

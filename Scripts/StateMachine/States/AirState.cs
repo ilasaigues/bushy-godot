@@ -6,14 +6,21 @@ using static MovementComponent;
 namespace BushyCore 
 {
     [Scene]
-    public partial class AirState : BaseMovementState
+    public partial class AirState : BaseState
     {
         private double verticalVelocity;
         private float targetVelocity;
         private bool canCoyoteJump;
+        private bool canFallIntoHedge;
+
+		private AxisMovement xAxisMovement;
 
         [Node]
         private Timer JumpCoyoteTimer;
+
+		[Node]
+		private HedgeStateCheck HedgeStateCheck;
+	
 
         public override void _Notification(int what)
         {
@@ -24,29 +31,53 @@ namespace BushyCore
             }
         }
 
+		public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationPlayer anim, CharacterCollisionComponent col)
+		{
+			base.InitState(mc, cv, ac, anim, col);
+
+			this.xAxisMovement = new AxisMovement.Builder()
+				.Acc(characterVariables.AirHorizontalAcceleration)
+				.Dec(characterVariables.AirHorizontalDeceleration)
+				.Speed(characterVariables.AirHorizontalMovementSpeed)
+				.OverDec(characterVariables.AirHorizontalOvercappedDeceleration)
+				.TurnDec(characterVariables.HorizontalTurnDeceleration)
+				.Movement(mc)
+				.Direction(() => { return ac.MovementDirection.X; })
+				.Variables(cv)
+				.Build();
+		
+		}
+
         protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
         {
-            horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
+            xAxisMovement.SetInitVel(movementComponent.Velocities[VelocityType.MainMovement].X);
+
             verticalVelocity = 0;
+            canFallIntoHedge = false;
             canCoyoteJump = actionsComponent.CanJump;
-            
+
             JumpCoyoteTimer.WaitTime = characterVariables.JumpCoyoteTime;
             JumpCoyoteTimer.Start();
 
-			base.HorizontalAcceleration = characterVariables.AirHorizontalAcceleration;
-			base.HorizontalDeceleration = characterVariables.AirHorizontalDeceleration;
-			base.HorizontalOvercappedDeceleration = characterVariables.AirHorizontalOvercappedDeceleration;
-			base.HorizontalMovementSpeed = characterVariables.AirHorizontalMovementSpeed;
-            base.HasOvershootDeceleration = true;
+            xAxisMovement.OvershootDec(true);
 
             base.collisionComponent.CallDeferred(
                 CharacterCollisionComponent.MethodName.SwitchShape, 
                 (int) CharacterCollisionComponent.ShapeMode.CILINDER);
 
-            SetupFromConfigs(configs);
 
+			HedgeStateCheck.CheckerInit(movementComponent);
+			HedgeStateCheck.CheckerReset((float) xAxisMovement.Velocity * Vector2.Right);
+
+            SetupFromConfigs(configs);
 			actionsComponent.DashActionStart += DashActionRequested;
 			actionsComponent.JumpActionEnd += JumpActionEnded;
+
+            if (canFallIntoHedge)
+            {
+                Debug.WriteLine($"Air in. Fall into hedge? {canFallIntoHedge}");
+                collisionComponent.ToggleHedgeCollision(false);
+            }
         }
         
         private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
@@ -54,7 +85,9 @@ namespace BushyCore
             foreach (var config in configs)
             {
                 if (config is StateConfig.StartJumpConfig)
-                {
+                {   
+                    // This path seems unused
+                    Debug.WriteLine("Are we ever here?");
                     verticalVelocity = characterVariables.JumpSpeed;
                     actionsComponent.CanJump = false;
                     canCoyoteJump = false;
@@ -63,7 +96,8 @@ namespace BushyCore
                 {
                     verticalVelocity = velocityConfig.Velocity.Y;
                     targetVelocity = velocityConfig.Velocity.X;
-                    HasOvershootDeceleration = velocityConfig.DoesDecelerate;
+                    xAxisMovement.OvershootDec(velocityConfig.DoesDecelerate);
+                    canFallIntoHedge = velocityConfig.CanEnterHedge;
                 }
             }
         }
@@ -73,8 +107,10 @@ namespace BushyCore
 			actionsComponent.DashActionStart -= DashActionRequested;
 			actionsComponent.JumpActionEnd -= JumpActionEnded;
             
+            if (!movementComponent.IsInHedge)
+                collisionComponent.ToggleHedgeCollision(true);
+
             base.StateExit();
-            // _directionInputSubscription?.Dispose();
         }
 
         public override void StateUpdateInternal(double delta)
@@ -83,6 +119,7 @@ namespace BushyCore
             HandleGravity(delta);
             base.StateUpdateInternal(delta);
 
+            xAxisMovement.HandleMovement(delta);
             CheckTransitions();
             VelocityUpdate();
             
@@ -127,20 +164,27 @@ namespace BushyCore
         {
             if (canCoyoteJump && actionsComponent.IsJumpRequested)
                 actionsComponent.Jump();
-                
-            if (!movementComponent.IsOnFloor) return;
             
+            if (canFallIntoHedge && movementComponent.IsInHedge) 
+                actionsComponent.EnterHedge(movementComponent.HedgeEntered, (float) xAxisMovement.Velocity * Vector2.Right); 
+
+            if (!movementComponent.IsOnFloor) return;
+        
             if (verticalVelocity > 0) 
             {
                 animationComponent.Play("land");
-                actionsComponent.Land(StateConfig.InitialGrounded(base.HasOvershootDeceleration));
+                actionsComponent.Land(StateConfig.InitialGrounded(xAxisMovement.HasOvershootDeceleration));
             }
+        }
+
+        public void OnHedgeEnter(HedgeNode hedgeNode)
+        {
         }
 
         protected override void VelocityUpdate()
         {
             movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
-            movementComponent.Velocities[VelocityType.MainMovement] = (float) horizontalVelocity * Vector2.Right;
+            movementComponent.Velocities[VelocityType.MainMovement] = (float) xAxisMovement.Velocity * Vector2.Right;
         }
 
 		public void DashActionRequested()

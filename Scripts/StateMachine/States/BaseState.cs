@@ -21,7 +21,7 @@ namespace BushyCore
 
         protected bool IsActive { get; private set; }
 
-        public void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationPlayer anim, CharacterCollisionComponent col) {
+        public virtual void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationPlayer anim, CharacterCollisionComponent col) {
             this.movementComponent = mc;
             this.characterVariables = cv;
             this.actionsComponent = ac;

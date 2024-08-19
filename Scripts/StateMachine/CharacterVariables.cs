@@ -60,6 +60,18 @@ namespace BushyCore
         public float DashJumpSpeed { get; private set; }
         
 
+        [Export] 
+        public int HedgeAcceleration { get; private set; }
+        [Export] 
+        public int HedgeDeceleration { get; private set; }
+        [Export] 
+        public int HedgeTurnDeceleration { get; private set; }
+        [Export]
+        public int HedgeOvercappedDeceleration { get; private set; }
+        [Export] 
+        public int HedgeMovementSpeed { get; private set; }
+        [Export] 
+        public int MaxHedgeEnterSpeed { get; private set; }
         public CharacterVariables() {}
     }
 }

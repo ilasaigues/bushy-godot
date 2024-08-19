@@ -7,14 +7,18 @@ using static MovementComponent;
 namespace BushyCore 
 {
     [Scene]
-    public partial class JumpState : BaseMovementState
+    public partial class JumpState : BaseState
     {
 		private double verticalVelocity;
         private bool earlyDrop;
         private int targetVelocity;
-
+		private AxisMovement xAxisMovement;
+        private bool CanJumpIntoHedge;
         [Node]
         private Timer DurationTimer;
+		[Node]
+		private HedgeStateCheck HedgeStateCheck;
+        private HedgeNode hedgeNodeEntered;
 
         public override void _Notification(int what)
         {
@@ -25,18 +29,40 @@ namespace BushyCore
             }
         }
 
-	    protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
+        public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationPlayer anim, CharacterCollisionComponent col)
+        {
+            base.InitState(mc, cv, ac, anim, col);
+
+			this.xAxisMovement = new AxisMovement.Builder()
+				.Acc(characterVariables.AirHorizontalAcceleration)
+				.Dec(characterVariables.AirHorizontalDeceleration)
+				.Speed(characterVariables.AirHorizontalMovementSpeed)
+				.OverDec(characterVariables.AirHorizontalOvercappedDeceleration)
+				.TurnDec(characterVariables.HorizontalTurnDeceleration)
+				.Movement(mc)
+				.Direction(() => { return ac.MovementDirection.X; })
+				.Variables(cv)
+				.Build();
+        }
+
+        protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
             animationComponent.ClearQueue();
             animationComponent.Play("jump");
             animationComponent.Queue("ascent");
 
             targetVelocity = characterVariables.AirHorizontalMovementSpeed;
-            horizontalVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
             verticalVelocity = characterVariables.JumpSpeed;
+            CanJumpIntoHedge = false;
 
             earlyDrop = false;
 
+            xAxisMovement.OvershootDec(true);
+            xAxisMovement.SetInitVel(movementComponent.Velocities[VelocityType.MainMovement].X);
+
+			HedgeStateCheck.CheckerInit(movementComponent);
+			HedgeStateCheck.CheckerReset((float) xAxisMovement.Velocity * Vector2.Right);
+            
             DurationTimer.WaitTime = characterVariables.JumpDuration;
             DurationTimer.Start();
 
@@ -45,12 +71,6 @@ namespace BushyCore
 			actionsComponent.DashActionStart += DashActionRequested;
 			actionsComponent.JumpActionEnd += JumpActionEnded;
 
-			base.HorizontalAcceleration = characterVariables.AirHorizontalAcceleration;
-			base.HorizontalDeceleration = characterVariables.AirHorizontalDeceleration;
-			base.HorizontalOvercappedDeceleration = characterVariables.AirHorizontalOvercappedDeceleration;
-			base.HorizontalMovementSpeed = targetVelocity;
-            base.HasOvershootDeceleration = true;
-
             base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
 
             foreach (var config in configs)
@@ -58,19 +78,28 @@ namespace BushyCore
                 if(config is StateConfig.InitialVelocityVectorConfig velocityConfig)
                 {
                     targetVelocity = (int) MathF.Abs(velocityConfig.Velocity.X);
-                    HasOvershootDeceleration = velocityConfig.DoesDecelerate;
+                    xAxisMovement.OvershootDec(velocityConfig.DoesDecelerate);
+                    CanJumpIntoHedge = velocityConfig.CanEnterHedge;
                 }
             }
+
+            if (CanJumpIntoHedge)
+                collisionComponent.ToggleHedgeCollision(false);
 		}
+
+        protected override void AnimationUpdate() {}
         public override void StateExit()
         {
 			actionsComponent.DashActionStart -= DashActionRequested;
 			actionsComponent.JumpActionEnd -= JumpActionEnded;
+            if (!movementComponent.IsInHedge)
+                collisionComponent.ToggleHedgeCollision(true);
             base.StateExit();
         }
         public override void StateUpdateInternal(double delta)
         {
             base.StateUpdateInternal(delta);
+            xAxisMovement.HandleMovement(delta);
             this.VelocityUpdate();
             // CheckSwing();
 
@@ -79,13 +108,16 @@ namespace BushyCore
         protected override void VelocityUpdate()
         {
             movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
-            movementComponent.Velocities[VelocityType.MainMovement] = (float) horizontalVelocity * Vector2.Right;
+            movementComponent.Velocities[VelocityType.MainMovement] = (float) xAxisMovement.Velocity * Vector2.Right;
         }
 
         void CheckTransitions()
         {
+            if (CanJumpIntoHedge && movementComponent.IsInHedge)
+                actionsComponent.EnterHedge(movementComponent.HedgeEntered, (float) xAxisMovement.Velocity * Vector2.Right);
+            
             if (actionsComponent.IsJumpCancelled)
-                actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), HasOvershootDeceleration);
+                actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), xAxisMovement.HasOvershootDeceleration, CanJumpIntoHedge);
 
             if (movementComponent.IsOnCeiling)
                 actionsComponent.Fall();
@@ -94,7 +126,7 @@ namespace BushyCore
         void DurationTimerTimeout()
         {
             if (!this.IsActive) return;
-            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpSpeed), HasOvershootDeceleration));
+            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpSpeed), xAxisMovement.HasOvershootDeceleration, CanJumpIntoHedge));
         }
 
 		public void DashActionRequested()
@@ -107,7 +139,7 @@ namespace BushyCore
 
         public void JumpActionEnded()
         {
-            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed)));
+            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), canFallIntoHedge: CanJumpIntoHedge));
         }
     }
 }

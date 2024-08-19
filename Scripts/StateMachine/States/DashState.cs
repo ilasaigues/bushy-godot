@@ -14,19 +14,15 @@ namespace BushyCore
 		private bool bufferJump;
 		private float direction;
 		private HedgeNode hedgeNode;
+
 		[Node]
     	private Timer DurationTimer;
 		[Node]
 		private RayCast2D SlopeRaycast2D;
 		[Node]
-		private RayCast2D HedgeRaycastTop;
-		[Node]
-		private RayCast2D HedgeRaycastBot;
-
+		private HedgeStateCheck HedgeStateCheck;
 
 		private int state;
-		private int verticalVelCorrector;
-		private int isOnSlopeCount;
 		public override void _Notification(int what)
         {
             if (what == NotificationSceneInstantiated)
@@ -41,7 +37,6 @@ namespace BushyCore
 		protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
 			SetupFromConfigs(configs);
-			
 			direction = actionsComponent.MovementDirection.X != 0 
 				? Mathf.Sign(actionsComponent.MovementDirection.X)
 				: Mathf.Sign(movementComponent.FacingDirection.X);
@@ -51,22 +46,19 @@ namespace BushyCore
 			actionsComponent.JumpActionStart += JumpActionRequested;
 			actionsComponent.CanDash = false;
 			bufferJump = false;
-			verticalVelCorrector = 0;
+			
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
 			movementComponent.CourseCorrectionEnabled = true;
-			hedgeNode = null;
-
-			SetHedgeRaycasts(direction);
+			Debug.WriteLine("Dash state");
+			HedgeStateCheck.CheckerInit(movementComponent);
+			HedgeStateCheck.CheckerReset(direction * Vector2.Right);
+			collisionComponent.ToggleHedgeCollision(false);
 
 			if (movementComponent.IsOnFloor)
 				collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
 		}
 
-        private void SetHedgeRaycasts(float direction)
-        {
-			HedgeRaycastBot.Enabled = false;
-        }
 
         private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
 		{
@@ -85,9 +77,13 @@ namespace BushyCore
 			movementComponent.CourseCorrectionEnabled = false;
 			actionsComponent.JumpActionStart -= JumpActionRequested;
 
+			var exitVelocity = characterVariables.DashExitVelocity;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(
-				characterVariables.DashExitVelocity * direction, 
+				exitVelocity * direction, 
 				movementComponent.Velocities[VelocityType.MainMovement].Y);
+
+			if (!movementComponent.IsInHedge)
+				collisionComponent.ToggleHedgeCollision(true);
         }
     	public override void StateUpdateInternal(double delta)
     	{
@@ -95,9 +91,16 @@ namespace BushyCore
 				JumpActionRequested();
 
 			VelocityUpdate();
-			CheckHedgeCollision();
+			CheckHedge();
 		}
 
+		private void CheckHedge()
+		{
+			if (!movementComponent.IsInHedge) return;
+
+			animationComponent.Play("turn");
+			actionsComponent.EnterHedge(movementComponent.HedgeEntered, direction * Vector2.Right);
+		}
     	protected override void VelocityUpdate() 
 		{
 			if (state == 0) return;
@@ -126,26 +129,6 @@ namespace BushyCore
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(horizontalComponent, verticalComponent);
 		}
 
-		private void CheckHedgeCollision()
-		{
-			if (!movementComponent.IsOnWall && !movementComponent.IsOnCeiling)
-				return;
-
-			HedgeRaycastBot.Position = Vector2.Zero;
-			HedgeRaycastBot.TargetPosition = Mathf.Sign(IntendedDirection.X) * Vector2.Right * 12;
-
-			HedgeRaycastBot.ForceRaycastUpdate();
-			var hedgeCollider = HedgeRaycastBot.GetCollider();
-			
-			if (hedgeCollider == null) 
-				return;
-
-			if (hedgeCollider is StaticBody2D sb && sb.GetParent() is HedgeNode hedgeCollision)
-			{
-				hedgeNode = hedgeCollision;
-				hedgeNode.ToggleHedgeCollision(false);
-			}
-		}
 		public void JumpActionRequested()
 		{
 			if (actionsComponent.CanJump)
@@ -155,7 +138,9 @@ namespace BushyCore
 					case 0:
 						DurationTimer.Stop();
 						movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);
-						RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed, false));
+
+						Debug.WriteLine("Jump request during dash init");
+						RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed, false, true));
 						break;
 					case 2:
 						bufferJump = true;
@@ -186,11 +171,6 @@ namespace BushyCore
 				case 2:
 					DurationTimer.Stop();
 					RunAndEndState(() => {
-						if (hedgeNode != null)
-						{
-							animationComponent.Play("turn");
-							actionsComponent.EnterHedge(hedgeNode, direction * Vector2.Right);
-						}
 						if (movementComponent.IsOnFloor)
 						{
 							animationComponent.Play("turn");

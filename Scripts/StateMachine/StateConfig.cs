@@ -16,10 +16,12 @@ namespace BushyCore
         {
             public Vector2 Velocity;
             public bool DoesDecelerate;
-            public InitialVelocityVectorConfig(Vector2 velocity, bool doesDecelerate = true) 
+            public bool CanEnterHedge; 
+            public InitialVelocityVectorConfig(Vector2 velocity, bool doesDecelerate = true, bool canEnterHedge = false) 
             { 
                 Velocity = velocity; 
                 DoesDecelerate = doesDecelerate; 
+                CanEnterHedge = canEnterHedge;
             }
         }
 
@@ -27,9 +29,9 @@ namespace BushyCore
         {
             return new InitialVerticalVelocityConfig(velocity);
         }
-        public static InitialVelocityVectorConfig InitialVelocityVector(Vector2 velocity, bool doesDecelerate = true)
+        public static InitialVelocityVectorConfig InitialVelocityVector(Vector2 velocity, bool doesDecelerate = true, bool canEnterHedge = false)
         {
-            return new InitialVelocityVectorConfig(velocity, doesDecelerate);
+            return new InitialVelocityVectorConfig(velocity, doesDecelerate, canEnterHedge);
         }
 
         public struct StartJumpConfig : IBaseStateConfig { }

@@ -1,6 +1,7 @@
 using Godot;
 using GodotUtilities;
 using System;
+using System.Diagnostics;
 
 namespace BushyCore
 {	
@@ -9,20 +10,13 @@ namespace BushyCore
 	{
 		[Node]
 		private StaticBody2D StaticBody2D;
-		// Called when the node enters the scene tree for the first time.
-		public override void _Ready()
-		{
-		}
+		[Node]
+		private Area2D HedgeArea2D;
 
-		// Called every frame. 'delta' is the elapsed time since the previous frame.
-		public override void _Process(double delta)
-		{
-		}
 
 		public void ToggleHedgeCollision(bool isOn)
 		{
 			StaticBody2D.SetCollisionLayerValue(3, isOn);
-			// StaticBody2D.CallDeferred(StaticBody2D.MethodName.SetCollisionLayerValue, 3, isOn);
 		}
 
 		public override void _Notification(int what)

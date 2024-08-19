@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Godot;
 using GodotUtilities;
 
@@ -7,6 +8,8 @@ namespace BushyCore
 	[Scene]
 	public partial class AreaDetectionComponent : Area2D
 	{
+		[Signal]
+		public delegate void OnHedgeEnterEventHandler(HedgeNode hedgeNode);
 		[Signal]
 		public delegate void OnHedgeExitEventHandler(HedgeNode hedgeNode);
 	
@@ -22,7 +25,7 @@ namespace BushyCore
             }
         }
 
-		public void OnAreaExited(Area2D area2D)
+        public void OnAreaExited(Area2D area2D)
 		{
 			if (area2D.GetParent() is HedgeNode hedgeNode)
 			{
@@ -30,11 +33,11 @@ namespace BushyCore
 			}
 		}
 
-		public void _on_area_entered(Area2D area2D)
+		public void OnAreaEntered(Area2D area2D)
 		{
 			if (area2D.GetParent() is HedgeNode hedgeNode)
 			{
-				// This was for debugging
+				EmitSignal(SignalName.OnHedgeEnter, hedgeNode);
 			}
 		}
 	}

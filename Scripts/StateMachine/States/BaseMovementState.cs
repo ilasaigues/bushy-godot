@@ -10,6 +10,7 @@ namespace BushyCore
         protected int HorizontalMovementSpeed;
         protected float HorizontalOvercappedDeceleration;
         protected bool HasOvershootDeceleration;
+        
         public override void StateUpdateInternal(double delta)
         {
             base.StateUpdateInternal(delta);
