@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Diagnostics;
 
 public class InputAction
 {
@@ -27,7 +28,6 @@ public class InputAction
                 _timeLastPressed = Time.GetTicksMsec();
                 OnInputJustPressed();
             }
-            WhileInputPressed();
         }
         if (inputEvent.IsActionReleased(ActionID))
         {
@@ -44,4 +44,30 @@ public class InputAction
             WhileInputPressed();
         }
     }
+}
+
+public class InputAxis
+{
+    private InputAction _positiveAction;
+    private InputAction _negativeAction;
+
+    public float Value => (_positiveAction.Pressed ? 1 : 0) - (_negativeAction.Pressed ? 1 : 0);
+
+    public Action<float> OnAxisUpdated = _ => { };
+
+    public InputAxis(InputAction positive, InputAction negative)
+    {
+        _positiveAction = positive;
+        _negativeAction = negative;
+        _positiveAction.OnInputJustPressed += OnActionsUpdated;
+        _positiveAction.OnInputReleased += OnActionsUpdated;
+        _negativeAction.OnInputJustPressed += OnActionsUpdated;
+        _negativeAction.OnInputReleased += OnActionsUpdated;
+    }
+
+    private void OnActionsUpdated()
+    {
+        OnAxisUpdated(Value);
+    }
+
 }

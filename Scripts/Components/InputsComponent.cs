@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace BushyCore
 {
@@ -20,10 +21,22 @@ namespace BushyCore
 		public bool IsJumpRequested => (Time.GetTicksMsec() - JumpInputTime) <= JumpBufferTime;
 		public bool IsDashRequested => (Time.GetTicksMsec() - DashnputTime) <= DashBufferTime;
 
+		public override void _Ready()
+		{
+			InputManager.Instance.HorizontalAxis.OnAxisUpdated += OnHorizontalAxisChanged;
+			InputManager.Instance.VerticalAxis.OnAxisUpdated += OnVerticalAxisChanged;
+		}
+
+		public override void _ExitTree()
+		{
+			base._ExitTree();
+			InputManager.Instance.HorizontalAxis.OnAxisUpdated -= OnHorizontalAxisChanged;
+			InputManager.Instance.VerticalAxis.OnAxisUpdated -= OnVerticalAxisChanged;
+		}
+
 		// VERY IMPORTANT: the order in which these checks are done, impact the order of which action signals are fired
 		public override void _Process(double delta)
 		{
-			this.DirectionCheck();
 			this.DashCheck();
 			this.JumpCheck();
 		}
@@ -34,21 +47,15 @@ namespace BushyCore
 				actionsComponent.IsJumpCancelled = true;
 			}
 		}
-		private void DirectionCheck()
-		{
-			bool anyDirJustChanged = Input.IsActionJustPressed("ui_left") ||
-				Input.IsActionJustPressed("ui_right") ||
-				Input.IsActionJustPressed("ui_up") ||
-				Input.IsActionJustPressed("ui_down") ||
-				Input.IsActionJustReleased("ui_left") ||
-				Input.IsActionJustReleased("ui_right") ||
-				Input.IsActionJustReleased("ui_up") ||
-				Input.IsActionJustReleased("ui_down");
 
-			if (anyDirJustChanged)
-			{
-				actionsComponent.MovementDirection = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-			}
+		private void OnHorizontalAxisChanged(float value)
+		{
+			actionsComponent.MovementDirection = new Vector2(value, actionsComponent.MovementDirection.Y);
+		}
+
+		private void OnVerticalAxisChanged(float value)
+		{
+			actionsComponent.MovementDirection = new Vector2(actionsComponent.MovementDirection.X, value);
 		}
 
 		private void JumpCheck()

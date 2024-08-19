@@ -7,15 +7,29 @@ public partial class InputManager : Node
     public static InputManager Instance { get; private set; }
     public InputAction JumpAction { get; private set; } = new("ui_accept");
     public InputAction LeftAction { get; private set; } = new("ui_left");
+    public InputAction RightAction { get; private set; } = new("ui_right");
+    public InputAction UpAction { get; private set; } = new("ui_up");
+    public InputAction DownAction { get; private set; } = new("ui_down");
+    public InputAction DashAction { get; private set; } = new("left_shift");
+    public InputAxis HorizontalAxis { get; private set; }
+    public InputAxis VerticalAxis { get; private set; }
 
     private List<InputAction> _inputActions = new();
 
     public override void _Ready()
     {
         Instance ??= this;
+
+        HorizontalAxis = new InputAxis(RightAction, LeftAction);
+        VerticalAxis = new InputAxis(DownAction, UpAction);
+
         _inputActions = new List<InputAction> {
             JumpAction,
             LeftAction,
+            RightAction,
+            UpAction,
+            DownAction,
+            DashAction
          };
     }
 
