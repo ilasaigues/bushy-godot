@@ -163,7 +163,6 @@ public partial class MovementComponent : Node2D
 
 			if (collider is HedgeStaticBody2D)
 			{	
-				Debug.WriteLine($"RAY hit {rayCast2D.Position}");
 				_raysOnHedge++;
 			}
 		}
@@ -178,7 +177,6 @@ public partial class MovementComponent : Node2D
 		{
 			if (collider is HedgeStaticBody2D)
 			{	
-				Debug.WriteLine($"RAY hit {rayCast2D.Position}");
 				_raysOnHedge++;
 			}
 		}

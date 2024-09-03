@@ -39,7 +39,6 @@ namespace BushyCore
         }
         public void UnSubscribeMovementComponent(MovementComponent mc)
         {
-            Debug.WriteLine("Unsubscribed MC");
             mc.Velocities[MovementComponent.VelocityType.InheritedVelocity] = Vector2.Zero;
             componentsInHedge.Remove(mc);
         }
@@ -53,7 +52,6 @@ namespace BushyCore
             var velocity = direction.Normalized() * (float) Velocity *  Transform.Scale;
             
             componentsInHedge.ForEach((mc) => {
-                Debug.WriteLine($"Updating inherited velocity to {velocity}");
                 mc.Velocities[MovementComponent.VelocityType.InheritedVelocity] = velocity;
             });
             oldPos = PathFollow2D.Position;
