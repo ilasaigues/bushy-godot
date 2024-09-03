@@ -180,8 +180,8 @@ action_mode = 0
 text = "Death
 "
 
-[node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("cam", "target")]
-position = Vector2(178, 250)
+[node name="w" type="Camera2D" parent="." node_paths=PackedStringArray("cam", "target")]
+position = Vector2(-807, 59)
 offset = Vector2(0, -32)
 position_smoothing_enabled = true
 position_smoothing_speed = 3.0
@@ -195,7 +195,7 @@ position = Vector2(-2076, -1983)
 
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
-position = Vector2(176, 239)
+position = Vector2(-816, 58)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)
@@ -228,7 +228,7 @@ texture_filter = 1
 position = Vector2(1633, 154)
 
 [node name="HedgeNode" parent="." instance=ExtResource("10_qw50u")]
-position = Vector2(132, 221)
+position = Vector2(-942, 47)
 scale = Vector2(10, 10)
 curve = SubResource("Curve2D_eu7ss")
 Velocity = 10.0
