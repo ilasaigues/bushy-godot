@@ -48,6 +48,7 @@ namespace BushyCore
 				.Direction(() => { return ac.MovementDirection.Y; })
 				.ThresSpeed(characterVariables.MaxHedgeEnterSpeed)
 				.Build();
+			
         }
 
 		private void RemoveControls() 
@@ -86,6 +87,8 @@ namespace BushyCore
 
 			base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 			SetupFromConfigs(configs);
+
+			hedgeNode.SubscribeMovementComponent(movementComponent);
 		}
 
 		private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
@@ -104,7 +107,7 @@ namespace BushyCore
 		{
 			collisionComponent.ToggleHedgeCollision(true);
 			actionsComponent.CanDash = true;
-			
+			hedgeNode.UnSubscribeMovementComponent(movementComponent);
 			base.StateExit();
 		}
 
@@ -136,7 +139,6 @@ namespace BushyCore
 			
 			RunAndEndState(() => {
 				collisionComponent.ToggleHedgeCollision(true);
-				// TODO: Check if this fucks up when walking through a hedge at floor level
 				actionsComponent.Fall();
 			});
 		}

@@ -19,8 +19,6 @@ namespace BushyCore
     	private Timer DurationTimer;
 		[Node]
 		private RayCast2D SlopeRaycast2D;
-		[Node]
-		private HedgeStateCheck HedgeStateCheck;
 
 		private int state;
 		public override void _Notification(int what)
@@ -50,9 +48,7 @@ namespace BushyCore
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
 			movementComponent.CourseCorrectionEnabled = true;
-			Debug.WriteLine("Dash state");
-			HedgeStateCheck.CheckerInit(movementComponent);
-			HedgeStateCheck.CheckerReset(direction * Vector2.Right);
+			
 			collisionComponent.ToggleHedgeCollision(false);
 
 			if (movementComponent.IsOnFloor)
@@ -138,8 +134,6 @@ namespace BushyCore
 					case 0:
 						DurationTimer.Stop();
 						movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);
-
-						Debug.WriteLine("Jump request during dash init");
 						RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed, false, true));
 						break;
 					case 2:

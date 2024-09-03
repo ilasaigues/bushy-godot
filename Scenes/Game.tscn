@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=20 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Texture2D" uid="uid://b1uq3n6md5wce" path="res://Assets/Background/forest_background_1.png" id="1_02yv3"]
 [ext_resource type="Script" path="res://bgm_test.gd" id="1_jka76"]
@@ -80,6 +80,13 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nsg2r"]
+
+[sub_resource type="Curve2D" id="Curve2D_eu7ss"]
+bake_interval = 1.0
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -7, 0, 0, 0, 0, 21, -7, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
 
 [node name="Game" type="Node2D"]
 position = Vector2(185, 24)
@@ -188,7 +195,7 @@ position = Vector2(-2076, -1983)
 
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
-position = Vector2(178, 248)
+position = Vector2(176, 239)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)
@@ -221,7 +228,10 @@ texture_filter = 1
 position = Vector2(1633, 154)
 
 [node name="HedgeNode" parent="." instance=ExtResource("10_qw50u")]
-position = Vector2(112, 223)
+position = Vector2(132, 221)
+scale = Vector2(10, 10)
+curve = SubResource("Curve2D_eu7ss")
+Velocity = 10.0
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Finisher" to="Audio Manager" method="_on_finisher_button_down"]

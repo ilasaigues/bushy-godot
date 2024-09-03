@@ -305,11 +305,8 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.05, 1.05)
+scale = Vector2(1.1, 1.1)
 
 [connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeEnter"]
-[connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="StateMachine/JumpState" method="OnHedgeEnter"]
-[connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="StateMachine/AirState" method="OnHedgeEnter"]
-[connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="StateMachine/DashState" method="OnHedgeEnter"]
 [connection signal="OnHedgeExit" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeExit"]
 [connection signal="OnHedgeExit" from="AreaDetectionComponent" to="StateMachine/HedgeState" method="OnHedgeExit"]
