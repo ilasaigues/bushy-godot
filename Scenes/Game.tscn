@@ -119,7 +119,7 @@ position = Vector2(199, 33)
 
 [node name="ForestBackground0" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer3"]
 texture_filter = 1
-position = Vector2(-476, -392)
+position = Vector2(-475, -392)
 texture = ExtResource("3_ukntx")
 
 [node name="Audio Manager" type="Node" parent="."]
@@ -231,7 +231,7 @@ position = Vector2(1633, 154)
 position = Vector2(-942, 47)
 scale = Vector2(10, 10)
 curve = SubResource("Curve2D_eu7ss")
-Velocity = 10.0
+Velocity = 5.0
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Finisher" to="Audio Manager" method="_on_finisher_button_down"]

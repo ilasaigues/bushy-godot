@@ -159,6 +159,9 @@ namespace BushyCore
             if (canFallIntoHedge && movementComponent.IsInHedge) 
                 actionsComponent.EnterHedge(movementComponent.HedgeEntered, (float) xAxisMovement.Velocity * Vector2.Right); 
 
+            if (verticalVelocity < 0f && movementComponent.IsOnCeiling)
+                verticalVelocity = 0;
+
             if (!movementComponent.IsOnFloor) return;
         
             if (verticalVelocity > 0) 
