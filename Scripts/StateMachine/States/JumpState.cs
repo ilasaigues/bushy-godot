@@ -66,7 +66,9 @@ namespace BushyCore
 			actionsComponent.DashActionStart += DashActionRequested;
 			actionsComponent.JumpActionEnd += JumpActionEnded;
 
-            base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
+            base.collisionComponent.CallDeferred(
+                CharacterCollisionComponent.MethodName.SwitchShape, 
+                (int) CharacterCollisionComponent.ShapeMode.CILINDER);
 
             foreach (var config in configs)
             {
