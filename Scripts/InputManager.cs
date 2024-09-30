@@ -24,12 +24,12 @@ public partial class InputManager : Node
         VerticalAxis = new InputAxis(DownAction, UpAction);
 
         _inputActions = new List<InputAction> {
+            DashAction,
             JumpAction,
             LeftAction,
             RightAction,
             UpAction,
-            DownAction,
-            DashAction
+            DownAction
          };
     }
 

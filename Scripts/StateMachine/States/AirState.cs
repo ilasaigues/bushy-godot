@@ -17,9 +17,6 @@ namespace BushyCore
 
         [Node]
         private Timer JumpCoyoteTimer;
-
-		[Node]
-		private HedgeStateCheck HedgeStateCheck;
 	
 
         public override void _Notification(int what)
@@ -65,17 +62,12 @@ namespace BushyCore
                 CharacterCollisionComponent.MethodName.SwitchShape, 
                 (int) CharacterCollisionComponent.ShapeMode.CILINDER);
 
-
-			HedgeStateCheck.CheckerInit(movementComponent);
-			HedgeStateCheck.CheckerReset((float) xAxisMovement.Velocity * Vector2.Right);
-
             SetupFromConfigs(configs);
 			actionsComponent.DashActionStart += DashActionRequested;
 			actionsComponent.JumpActionEnd += JumpActionEnded;
 
             if (canFallIntoHedge)
             {
-                Debug.WriteLine($"Air in. Fall into hedge? {canFallIntoHedge}");
                 collisionComponent.ToggleHedgeCollision(false);
             }
         }
@@ -115,7 +107,6 @@ namespace BushyCore
 
         public override void StateUpdateInternal(double delta)
         {
-            // if (TryCoyoteJump()) return;
             HandleGravity(delta);
             base.StateUpdateInternal(delta);
 

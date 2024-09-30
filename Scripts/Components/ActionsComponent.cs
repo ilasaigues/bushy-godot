@@ -58,9 +58,18 @@ public partial class ActionsComponent : Node
 			
 			if (_IsDashRequested) 
 				EmitSignal(SignalName.DashActionStart);
-			else
-				EmitSignal(SignalName.DashActionEnd);
 		} 
+	}
+
+	private bool _IsDashCancelled;
+	public bool IsDashCancelled { 
+		get { return _IsDashCancelled; } 
+		set {
+			_IsDashCancelled = value;
+			
+			if (_IsDashCancelled) 
+				EmitSignal(SignalName.DashActionEnd);
+		}
 	}
 
 	private StateMachine stateMachine;

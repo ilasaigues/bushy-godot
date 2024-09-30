@@ -18,8 +18,14 @@ namespace BushyCore
 
 		[Node]
         private Timer EnteringTimer;
+		[Node]
+        private Timer JumpBufferTimer;
+		[Node]
+		private Timer DashBufferTimer;
 
 		private int hedgePhase;
+		private bool isExitJumpBuffer;
+		private bool isExitDashBuffer;
 		public override void _Notification(int what)
         {
             if (what == NotificationSceneInstantiated)
@@ -80,12 +86,59 @@ namespace BushyCore
 			yAxisMovement.SetInitVel(movementComponent.CurrentVelocity.Y);
 
             movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-			
+			actionsComponent.CanJump = true;
+
 			hedgePhase = 0;
 			this.RemoveControls();
 
 			base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 			SetupFromConfigs(configs);
+
+			hedgeNode.SubscribeMovementComponent(movementComponent);
+
+			actionsComponent.JumpActionStart += OnJumpActionRequested;
+			actionsComponent.JumpActionEnd += OnJumpActionCancelled;
+			isExitJumpBuffer = false;
+
+			actionsComponent.DashActionStart += OnDashActionRequested;
+			actionsComponent.DashActionEnd += OnDashActionCancelled;
+			isExitDashBuffer = false;
+		}
+
+		private void OnJumpActionRequested()
+		{
+			JumpBufferTimer.Start();
+			isExitJumpBuffer = true;
+		}
+
+		private void OnJumpActionCancelled()
+		{
+			JumpBufferTimer.Stop();
+			// Consider adding a buffer to this input cancel
+			isExitJumpBuffer = false;
+		}
+		private void OnJumpBufferTimerEnd()
+		{
+			if (IsActive)
+				isExitJumpBuffer = false;
+		}
+
+		private void OnDashActionRequested()
+		{
+			DashBufferTimer.Start();
+			isExitDashBuffer = true;
+		}
+
+		private void OnDashActionCancelled()
+		{
+			DashBufferTimer.Stop();
+			// Consider adding a buffer to this input cancel
+			isExitDashBuffer = false;
+		}
+		private void OnDashBufferTimerEnd()
+		{
+			if (IsActive)
+				isExitDashBuffer = false;
 		}
 
 		private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
@@ -104,8 +157,14 @@ namespace BushyCore
 		{
 			collisionComponent.ToggleHedgeCollision(true);
 			actionsComponent.CanDash = true;
-			
+			hedgeNode.UnSubscribeMovementComponent(movementComponent);
 			base.StateExit();
+
+			actionsComponent.JumpActionStart -= OnJumpActionRequested;
+			actionsComponent.JumpActionEnd -= OnJumpActionCancelled;
+
+			actionsComponent.DashActionStart -= OnDashActionRequested;
+			actionsComponent.DashActionEnd -= OnDashActionCancelled;
 		}
 
 		public override void StateUpdateInternal(double delta)
@@ -121,7 +180,6 @@ namespace BushyCore
         protected override void VelocityUpdate()
         {
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float) xAxisMovement.Velocity, (float)yAxisMovement.Velocity);
-			// Debug.WriteLine($"Hedge VEL: {movementComponent.Velocities[VelocityType.MainMovement]}");
 		}
 
         protected override void AnimationUpdate()
@@ -136,7 +194,24 @@ namespace BushyCore
 			
 			RunAndEndState(() => {
 				collisionComponent.ToggleHedgeCollision(true);
-				// TODO: Check if this fucks up when walking through a hedge at floor level
+
+				var direction = movementComponent.FacingDirection;
+				if (isExitDashBuffer && isExitJumpBuffer)
+				{
+					movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(this.characterVariables.DashJumpSpeed * Mathf.Sign(direction.X),0);
+					actionsComponent.CanDash = false;
+					actionsComponent.Jump(this.characterVariables.DashJumpSpeed, false, true);
+				}
+					
+				if (isExitDashBuffer)
+				{
+					actionsComponent.CanDash = false;
+					actionsComponent.Dash(direction);
+				}
+					
+				if (isExitJumpBuffer) 
+					actionsComponent.Jump();
+				
 				actionsComponent.Fall();
 			});
 		}

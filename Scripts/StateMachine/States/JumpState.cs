@@ -16,8 +16,6 @@ namespace BushyCore
         private bool CanJumpIntoHedge;
         [Node]
         private Timer DurationTimer;
-		[Node]
-		private HedgeStateCheck HedgeStateCheck;
         private HedgeNode hedgeNodeEntered;
 
         public override void _Notification(int what)
@@ -59,9 +57,6 @@ namespace BushyCore
 
             xAxisMovement.OvershootDec(true);
             xAxisMovement.SetInitVel(movementComponent.Velocities[VelocityType.MainMovement].X);
-
-			HedgeStateCheck.CheckerInit(movementComponent);
-			HedgeStateCheck.CheckerReset((float) xAxisMovement.Velocity * Vector2.Right);
             
             DurationTimer.WaitTime = characterVariables.JumpDuration;
             DurationTimer.Start();
@@ -71,7 +66,9 @@ namespace BushyCore
 			actionsComponent.DashActionStart += DashActionRequested;
 			actionsComponent.JumpActionEnd += JumpActionEnded;
 
-            base.collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
+            base.collisionComponent.CallDeferred(
+                CharacterCollisionComponent.MethodName.SwitchShape, 
+                (int) CharacterCollisionComponent.ShapeMode.CILINDER);
 
             foreach (var config in configs)
             {

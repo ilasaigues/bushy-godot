@@ -27,17 +27,17 @@ namespace BushyCore
 
         public void OnAreaExited(Area2D area2D)
 		{
-			if (area2D.GetParent() is HedgeNode hedgeNode)
+			if (area2D is HedgeArea2D hedgeArea2D)
 			{
-				EmitSignal(SignalName.OnHedgeExit, hedgeNode);
+				EmitSignal(SignalName.OnHedgeExit, hedgeArea2D.HedgeNode);
 			}
 		}
 
 		public void OnAreaEntered(Area2D area2D)
 		{
-			if (area2D.GetParent() is HedgeNode hedgeNode)
+			if (area2D is HedgeArea2D hedgeArea2D)
 			{
-				EmitSignal(SignalName.OnHedgeEnter, hedgeNode);
+				EmitSignal(SignalName.OnHedgeEnter, hedgeArea2D.HedgeNode);
 			}
 		}
 	}

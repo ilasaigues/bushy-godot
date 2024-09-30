@@ -15,16 +15,13 @@ namespace BushyCore
 		[Export]
 		private float DashBufferTime;
 
-		private double JumpInputTime;
-		private double DashnputTime;
-
-		public bool IsJumpRequested => (Time.GetTicksMsec() - JumpInputTime) <= JumpBufferTime;
-		public bool IsDashRequested => (Time.GetTicksMsec() - DashnputTime) <= DashBufferTime;
-
 		public override void _Ready()
 		{
 			InputManager.Instance.HorizontalAxis.OnAxisUpdated += OnHorizontalAxisChanged;
 			InputManager.Instance.VerticalAxis.OnAxisUpdated += OnVerticalAxisChanged;
+			InputManager.Instance.DashAction.OnInputJustPressed += OnDashRequested;
+			InputManager.Instance.JumpAction.OnInputJustPressed += OnJumpRequested;
+			InputManager.Instance.JumpAction.OnInputReleased += OnJumpReleased;
 		}
 
 		public override void _ExitTree()
@@ -32,6 +29,45 @@ namespace BushyCore
 			base._ExitTree();
 			InputManager.Instance.HorizontalAxis.OnAxisUpdated -= OnHorizontalAxisChanged;
 			InputManager.Instance.VerticalAxis.OnAxisUpdated -= OnVerticalAxisChanged;
+			InputManager.Instance.DashAction.OnInputJustPressed -= OnDashRequested;
+			InputManager.Instance.DashAction.OnInputReleased -= OnDashReleased;
+			InputManager.Instance.JumpAction.OnInputJustPressed -= OnJumpRequested;
+			InputManager.Instance.JumpAction.OnInputReleased -= OnJumpReleased;
+		}
+
+		private void OnDashRequested() 
+		{
+			actionsComponent.IsDashRequested = true;
+		}
+		private void OnDashReleased()
+		{
+			actionsComponent.IsDashCancelled = true;
+		}
+
+		private void DashCheck()
+		{
+			if (InputManager.Instance.DashAction.TimePressed > DashBufferTime)
+			{
+				actionsComponent.IsDashRequested = false;
+			}
+		}
+
+		private void OnJumpRequested()
+		{
+			actionsComponent.IsJumpRequested = true;
+			actionsComponent.IsJumpCancelled = false;
+		}
+		private void OnJumpReleased()
+		{
+			actionsComponent.IsJumpCancelled = true;
+			actionsComponent.IsJumpRequested = false;
+		}
+		private void JumpCheck()
+		{
+			if (InputManager.Instance.JumpAction.TimePressed > JumpBufferTime)
+			{
+				actionsComponent.IsJumpRequested = false;
+			}
 		}
 
 		// VERY IMPORTANT: the order in which these checks are done, impact the order of which action signals are fired
@@ -39,13 +75,6 @@ namespace BushyCore
 		{
 			this.DashCheck();
 			this.JumpCheck();
-		}
-		public override void _UnhandledInput(InputEvent @event)
-		{
-			if (@event.IsActionReleased("ui_accept"))
-			{
-				actionsComponent.IsJumpCancelled = true;
-			}
 		}
 
 		private void OnHorizontalAxisChanged(float value)
@@ -56,41 +85,6 @@ namespace BushyCore
 		private void OnVerticalAxisChanged(float value)
 		{
 			actionsComponent.MovementDirection = new Vector2(actionsComponent.MovementDirection.X, value);
-		}
-
-		private void JumpCheck()
-		{
-			if (Input.IsActionJustPressed("ui_accept"))
-			{
-				this.JumpInputTime = Time.GetTicksMsec();
-				actionsComponent.IsJumpRequested = true;
-				actionsComponent.IsJumpCancelled = false;
-			}
-
-			if (this.JumpInputTime > 0 && !IsJumpRequested)
-			{
-				actionsComponent.IsJumpRequested = false;
-				this.JumpInputTime = 0;
-			}
-		}
-		private void DashCheck()
-		{
-			if (Input.IsActionJustPressed("left_shift"))
-			{
-				this.DashnputTime = Time.GetTicksMsec();
-				actionsComponent.IsDashRequested = true;
-			}
-
-			if (this.DashnputTime > 0 && !IsDashRequested)
-			{
-				this.DashnputTime = 0;
-				actionsComponent.IsDashRequested = false;
-			}
-		}
-
-		private bool DashHeldCheck()
-		{
-			return Input.IsActionPressed("left_shift");
 		}
 	}
 

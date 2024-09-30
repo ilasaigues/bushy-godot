@@ -42,7 +42,6 @@ namespace BushyCore
 		
 		public HedgeNode CheckHedgeCollision()
 		{
-			// Debug.WriteLine($"HedgeRaycastBot.CollisionMask: {HedgeRaycastBot.CollisionMask}");
 			if (hedgeNode != null)
 				return hedgeNode;
 
@@ -57,10 +56,9 @@ namespace BushyCore
 			
 			if (hedgeCollider == null) 
 				return null;
-			Debug.WriteLine("Hedge checker has found collider!");
+
 			if (hedgeCollider is StaticBody2D sb && sb.GetParent() is HedgeNode hedgeCollision)
 			{
-			Debug.WriteLine("This shit is a hedge node!");
 				hedgeNode = hedgeCollision;
 				EmitSignal(SignalName.OnHedgeEnter, hedgeNode);
 				return hedgeNode;

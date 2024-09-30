@@ -36,7 +36,7 @@ public partial class MovementComponent : Node2D
 	}
 	public bool IsOnEdge { get { return _raysOnFloor == 1; } }
 	public HedgeNode HedgeEntered;
-	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge > 1; }}
+	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge > 2; }}
 
 	private int _raysOnFloor;
 	private int _raysOnHedge;
@@ -48,6 +48,10 @@ public partial class MovementComponent : Node2D
 	private RayCast2D GroundRayCastL;
 	[Node]
 	private RayCast2D GroundRayCastR;
+	[Node]
+	private RayCast2D CeilRayCastL;
+	[Node]
+	private RayCast2D CeilRayCastR;
 
 	[Node]
 	private RayCast2D CourseCorrectRayXu;
@@ -85,6 +89,8 @@ public partial class MovementComponent : Node2D
 
 		GroundRayCastL.Enabled = false;
 		GroundRayCastR.Enabled = false;
+		CeilRayCastL.Enabled = false;
+		CeilRayCastR.Enabled = false;
 		CourseCorrectRayXd.Enabled = false;
 		CourseCorrectRayXu.Enabled = false;
 		CourseCorrectRayYl.Enabled = false;
@@ -129,6 +135,9 @@ public partial class MovementComponent : Node2D
 		CheckRaycastFloor(GroundRayCastL);
 		CheckRaycastFloor(GroundRayCastR);
 
+		CheckRaycastHedge(CeilRayCastL);
+		CheckRaycastHedge(CeilRayCastR);
+
 		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f 
 			? FacingDirection 
 			: this.Velocities[VelocityType.MainMovement].X * Vector2.Right;
@@ -152,7 +161,21 @@ public partial class MovementComponent : Node2D
 			SnappedToFloor = true;
 			this._raysOnFloor++;
 
-			if (((Node2D) collider).GetParent() is HedgeNode)
+			if (collider is HedgeStaticBody2D)
+			{	
+				_raysOnHedge++;
+			}
+		}
+	}
+	private void CheckRaycastHedge(RayCast2D rayCast2D)
+	{
+		rayCast2D.ForceRaycastUpdate();
+
+		GodotObject collider = rayCast2D.GetCollider();
+
+		if (collider != null) 
+		{
+			if (collider is HedgeStaticBody2D)
 			{	
 				_raysOnHedge++;
 			}
@@ -162,7 +185,6 @@ public partial class MovementComponent : Node2D
 	{
 		characterBody2D.Velocity = CurrentVelocity;
 		ApplyCourseCorrection(characterBody2D);
-	
 		characterBody2D.MoveAndSlide();
 	}
 	public void SetParentController(PlayerController val) { this.parentController = val; }
@@ -223,6 +245,9 @@ public partial class MovementComponent : Node2D
 
 		GroundRayCastL.Position = new Vector2(-colliderSizeX/2, colliderSizeY/2);
 		GroundRayCastR.Position = new Vector2(colliderSizeX/2, colliderSizeY/2);
+		
+		CeilRayCastR.Position = new Vector2(colliderSizeX/2, -colliderSizeY/2);
+		CeilRayCastL.Position = new Vector2(-colliderSizeX/2, -colliderSizeY/2);
 
 		CourseCorrectRayXu.Position = new Vector2(colliderSizeX/2,0);
 		CourseCorrectRayXd.Position = new Vector2(colliderSizeX/2,0);
