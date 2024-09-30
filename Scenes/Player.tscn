@@ -298,14 +298,14 @@ libraries = {
 [node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
 script = ExtResource("9_03rmc")
 actionsComponent = NodePath("../ActionsComponent")
-JumpBufferTime = 80.0
+JumpBufferTime = 0.08
 
 [node name="LineTrail" parent="." instance=ExtResource("10_dffrb")]
 maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.1, 1.1)
+scale = Vector2(1.05, 1.05)
 
 [connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeEnter"]
 [connection signal="OnHedgeExit" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeExit"]

@@ -51,7 +51,7 @@ public partial class ActionsComponent : Node
 	}
 
 	private bool _IsDashRequested;
-	public bool IsDashRequested { 
+public bool IsDashRequested { 
 		get { return _IsDashRequested; } 
 		set {
 			_IsDashRequested = value;
