@@ -40,6 +40,7 @@ namespace BushyCore
 				.TurnDec(characterVariables.HorizontalTurnDeceleration)
 				.Movement(mc)
 				.Direction(() => { return ac.MovementDirection.X; })
+				.ColCheck((dir) => { return mc.IsOnWall; })
 				.Variables(cv)
 				.Build();
 		

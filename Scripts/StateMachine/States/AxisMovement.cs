@@ -15,6 +15,7 @@ namespace BushyCore
         private MovementComponent Movement;
         private CharacterVariables Variables;
         private Func<float> Direction; 
+        private Func<int, bool> CollisionCheck; 
         private int _axisDirection = 1; 
 
         public bool HasOvershootDeceleration { get; private set; }
@@ -29,7 +30,8 @@ namespace BushyCore
             int? _thresholdSpeed,
             MovementComponent _movement,
             Func<float> _direction,
-            CharacterVariables _variables)
+            CharacterVariables _variables,
+            Func<int, bool> _collisionCheck)
         {
             this.Acceleration = _acceleration;
             this.Deceleration = _deceleration;
@@ -42,6 +44,7 @@ namespace BushyCore
             this.Movement = _movement;
             this.Direction = _direction;
             this.Variables = _variables;
+            this.CollisionCheck = _collisionCheck;
 
             this.HasOvershootDeceleration = true;
         }
@@ -58,7 +61,8 @@ namespace BushyCore
 
 			if (currDirection != 0)
 			{
-                var targetVelocity = Movement.IsOnWall ? vars.MaxOnWallHorizontalMovementSpeed : MovementSpeed;
+                var isColliding = CollisionCheck.Invoke(_axisDirection);
+                var targetVelocity = isColliding ? vars.MaxOnWallHorizontalMovementSpeed : MovementSpeed;
 				//if the input direction is opposite of the current direction, we also add a deceleration
                 if (currDirection * Velocity < 0)
 				{
@@ -69,7 +73,7 @@ namespace BushyCore
                     Velocity += currDirection * Acceleration * deltaTime;
                     Velocity = Mathf.Clamp(Velocity, -targetVelocity, targetVelocity);
                 }
-                else if (HasOvershootDeceleration || Movement.IsOnWall)
+                else if (HasOvershootDeceleration || isColliding)
                 {   
                     Velocity += OvercappedDeceleration * deltaTime * (Velocity > 0 ? -1 : 1);
                     Velocity = Mathf.Max(targetVelocity, Mathf.Abs(Velocity)) * Mathf.Sign(_axisDirection);
@@ -114,7 +118,8 @@ namespace BushyCore
                 .Variables(this.Variables)
                 .Vel(this.Velocity)
                 .HasOvershoot(this.HasOvershootDeceleration)
-                .AxisDir(this._axisDirection);
+                .AxisDir(this._axisDirection)
+                .ColCheck(this.CollisionCheck);
         }
         public class Builder
         {
@@ -129,6 +134,7 @@ namespace BushyCore
             private MovementComponent _movement;
             private Func<float> _direction;
             private CharacterVariables _variables;
+            private Func<int,bool> _collisionCheck;
 
             // Optional state variables
             private int _axisDirection = 1; 
@@ -148,7 +154,7 @@ namespace BushyCore
             public Builder AxisDir(int axisDirection) { _axisDirection = axisDirection; return this; }
             public Builder HasOvershoot(bool hasOvershootVel) { _hasOvershootVel = hasOvershootVel; return this; }
             public Builder Vel(double velocity) { _velocity = velocity; return this; }
-
+            public Builder ColCheck(Func<int,bool> collisionCheck) { _collisionCheck = collisionCheck; return this; }
             public AxisMovement Build()
             { 
                 if (_acceleration == null) throw new System.Exception("No horizontal acceleration set");
@@ -158,6 +164,7 @@ namespace BushyCore
                 if (_movement == null) throw new System.Exception("No movement set");
                 if (_direction == null) throw new System.Exception("No actions set");
                 if (_variables == null) throw new System.Exception("No char variables set");
+                if (_collisionCheck == null) throw new System.Exception("No collision checker variables set");
                 
                 AxisMovement axisMovement = new AxisMovement(
                     _acceleration.Value,
@@ -168,7 +175,8 @@ namespace BushyCore
                     _thresholdSpeed,
                     _movement,
                     _direction,
-                    _variables
+                    _variables,
+                    _collisionCheck
                 );
 
                 axisMovement.SetInitVel(_velocity);
@@ -192,7 +200,8 @@ namespace BushyCore
                     .Variables(_variables)
                     .Vel(_velocity)
                     .HasOvershoot(_hasOvershootVel)
-                    .AxisDir(_axisDirection);
+                    .AxisDir(_axisDirection)
+                    .ColCheck(_collisionCheck);
             }
 
         }
