@@ -185,7 +185,12 @@ namespace BushyCore
 		{
 			var downwardVel = movementComponent.IsOnEdge ? 0 : 15;
 			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) xAxisMovement.Velocity;
-			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal *  (float) verticalVelocity * downwardVel;
+			GD.Print(slopeVerticalComponent);
+			if(slopeVerticalComponent != 0)
+			{
+				movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal *  (float) verticalVelocity * downwardVel;
+			}
+			else movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float) xAxisMovement.Velocity, slopeVerticalComponent);
 		}
 	}

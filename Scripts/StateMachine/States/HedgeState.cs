@@ -172,8 +172,9 @@ namespace BushyCore
 			direction = actionsComponent.MovementDirection;
             base.StateUpdateInternal(delta);
 
-			xAxisMovement.HandleMovement(delta);
 			yAxisMovement.HandleMovement(delta);
+			xAxisMovement.HandleMovement(delta);
+			
 			VelocityUpdate();
         }
 
