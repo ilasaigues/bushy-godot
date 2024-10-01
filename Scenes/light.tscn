@@ -67,5 +67,8 @@ libraries = {
 
 [node name="AnimationTree" type="AnimationTree" parent="AnimationPlayer"]
 root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_ovwyd")
+}
 tree_root = SubResource("AnimationNodeStateMachine_nadtl")
 anim_player = NodePath("..")

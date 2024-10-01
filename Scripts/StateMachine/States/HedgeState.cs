@@ -47,11 +47,13 @@ namespace BushyCore
 				.HasOvershoot(true)
 				.Movement(mc)
 				.Direction(() => { return ac.MovementDirection.X; })
+				.ColCheck((dir) => { return mc.IsOnWall; })
 				.Variables(cv);
 
 			xAxisMovement = builder.Build();
 			yAxisMovement = builder.Copy()
 				.Direction(() => { return ac.MovementDirection.Y; })
+				.ColCheck((dir) => { return dir > 0 ? mc.IsOnFloor : mc.IsOnCeiling; })
 				.ThresSpeed(characterVariables.MaxHedgeEnterSpeed)
 				.Build();
         }
@@ -111,36 +113,6 @@ namespace BushyCore
 			isExitJumpBuffer = true;
 		}
 
-		private void OnJumpActionCancelled()
-		{
-			JumpBufferTimer.Stop();
-			// Consider adding a buffer to this input cancel
-			isExitJumpBuffer = false;
-		}
-		private void OnJumpBufferTimerEnd()
-		{
-			if (IsActive)
-				isExitJumpBuffer = false;
-		}
-
-		private void OnDashActionRequested()
-		{
-			DashBufferTimer.Start();
-			isExitDashBuffer = true;
-		}
-
-		private void OnDashActionCancelled()
-		{
-			DashBufferTimer.Stop();
-			// Consider adding a buffer to this input cancel
-			isExitDashBuffer = false;
-		}
-		private void OnDashBufferTimerEnd()
-		{
-			if (IsActive)
-				isExitDashBuffer = false;
-		}
-
 		private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
 		{
 			foreach (var config in configs)
@@ -180,6 +152,7 @@ namespace BushyCore
 
         protected override void VelocityUpdate()
         {
+			Debug.WriteLine($"hedge velocities: {xAxisMovement.Velocity} - {yAxisMovement.Velocity}");
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float) xAxisMovement.Velocity, (float)yAxisMovement.Velocity);
 		}
 
@@ -224,6 +197,37 @@ namespace BushyCore
 			this.hedgePhase = 1;
 			this.ReturnControls();
 		}
+
+		private void OnJumpActionCancelled()
+		{
+			JumpBufferTimer.Stop();
+			// Consider adding a buffer to this input cancel
+			isExitJumpBuffer = false;
+		}
+		private void OnJumpBufferTimerEnd()
+		{
+			if (IsActive)
+				isExitJumpBuffer = false;
+		}
+
+		private void OnDashActionRequested()
+		{
+			DashBufferTimer.Start();
+			isExitDashBuffer = true;
+		}
+
+		private void OnDashActionCancelled()
+		{
+			DashBufferTimer.Stop();
+			// Consider adding a buffer to this input cancel
+			isExitDashBuffer = false;
+		}
+		private void OnDashBufferTimerEnd()
+		{
+			if (IsActive)
+				isExitDashBuffer = false;
+		}
+
     }
 }
 

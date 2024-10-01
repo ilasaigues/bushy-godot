@@ -34,6 +34,7 @@ namespace BushyCore
 				.TurnDec(characterVariables.HorizontalTurnDeceleration)
 				.Movement(mc)
 				.Direction(() => { return ac.MovementDirection.X; })
+				.ColCheck((dir) => { return mc.IsOnWall; })
 				.Variables(cv)
 				.Build();
 			
@@ -185,12 +186,9 @@ namespace BushyCore
 		{
 			var downwardVel = movementComponent.IsOnEdge ? 0 : 15;
 			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) xAxisMovement.Velocity;
-			GD.Print(slopeVerticalComponent);
-			if(slopeVerticalComponent != 0)
-			{
-				movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal *  (float) verticalVelocity * downwardVel;
-			}
-			else movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
+			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorAngle != 0 ? 
+				movementComponent.FloorNormal *  (float) verticalVelocity * downwardVel
+				: Vector2.Zero;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float) xAxisMovement.Velocity, slopeVerticalComponent);
 		}
 	}
