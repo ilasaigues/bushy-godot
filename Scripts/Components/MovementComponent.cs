@@ -186,6 +186,9 @@ public partial class MovementComponent : Node2D
 		characterBody2D.Velocity = CurrentVelocity;
 		ApplyCourseCorrection(characterBody2D);
 		characterBody2D.MoveAndSlide();
+		float y = (IsOnFloor || IsOnCeiling) && FloorNormal.X == 0 ? parentController.GlobalPosition.Round().Y : parentController.GlobalPosition.Y;
+		float x = IsOnWall ? parentController.GlobalPosition.Round().X : parentController.GlobalPosition.X;
+		parentController.GlobalPosition = new Vector2(x,y);
 	}
 	public void SetParentController(PlayerController val) { this.parentController = val; }
 

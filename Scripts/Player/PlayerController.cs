@@ -30,7 +30,6 @@ namespace BushyCore {
 		{
 			MovementComponent.UpdateState(this);
 			MovementComponent.Move(this);
-			GD.Print(GlobalPosition.Y);
 		}
 	}
 
