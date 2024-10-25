@@ -34,5 +34,3 @@ void fragment() {
 	vec3 result = replace(screen).rgb;
 	COLOR = vec4(result, sprite.a);
 }
-
-
