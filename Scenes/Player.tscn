@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=35 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
 [ext_resource type="PackedScene" uid="uid://ikw2snd4s3rd" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
 [ext_resource type="PackedScene" uid="uid://pwejeh2nevkj" path="res://Scenes/States/HedgeState.tscn" id="12_sohlx"]
+[ext_resource type="PackedScene" uid="uid://bhv5xfj6xpkug" path="res://Scenes/States/BattleState.tscn" id="14_a32x2"]
 [ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_raavv"]
@@ -288,6 +289,8 @@ position = Vector2(-1, 0)
 
 [node name="HedgeState" parent="StateMachine" instance=ExtResource("12_sohlx")]
 
+[node name="BattleState" parent="StateMachine" instance=ExtResource("14_a32x2")]
+
 [node name="ActionsComponent" parent="." instance=ExtResource("7_2bflq")]
 
 [node name="AnimationComponent" type="AnimationPlayer" parent="."]
@@ -306,7 +309,7 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.0125, 1.0125)
+scale = Vector2(1.0875, 1.0875)
 
 [connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeEnter"]
 [connection signal="OnHedgeExit" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeExit"]
