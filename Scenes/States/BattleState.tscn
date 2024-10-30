@@ -1,6 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://bhv5xfj6xpkug"]
+[gd_scene load_steps=6 format=3 uid="uid://bhv5xfj6xpkug"]
 
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/BattleState.cs" id="1_xcdp0"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/CombatStateMachine.cs" id="2_70a26"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/BasicAttackStep.cs" id="3_5147q"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/ComboAttackStep.cs" id="4_iiwny"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/EndComboAttackStep.cs" id="5_ul7gd"]
 
 [node name="BattleState" type="Node2D"]
 script = ExtResource("1_xcdp0")
+
+[node name="CombatStateMachine" type="Node2D" parent="."]
+script = ExtResource("2_70a26")
+
+[node name="BasicAttack" type="Node2D" parent="CombatStateMachine"]
+script = ExtResource("3_5147q")
+
+[node name="ComboAttack" type="Node2D" parent="CombatStateMachine"]
+script = ExtResource("4_iiwny")
+
+[node name="EndComboAttack" type="Node2D" parent="CombatStateMachine"]
+script = ExtResource("5_ul7gd")

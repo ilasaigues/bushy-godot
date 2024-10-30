@@ -22,12 +22,12 @@ namespace BushyCore
 
 			currentAttack = attackSteps.Values.First();
 		}
-        void CombatUpdate() 
+        public void CombatUpdate(double delta) 
         {
-
+            currentAttack.CombatUpdate(delta);
         }
 
-        void ChangeAttackStep<T>() where T: AttackStep 
+        public void ChangeAttackStep<T>() where T: AttackStep 
         {
 
         }

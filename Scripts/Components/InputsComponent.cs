@@ -14,6 +14,8 @@ namespace BushyCore
 		private float JumpBufferTime;
 		[Export]
 		private float DashBufferTime;
+		[Export]
+		private float AttackBufferTime;
 
 		public override void _Ready()
 		{
@@ -22,6 +24,7 @@ namespace BushyCore
 			InputManager.Instance.DashAction.OnInputJustPressed += OnDashRequested;
 			InputManager.Instance.JumpAction.OnInputJustPressed += OnJumpRequested;
 			InputManager.Instance.JumpAction.OnInputReleased += OnJumpReleased;
+			InputManager.Instance.AttackAction.OnInputJustPressed += OnAttackRequested;
 		}
 
 		public override void _ExitTree()
@@ -33,6 +36,7 @@ namespace BushyCore
 			InputManager.Instance.DashAction.OnInputReleased -= OnDashReleased;
 			InputManager.Instance.JumpAction.OnInputJustPressed -= OnJumpRequested;
 			InputManager.Instance.JumpAction.OnInputReleased -= OnJumpReleased;
+			InputManager.Instance.AttackAction.OnInputJustPressed += OnAttackRequested;
 		}
 
 		private void OnDashRequested() 
@@ -42,6 +46,17 @@ namespace BushyCore
 		private void OnDashReleased()
 		{
 			actionsComponent.IsDashCancelled = true;
+		}
+		private void OnAttackRequested()
+		{
+			actionsComponent.IsAttackRequested = true;
+		}
+		private void AttackCheck()
+		{
+			if (InputManager.Instance.AttackAction.TimePressed > AttackBufferTime)
+			{
+				actionsComponent.IsAttackRequested = false;
+			}
 		}
 
 		private void DashCheck()

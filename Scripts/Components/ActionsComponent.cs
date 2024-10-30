@@ -22,6 +22,9 @@ public partial class ActionsComponent : Node
 	public delegate void DashActionEndEventHandler();
 	[Signal]
 	public delegate void MovementDirectionChangeEventHandler(Vector2 vector2);
+	[Signal]
+	public delegate void AttackActionStartEventHandler();
+
 	private Vector2 _MovementDirection;
 	public Vector2 MovementDirection { 
 		get { return _MovementDirection; }
@@ -71,7 +74,17 @@ public partial class ActionsComponent : Node
 				EmitSignal(SignalName.DashActionEnd);
 		}
 	}
+	private bool _IsAttackRequested;
+	public bool IsAttackRequested {
+		get { return _IsAttackRequested; } 
+		set {
+			_IsAttackRequested = value;
+			
+			if (_IsAttackRequested) 
+				EmitSignal(SignalName.AttackActionStart);
+		} 
 
+	}
 	private StateMachine stateMachine;
 
 	public void SetStateMachine(StateMachine sm) 
@@ -117,5 +130,10 @@ public partial class ActionsComponent : Node
 	public void EnterHedge(params StateConfig.IBaseStateConfig[] configs)
 	{
 		this.stateMachine.ChangeState<HedgeState>(configs);
+	}
+
+	public void MainAttack(params StateConfig.IBaseStateConfig[] configs)
+	{
+		this.stateMachine.ChangeState<BattleState>(configs);
 	}
 }

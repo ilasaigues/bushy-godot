@@ -11,6 +11,7 @@ public partial class InputManager : Node
     public InputAction UpAction { get; private set; } = new("ui_up");
     public InputAction DownAction { get; private set; } = new("ui_down");
     public InputAction DashAction { get; private set; } = new("left_shift");
+    public InputAction AttackAction { get; private set; } = new("game_attack");
     public InputAxis HorizontalAxis { get; private set; }
     public InputAxis VerticalAxis { get; private set; }
 
@@ -29,7 +30,8 @@ public partial class InputManager : Node
             LeftAction,
             RightAction,
             UpAction,
-            DownAction
+            DownAction,
+            AttackAction
          };
     }
 

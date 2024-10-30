@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=38 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://pwejeh2nevkj" path="res://Scenes/States/HedgeState.tscn" id="12_sohlx"]
 [ext_resource type="PackedScene" uid="uid://bhv5xfj6xpkug" path="res://Scenes/States/BattleState.tscn" id="14_a32x2"]
 [ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
+[ext_resource type="Script" path="res://Scripts/Components/AnimationComponent.cs" id="16_w750l"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_raavv"]
 size = Vector2(8, 13)
@@ -223,9 +224,59 @@ tracks/0/keys = {
 "values": [9]
 }
 
+[sub_resource type="Animation" id="Animation_a51xw"]
+length = 1.42
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.23333, 1.33333),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimationComponent")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.2, 0.533333),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [1],
+"method": &"ChangeAnimationStep"
+}, {
+"args": [2],
+"method": &"ChangeAnimationStep"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_iwg24"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [17]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_uncl2"]
 _data = {
+"RESET": SubResource("Animation_iwg24"),
 "ascent": SubResource("Animation_32tpq"),
+"basic_attack": SubResource("Animation_a51xw"),
 "dash_end": SubResource("Animation_dq7ya"),
 "dash_start": SubResource("Animation_0av21"),
 "fall": SubResource("Animation_digef"),
@@ -264,7 +315,7 @@ texture = ExtResource("2_c3m6v")
 offset = Vector2(-2, 0)
 hframes = 9
 vframes = 8
-frame = 13
+frame = 17
 script = ExtResource("3_2v3uq")
 movementComponent = NodePath("../MovementComponent")
 
@@ -297,6 +348,7 @@ position = Vector2(-1, 0)
 libraries = {
 "": SubResource("AnimationLibrary_uncl2")
 }
+script = ExtResource("16_w750l")
 
 [node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
 script = ExtResource("9_03rmc")

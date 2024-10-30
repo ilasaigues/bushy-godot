@@ -15,7 +15,7 @@ namespace BushyCore
 		[Export]
 		private ActionsComponent actionsComponent;
 		[Export]
-		private AnimationPlayer animationComponent;
+		private AnimationComponent animationComponent;
 		[Export]
 		private CharacterCollisionComponent collisionComponent;
 

@@ -10,16 +10,36 @@ namespace BushyCore
     {
         [Node]
         CombatStateMachine CombatStateMachine;
-        protected override void AnimationUpdate()
+        private int comboCounter;
+        public void OnBattleAnimationChange(string animationKey)
         {
-            throw new System.NotImplementedException();
+            animationComponent.Play(animationKey);
         }
 
-        protected override void VelocityUpdate()
+        public void OnBattleEnd()
         {
-            throw new System.NotImplementedException();
+            RunAndEndState(() => {
+                if (movementComponent.IsOnFloor)
+                {
+                    actionsComponent.Land();
+                }
+                actionsComponent.Fall();
+            });
         }
 
+        protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
+        {
+            base.StateEnterInternal(configs);
+            CombatStateMachine.ChangeAttackStep<BasicAttackStep>();
+        }
+        public override void StateUpdateInternal(double delta)
+        {
+            CombatStateMachine.CombatUpdate(delta);
+        }
+
+        protected override void AnimationUpdate() {}
+
+        protected override void VelocityUpdate() {}
         public override void _Notification(int what)
         {
             if (what == NotificationSceneInstantiated)
