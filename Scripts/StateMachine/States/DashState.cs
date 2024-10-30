@@ -50,9 +50,7 @@ namespace BushyCore
 			movementComponent.CourseCorrectionEnabled = true;
 			
 			collisionComponent.ToggleHedgeCollision(false);
-
-			if (movementComponent.IsOnFloor)
-				collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
+				
 		}
 
 
@@ -154,6 +152,7 @@ namespace BushyCore
 					DurationTimer.WaitTime = characterVariables.DashTime;
 					constantVelocity.X = characterVariables.DashVelocity;
 					animationComponent.Play("dash_end");
+					collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
 					DurationTimer.Start();
 					break;
 				case 1:

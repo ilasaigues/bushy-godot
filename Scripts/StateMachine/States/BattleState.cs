@@ -11,6 +11,18 @@ namespace BushyCore
         [Node]
         CombatStateMachine CombatStateMachine;
         private int comboCounter;
+
+        protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
+        {
+            base.StateEnterInternal(configs);
+            CombatStateMachine.ChangeAttackStep<BasicAttackStep>();
+        }
+        public override void StateUpdateInternal(double delta)
+        {
+            CombatStateMachine.CombatUpdate(delta);
+            // Movement component changes
+        } 
+
         public void OnBattleAnimationChange(string animationKey)
         {
             animationComponent.Play(animationKey);
@@ -25,16 +37,6 @@ namespace BushyCore
                 }
                 actionsComponent.Fall();
             });
-        }
-
-        protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
-        {
-            base.StateEnterInternal(configs);
-            CombatStateMachine.ChangeAttackStep<BasicAttackStep>();
-        }
-        public override void StateUpdateInternal(double delta)
-        {
-            CombatStateMachine.CombatUpdate(delta);
         }
 
         protected override void AnimationUpdate() {}

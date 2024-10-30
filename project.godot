@@ -37,6 +37,7 @@ config/icon="res://icon.svg"
 
 FmodManager="*res://addons/fmod/FmodManager.gd"
 InputManager="*res://Scripts/InputManager.cs"
+PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
 
 [display]
 
@@ -53,7 +54,7 @@ project/assembly_name="Bushy-godot"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/fmod/plugin.cfg")
+enabled=PackedStringArray("res://addons/fmod/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
 
 [input]
 
@@ -81,6 +82,11 @@ game_attack={
 2d_physics/layer_1="Player"
 2d_physics/layer_2="Tilemap"
 2d_physics/layer_3="Hedge"
+
+[physics]
+
+common/physics_jitter_fix=0.0
+common/physics_interpolation=true
 
 [rendering]
 
