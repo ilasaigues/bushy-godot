@@ -12,11 +12,42 @@ namespace BushyCore
         CombatStateMachine CombatStateMachine;
         private int comboCounter;
 
+
+		public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
+		{
+			base.InitState(mc, cv, ac, anim, col);
+
+            // Subscribe the SM Battle state to the Combate SM signlas for exiting/updating animations
+            CombatStateMachine.CombateAnimationUpdate += OnBattleAnimationChange;
+            CombatStateMachine.CombatEnd += OnBattleEnd;
+		}
+
         protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
         {
             base.StateEnterInternal(configs);
+            comboCounter = 0;
+
+            // Subscribe Combat State machine to action requests
+            actionsComponent.AttackActionStart += CombatStateMachine.BasicAttackRequested;
+
+            // Subscribe Combat State machine to the animation component events
+            animationComponent.AnimationStepChange += CombatStateMachine.OnAnimationStepChange;
+            animationComponent.AnimationFinished += CombatStateMachine.OnAnimationStepFinished;
+
+            // We should really use this to have more dynamic movement in attacks. Momentum and such
+            movementComponent.Velocities[VelocityType.MainMovement] = Vector2.Zero;
+
             CombatStateMachine.ChangeAttackStep<BasicAttackStep>();
         }
+
+        public override void StateExit()
+        {
+            animationComponent.AnimationStepChange -= CombatStateMachine.OnAnimationStepChange;
+            animationComponent.AnimationFinished -= CombatStateMachine.OnAnimationStepFinished;
+
+            actionsComponent.AttackActionStart -= CombatStateMachine.BasicAttackRequested;
+        }
+
         public override void StateUpdateInternal(double delta)
         {
             CombatStateMachine.CombatUpdate(delta);

@@ -51,6 +51,7 @@ namespace BushyCore
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;;
 			actionsComponent.JumpActionStart += JumpActionRequested;
 			actionsComponent.DashActionStart += DashActionRequested;
+			actionsComponent.AttackActionStart += AttackActionRequested;
 
 			xAxisMovement.OvershootDec(true);
 			
@@ -76,6 +77,7 @@ namespace BushyCore
 
 			actionsComponent.JumpActionStart -= JumpActionRequested;
 			actionsComponent.DashActionStart -= DashActionRequested;
+			actionsComponent.AttackActionStart -= AttackActionRequested;
 
 			// Reconsider enabling this ALWAYS because we might have a really short dash CD if Bushy dashes close 
 			// to the ground, lands, quickily jumps and redash
@@ -157,6 +159,11 @@ namespace BushyCore
 				RunAndEndState(() => actionsComponent.Jump());
 			}
 		} 
+
+		public void AttackActionRequested()
+		{
+			RunAndEndState(() => actionsComponent.MainAttack());
+		}
 
 		void HandleMovement(double deltaTime)
 		{

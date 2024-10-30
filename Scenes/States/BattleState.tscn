@@ -12,11 +12,13 @@ script = ExtResource("1_xcdp0")
 [node name="CombatStateMachine" type="Node2D" parent="."]
 script = ExtResource("2_70a26")
 
-[node name="BasicAttack" type="Node2D" parent="CombatStateMachine"]
+[node name="BasicAttack" type="Node2D" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_2")]
 script = ExtResource("3_5147q")
+BasicAttackCombo_2 = NodePath("../ComboAttack")
 
-[node name="ComboAttack" type="Node2D" parent="CombatStateMachine"]
+[node name="ComboAttack" type="Node2D" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_3")]
 script = ExtResource("4_iiwny")
+BasicAttackCombo_3 = NodePath("../EndComboAttack")
 
 [node name="EndComboAttack" type="Node2D" parent="CombatStateMachine"]
 script = ExtResource("5_ul7gd")

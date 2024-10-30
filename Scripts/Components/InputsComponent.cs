@@ -36,7 +36,7 @@ namespace BushyCore
 			InputManager.Instance.DashAction.OnInputReleased -= OnDashReleased;
 			InputManager.Instance.JumpAction.OnInputJustPressed -= OnJumpRequested;
 			InputManager.Instance.JumpAction.OnInputReleased -= OnJumpReleased;
-			InputManager.Instance.AttackAction.OnInputJustPressed += OnAttackRequested;
+			InputManager.Instance.AttackAction.OnInputJustPressed -= OnAttackRequested;
 		}
 
 		private void OnDashRequested() 
