@@ -10,9 +10,7 @@ namespace BushyCore
     {
         [Node]
         CombatStateMachine CombatStateMachine;
-        private int comboCounter;
-
-
+        
 		public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
 		{
 			base.InitState(mc, cv, ac, anim, col);
@@ -25,8 +23,7 @@ namespace BushyCore
         protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
         {
             base.StateEnterInternal(configs);
-            comboCounter = 0;
-
+            
             // Subscribe Combat State machine to action requests
             actionsComponent.AttackActionStart += CombatStateMachine.BasicAttackRequested;
 
@@ -37,7 +34,9 @@ namespace BushyCore
             // We should really use this to have more dynamic movement in attacks. Momentum and such
             movementComponent.Velocities[VelocityType.MainMovement] = Vector2.Zero;
 
-            CombatStateMachine.ChangeAttackStep<BasicAttackStep>();
+
+            var attackConfig = new AttackStepConfig(movementComponent.FacingDirection.Normalized());    
+            CombatStateMachine.ChangeAttackStep<BasicAttackStep>(attackConfig);
         }
 
         public override void StateExit()

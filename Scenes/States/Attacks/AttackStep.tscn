@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://btja5sixyb4f8"]
+
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/AttackStep.cs" id="1_ynga8"]
+[ext_resource type="Script" path="res://Scripts/Components/HitboxComponent.cs" id="2_6c8bt"]
+
+[node name="AttackStep" type="Node2D"]
+script = ExtResource("1_ynga8")
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+script = ExtResource("2_6c8bt")
+IsDebug = true
+DebugColor = Color(0.654902, 0.313726, 0.419608, 0.572549)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+disabled = true

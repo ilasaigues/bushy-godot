@@ -243,6 +243,8 @@ public partial class MovementComponent : Node2D
 
 	public void SetRaycastPosition()
 	{
+		if (Engine.IsEditorHint())
+			return;
 		float colliderSizeX = CollisionComponent.Shape.GetRect().Size.X;
 		float colliderSizeY = CollisionComponent.Shape.GetRect().Size.Y;
 

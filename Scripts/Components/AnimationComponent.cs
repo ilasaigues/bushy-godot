@@ -5,9 +5,6 @@ public partial class AnimationComponent : AnimationPlayer
 {
 	// Emits a signal to indicate a phase/step change within an animaiton track
 	[Signal]
-	public delegate void AnimationStepChangeEventHandler(int step);
-	public void ChangeAnimationStep(int step)
-	{
-		EmitSignal(SignalName.AnimationStepChange, step);
-	}
+	public delegate void AnimationStepChangeEventHandler(int phase);
+	public void ChangeAnimationStep(int phase) => EmitSignal(SignalName.AnimationStepChange, phase);
 }

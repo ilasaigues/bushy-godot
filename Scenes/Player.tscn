@@ -141,13 +141,16 @@ tracks/1/path = NodePath("AnimationComponent")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.166667, 0.416667),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0.166667, 0.28, 0.416667),
+"transitions": PackedFloat32Array(1, 1, 1),
 "values": [{
 "args": [1],
 "method": &"ChangeAnimationStep"
 }, {
 "args": [2],
+"method": &"ChangeAnimationStep"
+}, {
+"args": [3],
 "method": &"ChangeAnimationStep"
 }]
 }
@@ -175,13 +178,13 @@ tracks/1/path = NodePath("AnimationComponent")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.166667, 0.416667),
+"times": PackedFloat32Array(0.166667, 0.3641),
 "transitions": PackedFloat32Array(1, 1),
 "values": [{
 "args": [1],
 "method": &"ChangeAnimationStep"
 }, {
-"args": [2],
+"args": [3],
 "method": &"ChangeAnimationStep"
 }]
 }
@@ -215,7 +218,7 @@ tracks/1/keys = {
 "args": [1],
 "method": &"ChangeAnimationStep"
 }, {
-"args": [2],
+"args": [3],
 "method": &"ChangeAnimationStep"
 }]
 }
@@ -362,7 +365,6 @@ _data = {
 
 [node name="Player" type="CharacterBody2D"]
 z_index = 1
-position = Vector2(-2, 1)
 collision_mask = 15
 script = ExtResource("1_1vn0y")
 
@@ -433,7 +435,4 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-
-[connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeEnter"]
-[connection signal="OnHedgeExit" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeExit"]
-[connection signal="OnHedgeExit" from="AreaDetectionComponent" to="StateMachine/HedgeState" method="OnHedgeExit"]
+scale = Vector2(1.0125, 1.0125)

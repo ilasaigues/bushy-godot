@@ -1,12 +1,36 @@
+using GodotUtilities;
+using Godot;
+
 namespace BushyCore
 {
+    [Scene]
+    [Tool]
     partial class EndComboAttackStep : AttackStep
     {
+        private Shape2D _DebugHitboxShape;
+        [Export]
+        protected Shape2D DebugHitboxShape { 
+            get { return _DebugHitboxShape; }
+            set {
+                if (_DebugHitboxShape != null) {
+                    _DebugHitboxShape.Changed -= QueueRedraw;
+                    _DebugHitboxShape.Changed -= RemoveToolRef;
+                }
+                
+                hitboxShape = value;
+                _DebugHitboxShape = value;
 
-        public override void StepEnter() {
-            base.StepEnter();
-            EmitSignal(SignalName.BattleAnimationChange, "ground_attack_3");
+                if (_DebugHitboxShape != null) {
+                    _DebugHitboxShape.Changed += QueueRedraw;
+                    _DebugHitboxShape.Changed += RemoveToolRef;
+                }
+
+                QueueRedraw();
+        }}
+
+        public void RemoveToolRef() 
+        {
+            hitboxShape = _DebugHitboxShape;
         }
-
     }
 }

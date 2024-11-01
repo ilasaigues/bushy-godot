@@ -35,47 +35,41 @@ namespace BushyCore
             currentAttack.CombatUpdate(delta);
         }
 
-        public void ChangeAttackStep<T>() where T: AttackStep 
+        public void ChangeAttackStep<T>(AttackStepConfig config) where T: AttackStep 
         {
             if (attackSteps.ContainsKey(typeof(T)))
 			{
 				var nextState = (T)attackSteps[typeof(T)];
 				currentAttack.StepExit();
-				nextState.StepEnter();
+				nextState.StepEnter(config);
 				currentAttack = nextState;
                 return;
 			}
 			throw new System.Exception($"No state instance of type {typeof(T)} found.");
         }
 
-        public void ChangeAttackStep(AttackStep nextStep) 
+        public void ChangeAttackStep(AttackStep nextStep, AttackStepConfig config) 
         {
             if (attackSteps.Values.Contains(nextStep))
 			{
 				currentAttack.StepExit();
-				nextStep.StepEnter();
+				nextStep.StepEnter(config);
 				currentAttack = nextStep;
                 return;
 			}
 			throw new System.Exception($"This attack step provided is not in the SM list of steps. {nextStep}.");
         }
 
-        public void EndStateMachine() => EmitSignal(SignalName.CombatEnd);
+        public void EndStateMachine() {
+            currentAttack.StepExit();
+            EmitSignal(SignalName.CombatEnd);
+        }
         public void UpdateCombatAnimation(string animationKey) => EmitSignal(SignalName.CombateAnimationUpdate, animationKey);
         
-        public void OnAnimationStepChange(int state) 
-        {
-            currentAttack.ChangePhase(state);
-        }
+        public void OnAnimationStepChange(int phase) => currentAttack.ChangePhase(phase); 
 
-        public void OnAnimationStepFinished(StringName animationKey)
-        {
-            currentAttack.ChangePhase(0);
-        }
+        public void OnAnimationStepFinished(StringName _animationKey) => currentAttack.ChangePhase(4); 
 
-        public void BasicAttackRequested()
-        {
-            currentAttack.HandleAttackAction();
-        }
+        public void BasicAttackRequested() => currentAttack.HandleAttackAction();
     }
 }

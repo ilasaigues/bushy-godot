@@ -1,10 +1,19 @@
-[gd_scene load_steps=6 format=3 uid="uid://bhv5xfj6xpkug"]
+[gd_scene load_steps=10 format=3 uid="uid://bhv5xfj6xpkug"]
 
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/BattleState.cs" id="1_xcdp0"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/CombatStateMachine.cs" id="2_70a26"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/BasicAttackStep.cs" id="3_5147q"]
+[ext_resource type="PackedScene" uid="uid://btja5sixyb4f8" path="res://Scenes/States/Attacks/AttackStep.tscn" id="3_tl42v"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/ComboAttackStep.cs" id="4_iiwny"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/EndComboAttackStep.cs" id="5_ul7gd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dhctd"]
+size = Vector2(10, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pg161"]
+size = Vector2(20, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rrhdh"]
 
 [node name="BattleState" type="Node2D"]
 script = ExtResource("1_xcdp0")
@@ -12,13 +21,24 @@ script = ExtResource("1_xcdp0")
 [node name="CombatStateMachine" type="Node2D" parent="."]
 script = ExtResource("2_70a26")
 
-[node name="BasicAttack" type="Node2D" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_2")]
+[node name="BasicAttack" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_2") instance=ExtResource("3_tl42v")]
 script = ExtResource("3_5147q")
 BasicAttackCombo_2 = NodePath("../ComboAttack")
+DebugHitboxShape = SubResource("RectangleShape2D_dhctd")
+animationKey = "ground_attack_1"
+DebugHitbox = true
+attackVector = Vector2(15, 0)
 
-[node name="ComboAttack" type="Node2D" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_3")]
+[node name="ComboAttack" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_3") instance=ExtResource("3_tl42v")]
+position = Vector2(1, 0)
 script = ExtResource("4_iiwny")
 BasicAttackCombo_3 = NodePath("../EndComboAttack")
+DebugHitboxShape = SubResource("RectangleShape2D_pg161")
+animationKey = "ground_attack_2"
+attackVector = Vector2(15, 0)
 
-[node name="EndComboAttack" type="Node2D" parent="CombatStateMachine"]
+[node name="EndComboAttack" parent="CombatStateMachine" instance=ExtResource("3_tl42v")]
 script = ExtResource("5_ul7gd")
+DebugHitboxShape = SubResource("RectangleShape2D_rrhdh")
+animationKey = "ground_attack_3"
+attackVector = Vector2(18, 0)
