@@ -10,11 +10,11 @@ wait_time = 0.17
 one_shot = true
 
 [node name="JumpBufferTimer" type="Timer" parent="."]
-wait_time = 0.5
+wait_time = 0.15
 one_shot = true
 
 [node name="DashBufferTimer" type="Timer" parent="."]
-wait_time = 0.5
+wait_time = 0.15
 one_shot = true
 
 [connection signal="timeout" from="EnteringTimer" to="." method="EnteringTimerTimeout"]

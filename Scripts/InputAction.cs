@@ -31,7 +31,6 @@ public class InputAction
         }
         if (inputEvent.IsActionReleased(ActionID))
         {
-            if (ActionID == "left_shift") Debug.WriteLine("Dash INPUT CANCELLED");
             Pressed = false;
             _timeLastPressed = -1;
             OnInputReleased();

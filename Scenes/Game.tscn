@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=20 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Texture2D" uid="uid://b1uq3n6md5wce" path="res://Assets/Background/forest_background_1.png" id="1_02yv3"]
 [ext_resource type="Script" path="res://bgm_test.gd" id="1_jka76"]
@@ -6,9 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://c5jcpcfoarc0m" path="res://Assets/Background/Forest/test_forest_background_1.png" id="2_hwlqv"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
 [ext_resource type="Texture2D" uid="uid://toa0twuk32dm" path="res://Assets/Background/Forest/test_forest_background_0.png" id="3_ukntx"]
-[ext_resource type="Script" path="res://Scenes/CameraSecondaryTarget.cs" id="7_8jjot"]
+[ext_resource type="Script" path="res://Scenes/camera_placeholder.cs" id="6_g0hwt"]
 [ext_resource type="PackedScene" uid="uid://cvihx0b7fk6dc" path="res://Scenes/Levels/tree_top.tscn" id="8_28kkd"]
-[ext_resource type="Script" path="res://Scripts/CameraFollow.cs" id="8_iowyo"]
 [ext_resource type="PackedScene" uid="uid://bco5h8a4p3ito" path="res://Scenes/Levels/test_forest.tscn" id="8_m158k"]
 [ext_resource type="PackedScene" uid="uid://cp0lnw8h4618y" path="res://Scenes/HedgeNode.tscn" id="10_qw50u"]
 
@@ -71,9 +70,6 @@ Button/styles/hover = SubResource("StyleBoxFlat_5ef0f")
 Button/styles/normal = SubResource("StyleBoxFlat_0b37n")
 Button/styles/pressed = SubResource("StyleBoxFlat_0g4c4")
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_ta3h0"]
-radius = 100.0
-
 [sub_resource type="Gradient" id="Gradient_bw885"]
 offsets = PackedFloat32Array(0, 0.668605)
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
@@ -123,7 +119,7 @@ position = Vector2(199, 33)
 
 [node name="ForestBackground0" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer3"]
 texture_filter = 1
-position = Vector2(-476, -392)
+position = Vector2(-475, -392)
 texture = ExtResource("3_ukntx")
 
 [node name="Audio Manager" type="Node" parent="."]
@@ -184,31 +180,22 @@ action_mode = 0
 text = "Death
 "
 
+[node name="w" type="Camera2D" parent="." node_paths=PackedStringArray("cam", "target")]
+position = Vector2(-807, 59)
+offset = Vector2(0, -32)
+position_smoothing_enabled = true
+position_smoothing_speed = 3.0
+script = ExtResource("6_g0hwt")
+cam = NodePath(".")
+target = NodePath("../Player")
+
 [node name="test_forest" parent="." instance=ExtResource("8_m158k")]
 texture_filter = 1
 position = Vector2(-2076, -1983)
 
-[node name="Secondary Target" type="Area2D" parent="."]
-position = Vector2(-625, 2)
-script = ExtResource("7_8jjot")
-positionOverride = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Secondary Target"]
-shape = SubResource("CircleShape2D_ta3h0")
-
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(-818, 27)
-offset = Vector2(0, -32)
-position_smoothing_speed = 3.0
-script = ExtResource("8_iowyo")
-LookaheadDistance = 50.0
-VerticalLockThresholdAbove = 180.0
-VerticalLockThresholdBelow = 60.0
-
-[node name="Player" parent="." node_paths=PackedStringArray("cameraFollow") instance=ExtResource("2_py0in")]
+[node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
 position = Vector2(-816, 58)
-cameraFollow = NodePath("../Camera2D")
 
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)
@@ -217,6 +204,12 @@ energy = 2.0
 range_item_cull_mask = 2
 texture = SubResource("GradientTexture2D_f4u52")
 texture_scale = 1.5
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2(4, -11)
+offset = Vector2(0, -32)
+position_smoothing_enabled = true
+position_smoothing_speed = 3.0
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(244, 282)
@@ -238,9 +231,8 @@ position = Vector2(1633, 154)
 position = Vector2(-942, 47)
 scale = Vector2(10, 10)
 curve = SubResource("Curve2D_eu7ss")
+Velocity = 5.0
 
 [connection signal="button_down" from="CanvasLayer/Control/Boss" to="Audio Manager" method="_on_boss_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Finisher" to="Audio Manager" method="_on_finisher_button_down"]
 [connection signal="button_down" from="CanvasLayer/Control/Death" to="Audio Manager" method="_on_death_button_down"]
-[connection signal="body_entered" from="Secondary Target" to="Secondary Target" method="OnBodyEnter"]
-[connection signal="body_exited" from="Secondary Target" to="Secondary Target" method="OnBodyExit"]

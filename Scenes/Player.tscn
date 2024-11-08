@@ -263,7 +263,7 @@ texture = ExtResource("2_c3m6v")
 offset = Vector2(-2, 0)
 hframes = 9
 vframes = 8
-frame = 10
+frame = 13
 script = ExtResource("3_2v3uq")
 movementComponent = NodePath("../MovementComponent")
 
