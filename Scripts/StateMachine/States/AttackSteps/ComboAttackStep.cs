@@ -5,13 +5,17 @@ using GodotUtilities;
 namespace BushyCore
 {
     [Scene]
-    [Tool]
     partial class ComboAttackStep : AttackStep
     {
+        [Node]
+        public Timer AttackMovementTimer;
         [Export]
         public AttackStep BasicAttackCombo_3;
         private bool bufferComboAttack = false;
         public override void StepEnter(AttackStepConfig config) {
+            this.AddToGroup();
+            this.WireNodes();
+
             bufferComboAttack = false;
             base.StepEnter(config);
         }
@@ -39,11 +43,28 @@ namespace BushyCore
             }
         }
 
+        protected override void CoreographMovement()
+        {
+            switch(currentPhase) {
+                case AttackStepPhase.ACTION:
+                    AttackMovementTimer.Start();
+                    EmitSignal(SignalName.ForceCoreography, attackMovement * attackStepConfigs.Direction.Normalized());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void OnAttackMovementTimerEnd()
+        {
+            EmitSignal(SignalName.ForceCoreography, Vector2.Zero);
+        }
         private Shape2D _DebugHitboxShape;
         [Export]
         protected Shape2D DebugHitboxShape { 
             get { return _DebugHitboxShape; }
             set {
+                if (!DebugHitbox) return;
                 if (_DebugHitboxShape != null) {
                     _DebugHitboxShape.Changed -= QueueRedraw;
                     _DebugHitboxShape.Changed -= RemoveToolRef;

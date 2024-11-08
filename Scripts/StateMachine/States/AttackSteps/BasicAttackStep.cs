@@ -6,10 +6,10 @@ using GodotUtilities;
 namespace BushyCore
 {
     [Scene]
-    [Tool]
     partial class BasicAttackStep : AttackStep
     {
-       
+        [Node]
+        public Timer AttackMovementTimer;
         // Estos exports esta bien que se pasen por editor?
         [Export]
         public AttackStep BasicAttackCombo_2;
@@ -17,21 +17,19 @@ namespace BushyCore
 
         // Hace falta emitir un evento de animation change?
         public override void StepEnter(AttackStepConfig config) {
+            this.AddToGroup();
+            this.WireNodes();
+
             bufferComboAttack = false;
             base.StepEnter(config);
         }
 
-        public override void _Ready()
-        {
-            hitboxShape = DebugHitboxShape;
-            base._Ready();
-        }
         public override void CombatUpdate(double delta)
         {
-            if (currentPhase == AttackStepPhase.RECOVERY 
-                && currentPhase == AttackStepPhase.COMBO
+            if ((currentPhase == AttackStepPhase.RECOVERY 
+                || currentPhase == AttackStepPhase.COMBO)
                 && bufferComboAttack)
-                EmitSignal(SignalName.ComboStep, BasicAttackCombo_2);
+                EmitSignal(SignalName.ComboStep, BasicAttackCombo_2, attackStepConfigs);
 
             base.CombatUpdate(delta);
         }
@@ -51,36 +49,31 @@ namespace BushyCore
             }
         }
 
-
-         // Explicacion. Trate de hacer una herramienta de heditor que nos permita visualizar la hitbox de este script.
-        // El tema es que esa hitbox es una property HEREDADA y EXPORTABLE de un parent tool script.
-        // Por default si nosotros dejamos este setter en el parent tool script, funciona de diez, hasta que cambias de escena
-        // En ese momento, el valor exportado se pierde y listo. Esto es un hack malisimo para poder visualizar el hitbox durante la edicion
-        private Shape2D _DebugHitboxShape;
-        [Export]
-        protected Shape2D DebugHitboxShape { 
-            get { return _DebugHitboxShape; }
-            set {
-                if (_DebugHitboxShape != null) {
-                    _DebugHitboxShape.Changed -= QueueRedraw;
-                    _DebugHitboxShape.Changed -= RemoveToolRef;
-                }
-                
-                hitboxShape = value;
-                _DebugHitboxShape = value;
-
-                if (_DebugHitboxShape != null) {
-                    _DebugHitboxShape.Changed += QueueRedraw;
-                    _DebugHitboxShape.Changed += RemoveToolRef;
-                }
-
-                QueueRedraw();
-        }}
-
-        public void RemoveToolRef() 
+        protected override void CoreographMovement()
         {
-            hitboxShape = _DebugHitboxShape;
+            switch(currentPhase) {
+                case AttackStepPhase.ACTION:
+                    AttackMovementTimer.Start();
+                    EmitSignal(SignalName.ForceCoreography, attackMovement * attackStepConfigs.Direction.Normalized());
+                    break;
+                default:
+                    break;
+            }
         }
-    
+
+        void OnAttackMovementTimerEnd()
+        {
+            EmitSignal(SignalName.ForceCoreography, Vector2.Zero);
+        }
+
+        public override void _Notification(int what)
+        {
+            if (what == NotificationSceneInstantiated)
+            {
+                this.AddToGroup();
+                this.WireNodes();
+            }
+        }
+
     }
 }

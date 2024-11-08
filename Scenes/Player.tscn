@@ -436,3 +436,5 @@ maxPoints = 24
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
 scale = Vector2(1.0125, 1.0125)
+
+[connection signal="CoreographyUpdate" from="MovementComponent" to="Sprite2DComponent" method="ForceOrientation"]

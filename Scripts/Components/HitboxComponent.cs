@@ -22,7 +22,7 @@ public partial class HitboxComponent : Area2D
                 return;
 
 		if (IsDebug && !collisionShape2D.Disabled && collisionShape2D.Shape != null)
-		{
+		{	
 			DrawRect(collisionShape2D.Shape.GetRect(), DebugColor);
 		}
     }

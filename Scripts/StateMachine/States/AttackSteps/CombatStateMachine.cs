@@ -9,7 +9,9 @@ namespace BushyCore
     partial class CombatStateMachine : Node2D
     {
         [Signal]
-        public delegate void CombateAnimationUpdateEventHandler(string animation_key);
+        public delegate void CombateAnimationUpdateEventHandler(string animation_key, Vector2 direction);
+        [Signal]
+        public delegate void CombatMovementUpdateEventHandler(Vector2 direction);
         [Signal]
         public delegate void CombatEndEventHandler();
 
@@ -25,6 +27,7 @@ namespace BushyCore
                     attackStep.AttackStepCompleted += EndStateMachine;
                     attackStep.BattleAnimationChange += UpdateCombatAnimation;
                     attackStep.ComboStep += ChangeAttackStep;
+                    attackStep.ForceCoreography += HandleCoreography;
 					return attackStep;
 				})
 				.ToDictionary(s => s.GetType());
@@ -64,12 +67,19 @@ namespace BushyCore
             currentAttack.StepExit();
             EmitSignal(SignalName.CombatEnd);
         }
-        public void UpdateCombatAnimation(string animationKey) => EmitSignal(SignalName.CombateAnimationUpdate, animationKey);
+
+        public void UpdateCombatStepConfigs(AttackStepConfig stepConfig) { currentAttack.HandleStepConfigChange(stepConfig); }
+        public void UpdateCombatAnimation(string animationKey, Vector2 direction) => EmitSignal(SignalName.CombateAnimationUpdate, animationKey, direction);
         
         public void OnAnimationStepChange(int phase) => currentAttack.ChangePhase(phase); 
 
         public void OnAnimationStepFinished(StringName _animationKey) => currentAttack.ChangePhase(4); 
 
         public void BasicAttackRequested() => currentAttack.HandleAttackAction();
+
+        public void HandleCoreography(Vector2 speed)
+        {
+            EmitSignal(SignalName.CombatMovementUpdate, speed);
+        }
     }
 }

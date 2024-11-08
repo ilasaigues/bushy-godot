@@ -37,7 +37,8 @@ public partial class MovementComponent : Node2D
 	public bool IsOnEdge { get { return _raysOnFloor == 1; } }
 	public HedgeNode HedgeEntered;
 	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge > 2; }}
-
+	
+	private bool _isCoreography;
 	private int _raysOnFloor;
 	private int _raysOnHedge;
 	
@@ -73,6 +74,7 @@ public partial class MovementComponent : Node2D
 		Gravity,
 		InheritedVelocity,
 		Dash,
+		Locked,
 	}
 	public Dictionary<VelocityType, Vector2> Velocities = new Dictionary<VelocityType, Vector2>();
 
@@ -141,6 +143,10 @@ public partial class MovementComponent : Node2D
 		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f 
 			? FacingDirection 
 			: this.Velocities[VelocityType.MainMovement].X * Vector2.Right;
+
+		_isCoreography = this.Velocities[VelocityType.MainMovement] == Vector2.Zero 
+			? _isCoreography
+			: false;
 	}
 	
 	private void CheckRaycastFloor(RayCast2D rayCast2D)
@@ -270,6 +276,19 @@ public partial class MovementComponent : Node2D
 		this.HedgeEntered = null;
 	}
 
+	public void StartCoreography()
+	{
+		this._isCoreography = true;
+	}
+
+	public void CoreographFaceDirection(Vector2 direction)
+	{
+		if (_isCoreography)
+			EmitSignal(SignalName.CoreographyUpdate, direction);
+	}
+
+	[Signal]
+	public delegate void CoreographyUpdateEventHandler(Vector2 direction);
 	public override void _Notification(int what)
 	{
 		if (what == NotificationSceneInstantiated)

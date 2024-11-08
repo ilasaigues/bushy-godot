@@ -12,11 +12,13 @@ namespace BushyCore
     partial class AttackStep : Node2D
     {
         [Signal]
-        public delegate void BattleAnimationChangeEventHandler(string animationKey);
+        public delegate void BattleAnimationChangeEventHandler(string animationKey, Vector2 direction);
         [Signal]
         public delegate void AttackStepCompletedEventHandler();
         [Signal]
         public delegate void ComboStepEventHandler(AttackStep attackStep, AttackStepConfig config); 
+        [Signal]
+        public delegate void ForceCoreographyEventHandler(Vector2 speed);
 
         [Export]
         public string animationKey;
@@ -31,6 +33,8 @@ namespace BushyCore
         protected virtual Shape2D hitboxShape {get;set;}
         [Export]
         protected Vector2 attackVector;
+        [Export]
+        protected Vector2 attackMovement;
         
         public HitboxComponent HitboxComponent;
 
@@ -45,7 +49,10 @@ namespace BushyCore
         public virtual void StepEnter(AttackStepConfig config) {
             currentPhase = AttackStepPhase.WINDUP;
             attackStepConfigs = config;
-            EmitSignal(SignalName.BattleAnimationChange, animationKey);
+            HitboxComponent.Position = attackVector * new Vector2(attackStepConfigs.Direction.X, 1).Normalized();
+
+            EmitSignal(SignalName.BattleAnimationChange, animationKey, config.Direction);
+            CoreographMovement();
         }
         public virtual void StepExit() {
             SpawnHitbox(false);
@@ -80,14 +87,16 @@ namespace BushyCore
                 default:
                     break;
             }
+
+            CoreographMovement();
         }
+        protected virtual void CoreographMovement() {}
 
         protected virtual void SpawnHitbox(bool enable) {
             HitboxComponent.ToggleEnable(enable);
-            if (enable)
-                HitboxComponent.Position = attackVector * Vector2.One * attackStepConfigs.Direction.Normalized();
-            
         }
+
+        public void HandleStepConfigChange(AttackStepConfig configs) { this.attackStepConfigs = configs; }
 
         protected enum AttackStepPhase 
         {

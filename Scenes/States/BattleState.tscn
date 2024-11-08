@@ -7,14 +7,14 @@
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/ComboAttackStep.cs" id="4_iiwny"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/EndComboAttackStep.cs" id="5_ul7gd"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_dhctd"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q0nsg"]
 size = Vector2(20, 10)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_pg161"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gq3yv"]
 size = Vector2(20, 10)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rrhdh"]
-size = Vector2(40, 26)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v5sal"]
+size = Vector2(40, 20)
 
 [node name="BattleState" type="Node2D"]
 script = ExtResource("1_xcdp0")
@@ -23,24 +23,42 @@ script = ExtResource("1_xcdp0")
 script = ExtResource("2_70a26")
 
 [node name="BasicAttack" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_2") instance=ExtResource("3_tl42v")]
-position = Vector2(7, 0)
 script = ExtResource("3_5147q")
 BasicAttackCombo_2 = NodePath("../ComboAttack")
-DebugHitboxShape = SubResource("RectangleShape2D_dhctd")
 animationKey = "ground_attack_1"
-attackVector = Vector2(15, 0)
+hitboxShape = SubResource("RectangleShape2D_q0nsg")
+attackVector = Vector2(30, 0)
+attackMovement = Vector2(50, 0)
+
+[node name="AttackMovementTimer" type="Timer" parent="CombatStateMachine/BasicAttack"]
+wait_time = 0.05
+one_shot = true
 
 [node name="ComboAttack" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_3") instance=ExtResource("3_tl42v")]
-position = Vector2(7, 0)
 script = ExtResource("4_iiwny")
 BasicAttackCombo_3 = NodePath("../EndComboAttack")
-DebugHitboxShape = SubResource("RectangleShape2D_pg161")
+DebugHitboxShape = null
 animationKey = "ground_attack_2"
-attackVector = Vector2(15, 0)
+hitboxShape = SubResource("RectangleShape2D_gq3yv")
+attackVector = Vector2(30, 0)
+attackMovement = Vector2(50, 0)
+
+[node name="AttackMovementTimer" type="Timer" parent="CombatStateMachine/ComboAttack"]
+wait_time = 0.05
+one_shot = true
 
 [node name="EndComboAttack" parent="CombatStateMachine" instance=ExtResource("3_tl42v")]
-position = Vector2(14, -6)
 script = ExtResource("5_ul7gd")
-DebugHitboxShape = SubResource("RectangleShape2D_rrhdh")
+DebugHitboxShape = null
 animationKey = "ground_attack_3"
-attackVector = Vector2(18, 0)
+hitboxShape = SubResource("RectangleShape2D_v5sal")
+attackVector = Vector2(38, -3)
+attackMovement = Vector2(12, 0)
+
+[node name="AttackMovementTimer" type="Timer" parent="CombatStateMachine/EndComboAttack"]
+wait_time = 0.8
+one_shot = true
+
+[connection signal="timeout" from="CombatStateMachine/BasicAttack/AttackMovementTimer" to="CombatStateMachine/BasicAttack" method="OnAttackMovementTimerEnd"]
+[connection signal="timeout" from="CombatStateMachine/ComboAttack/AttackMovementTimer" to="CombatStateMachine/ComboAttack" method="OnAttackMovementTimerEnd"]
+[connection signal="timeout" from="CombatStateMachine/EndComboAttack/AttackMovementTimer" to="CombatStateMachine/EndComboAttack" method="OnAttackMovementTimerEnd"]

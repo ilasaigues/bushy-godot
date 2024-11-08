@@ -5,9 +5,33 @@ public partial class Sprite2DComponent : Sprite2D
 {
 	[Export]
 	private MovementComponent movementComponent;
-	
-	public override void _Process(double delta)
+
+    public override void _Ready()
+    {
+        movementComponent.CoreographyUpdate += ForceOrientation;
+    }
+    public override void _ExitTree()
+    {
+        movementComponent.CoreographyUpdate -= ForceOrientation;
+    }
+    public override void _Process(double delta)
 	{
-		this.FlipH = movementComponent.FacingDirection.X < 0f;
+		CheckSpriteOrientation();
+	}
+
+	private void CheckSpriteOrientation()
+	{
+		var mainVelocity = movementComponent.Velocities[MovementComponent.VelocityType.MainMovement];
+		
+		if (mainVelocity != Vector2.Zero)
+		{
+			this.FlipH = movementComponent.FacingDirection.X < 0f;
+			return;
+		}
+	}
+
+	public void ForceOrientation(Vector2 direction)
+	{
+		this.FlipH = direction.X < 0f;
 	}
 }
