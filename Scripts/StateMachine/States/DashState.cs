@@ -48,6 +48,10 @@ namespace BushyCore
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
 			movementComponent.CourseCorrectionEnabled = true;
+
+			constantVelocity.X = characterVariables.DashVelocity;
+			animationComponent.Play("dash_end");
+			collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
 			
 			collisionComponent.ToggleHedgeCollision(false);
 				
@@ -97,7 +101,6 @@ namespace BushyCore
 		}
     	protected override void VelocityUpdate() 
 		{
-			if (state == 0) return;
 
 			float verticalComponent = 0;
 
@@ -150,9 +153,6 @@ namespace BushyCore
 				case 0:
 					DurationTimer.Stop();
 					DurationTimer.WaitTime = characterVariables.DashTime;
-					constantVelocity.X = characterVariables.DashVelocity;
-					animationComponent.Play("dash_end");
-					collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
 					DurationTimer.Start();
 					break;
 				case 1:

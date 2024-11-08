@@ -19,7 +19,7 @@ namespace BushyCore
         protected override void CoreographMovement()
         {
             switch(currentPhase) {
-                case AttackStepPhase.WINDUP:
+                case AttackStepPhase.ACTION:
                     AttackMovementTimer.Start();
                     Debug.WriteLine(attackStepConfigs.Direction);
                     Debug.WriteLine(attackMovement);

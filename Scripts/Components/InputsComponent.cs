@@ -22,6 +22,7 @@ namespace BushyCore
 			InputManager.Instance.HorizontalAxis.OnAxisUpdated += OnHorizontalAxisChanged;
 			InputManager.Instance.VerticalAxis.OnAxisUpdated += OnVerticalAxisChanged;
 			InputManager.Instance.DashAction.OnInputJustPressed += OnDashRequested;
+			InputManager.Instance.DashAction.OnInputReleased += OnDashReleased;
 			InputManager.Instance.JumpAction.OnInputJustPressed += OnJumpRequested;
 			InputManager.Instance.JumpAction.OnInputReleased += OnJumpReleased;
 			InputManager.Instance.AttackAction.OnInputJustPressed += OnAttackRequested;
@@ -42,10 +43,12 @@ namespace BushyCore
 		private void OnDashRequested() 
 		{
 			actionsComponent.IsDashRequested = true;
+			actionsComponent.IsDashHeld = true;
 		}
 		private void OnDashReleased()
 		{
 			actionsComponent.IsDashCancelled = true;
+			actionsComponent.IsDashHeld = false;
 		}
 		private void OnAttackRequested()
 		{

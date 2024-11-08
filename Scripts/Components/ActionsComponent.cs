@@ -74,6 +74,7 @@ public partial class ActionsComponent : Node
 				EmitSignal(SignalName.DashActionEnd);
 		}
 	}
+	
 	private bool _IsAttackRequested;
 	public bool IsAttackRequested {
 		get { return _IsAttackRequested; } 
@@ -84,6 +85,14 @@ public partial class ActionsComponent : Node
 				EmitSignal(SignalName.AttackActionStart);
 		} 
 
+	}
+
+	private bool _IsDashHeld;
+	public bool IsDashHeld { 
+		get { return _IsDashHeld; } 
+		set {
+			_IsDashHeld = value;
+		}
 	}
 	private StateMachine stateMachine;
 
@@ -125,7 +134,7 @@ public partial class ActionsComponent : Node
 
 	public void EnterHedge(HedgeNode hedgeBody, Vector2 direction)
 	{
-		this.stateMachine.ChangeState<HedgeState>(StateConfig.InitialHedgeCollider(hedgeBody, direction));
+		this.stateMachine.ChangeState<HedgeState>(StateConfig.InitialHedgeCollider(hedgeBody, direction));	
 	}
 	public void EnterHedge(params StateConfig.IBaseStateConfig[] configs)
 	{

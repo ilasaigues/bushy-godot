@@ -369,7 +369,6 @@ collision_mask = 15
 script = ExtResource("1_1vn0y")
 
 [node name="AreaDetectionComponent" parent="." instance=ExtResource("2_kbshe")]
-position = Vector2(-1, 0)
 scale = Vector2(0.7, 0.7)
 
 [node name="CollisionComponent" type="CollisionShape2D" parent="." node_paths=PackedStringArray("AreaDetectionComponent")]
@@ -383,9 +382,7 @@ AreaDetectionComponent = NodePath("../AreaDetectionComponent")
 
 [node name="Sprite2DComponent" type="Sprite2D" parent="." node_paths=PackedStringArray("movementComponent")]
 texture_filter = 1
-position = Vector2(3, -1.5)
 texture = ExtResource("2_c3m6v")
-offset = Vector2(-2, 0)
 hframes = 9
 vframes = 8
 frame = 17
@@ -435,6 +432,6 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.0125, 1.0125)
+scale = Vector2(1.1, 1.1)
 
 [connection signal="CoreographyUpdate" from="MovementComponent" to="Sprite2DComponent" method="ForceOrientation"]

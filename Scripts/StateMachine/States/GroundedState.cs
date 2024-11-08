@@ -133,10 +133,14 @@ namespace BushyCore
 		void CheckTransitions()
 		{
 			if (canBufferJump && actionsComponent.IsJumpRequested && actionsComponent.CanJump)
-			{	
+			{		
+				if(actionsComponent.CanDash && actionsComponent.IsDashHeld)
+				{
+					actionsComponent.Dash(IntendedDirection);
+				}
 				actionsComponent.Jump();
 			}
-
+		
 			if (movementComponent.SnappedToFloor) return;
 			
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
@@ -156,7 +160,14 @@ namespace BushyCore
 		{
 			if (actionsComponent.CanJump)
 			{
-				RunAndEndState(() => actionsComponent.Jump());
+				RunAndEndState(() => 
+				{
+					if(actionsComponent.CanDash && actionsComponent.IsDashHeld)
+					{
+						actionsComponent.Dash(IntendedDirection);
+					}
+					actionsComponent.Jump();
+				});
 			}
 		} 
 
