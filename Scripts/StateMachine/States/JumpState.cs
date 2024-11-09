@@ -100,6 +100,7 @@ namespace BushyCore
             xAxisMovement.HandleMovement(delta);
             this.VelocityUpdate();
             // CheckSwing();
+            animationComponent.SetOutline(Mathf.Abs(xAxisMovement.Velocity) > characterVariables.GroundHorizontalMovementSpeed);
 
             CheckTransitions();
         }

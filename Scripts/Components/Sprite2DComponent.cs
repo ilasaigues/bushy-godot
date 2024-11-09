@@ -5,6 +5,9 @@ public partial class Sprite2DComponent : Sprite2D
 {
 	[Export]
 	private MovementComponent movementComponent;
+	[Export]
+	private Color OutlineColor;
+	
 
     public override void _Ready()
     {
@@ -33,5 +36,10 @@ public partial class Sprite2DComponent : Sprite2D
 	public void ForceOrientation(Vector2 direction)
 	{
 		this.FlipH = direction.X < 0f;
+	}
+
+	public void SetOutline(bool enabled){
+		Color NewColor = enabled ? OutlineColor : new Color(0,0,0,0);
+		((ShaderMaterial)Material).SetShaderParameter("outline_color", NewColor);
 	}
 }

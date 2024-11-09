@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=42 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://58asnhoao858" path="res://Scenes/AreaDetectionComponent.tscn" id="2_kbshe"]
 [ext_resource type="Script" path="res://Scripts/Components/Sprite2DComponent.cs" id="3_2v3uq"]
 [ext_resource type="PackedScene" uid="uid://cnkptwq4h84kk" path="res://Scenes/MovementComponent.tscn" id="3_wt20f"]
+[ext_resource type="Shader" path="res://Scenes/OutlineShader.gdshader" id="4_isurw"]
 [ext_resource type="PackedScene" uid="uid://seeco12ddgj7" path="res://Scenes/StateMachine.tscn" id="4_wtgcq"]
 [ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine/PlayerVariables.tres" id="6_pknnn"]
 [ext_resource type="PackedScene" uid="uid://bm6r2edmdx3an" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
@@ -32,6 +33,10 @@ radius = 5.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_j2efp"]
 radius = 3.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dh3wx"]
+shader = ExtResource("4_isurw")
+shader_parameter/outline_color = Color(0.988235, 0.901961, 0.776471, 0)
 
 [sub_resource type="Animation" id="Animation_iwg24"]
 length = 0.001
@@ -382,12 +387,14 @@ AreaDetectionComponent = NodePath("../AreaDetectionComponent")
 
 [node name="Sprite2DComponent" type="Sprite2D" parent="." node_paths=PackedStringArray("movementComponent")]
 texture_filter = 1
+material = SubResource("ShaderMaterial_dh3wx")
 texture = ExtResource("2_c3m6v")
 hframes = 9
 vframes = 8
 frame = 17
 script = ExtResource("3_2v3uq")
 movementComponent = NodePath("../MovementComponent")
+OutlineColor = Color(0.988235, 0.901961, 0.776471, 1)
 
 [node name="MovementComponent" parent="." node_paths=PackedStringArray("CollisionComponent") instance=ExtResource("3_wt20f")]
 CollisionComponent = NodePath("../CollisionComponent")
@@ -414,11 +421,12 @@ position = Vector2(-1, 0)
 
 [node name="ActionsComponent" parent="." instance=ExtResource("7_2bflq")]
 
-[node name="AnimationComponent" type="AnimationPlayer" parent="."]
+[node name="AnimationComponent" type="AnimationPlayer" parent="." node_paths=PackedStringArray("characterSprite")]
 libraries = {
 "": SubResource("AnimationLibrary_uncl2")
 }
 script = ExtResource("16_w750l")
+characterSprite = NodePath("../Sprite2DComponent")
 
 [node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
 script = ExtResource("9_03rmc")
@@ -432,6 +440,6 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 position = Vector2(0, 0)
-scale = Vector2(1.1, 1.1)
+scale = Vector2(1.0125, 1.0125)
 
 [connection signal="CoreographyUpdate" from="MovementComponent" to="Sprite2DComponent" method="ForceOrientation"]

@@ -94,6 +94,7 @@ namespace BushyCore
 			HandleMovement(delta);
 			CheckTransitions();
 			VelocityUpdate();
+			animationComponent.SetOutline(Mathf.Abs(xAxisMovement.Velocity) > characterVariables.GroundHorizontalMovementSpeed);
 		}
 
 		protected override void AnimationUpdate()

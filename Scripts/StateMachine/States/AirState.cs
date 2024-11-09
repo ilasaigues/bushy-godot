@@ -119,6 +119,7 @@ namespace BushyCore
             {
                 collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
             }
+            animationComponent.SetOutline(Mathf.Abs(xAxisMovement.Velocity) > characterVariables.GroundHorizontalMovementSpeed);
         }
 
         protected override void AnimationUpdate()
