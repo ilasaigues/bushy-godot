@@ -8,14 +8,11 @@ namespace BushyCore
     [Scene]
     partial class BasicAttackStep : AttackStep
     {
-        [Node]
-        public Timer AttackMovementTimer;
         // Estos exports esta bien que se pasen por editor?
         [Export]
         public AttackStep BasicAttackCombo_2;
         private bool bufferComboAttack = false;
 
-        // Hace falta emitir un evento de animation change?
         public override void StepEnter(AttackStepConfig config) {
             this.AddToGroup();
             this.WireNodes();
@@ -47,23 +44,6 @@ namespace BushyCore
                 default: 
                     break;
             }
-        }
-
-        protected override void CoreographMovement()
-        {
-            switch(currentPhase) {
-                case AttackStepPhase.ACTION:
-                    AttackMovementTimer.Start();
-                    EmitSignal(SignalName.ForceCoreography, attackMovement * attackStepConfigs.Direction.Normalized());
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void OnAttackMovementTimerEnd()
-        {
-            EmitSignal(SignalName.ForceCoreography, Vector2.Zero);
         }
 
         public override void _Notification(int what)

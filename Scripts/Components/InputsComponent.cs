@@ -43,12 +43,10 @@ namespace BushyCore
 		private void OnDashRequested() 
 		{
 			actionsComponent.IsDashRequested = true;
-			actionsComponent.IsDashHeld = true;
 		}
 		private void OnDashReleased()
 		{
 			actionsComponent.IsDashCancelled = true;
-			actionsComponent.IsDashHeld = false;
 		}
 		private void OnAttackRequested()
 		{

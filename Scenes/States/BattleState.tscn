@@ -1,20 +1,45 @@
-[gd_scene load_steps=10 format=3 uid="uid://bhv5xfj6xpkug"]
+[gd_scene load_steps=14 format=3 uid="uid://bhv5xfj6xpkug"]
 
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/BattleState.cs" id="1_xcdp0"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/CombatStateMachine.cs" id="2_70a26"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/BasicAttackStep.cs" id="3_5147q"]
 [ext_resource type="PackedScene" uid="uid://btja5sixyb4f8" path="res://Scenes/States/Attacks/AttackStep.tscn" id="3_tl42v"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/ComboAttackStep.cs" id="4_iiwny"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/PhaseCoreography.cs" id="5_l1a55"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/EndComboAttackStep.cs" id="5_ul7gd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q0nsg"]
 size = Vector2(20, 10)
 
+[sub_resource type="Resource" id="Resource_lubje"]
+script = ExtResource("5_l1a55")
+Phase = 1
+TimerDuration = 0.05
+VelocityVector = Vector2(30, 0)
+AccelerationVector = Vector2(0, 0)
+BeginOnTimerEnd = false
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gq3yv"]
 size = Vector2(20, 10)
 
+[sub_resource type="Resource" id="Resource_32gtp"]
+script = ExtResource("5_l1a55")
+Phase = 1
+TimerDuration = 0.05
+VelocityVector = Vector2(30, 0)
+AccelerationVector = Vector2(0, 0)
+BeginOnTimerEnd = false
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_v5sal"]
 size = Vector2(40, 20)
+
+[sub_resource type="Resource" id="Resource_8g0p2"]
+script = ExtResource("5_l1a55")
+Phase = 1
+TimerDuration = 0.05
+VelocityVector = Vector2(30, 0)
+AccelerationVector = Vector2(0, 0)
+BeginOnTimerEnd = false
 
 [node name="BattleState" type="Node2D"]
 script = ExtResource("1_xcdp0")
@@ -29,10 +54,7 @@ animationKey = "ground_attack_1"
 hitboxShape = SubResource("RectangleShape2D_q0nsg")
 attackVector = Vector2(30, 0)
 attackMovement = Vector2(50, 0)
-
-[node name="AttackMovementTimer" type="Timer" parent="CombatStateMachine/BasicAttack"]
-wait_time = 0.05
-one_shot = true
+Coreographies = [SubResource("Resource_lubje")]
 
 [node name="ComboAttack" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_3") instance=ExtResource("3_tl42v")]
 script = ExtResource("4_iiwny")
@@ -42,10 +64,7 @@ animationKey = "ground_attack_2"
 hitboxShape = SubResource("RectangleShape2D_gq3yv")
 attackVector = Vector2(30, 0)
 attackMovement = Vector2(50, 0)
-
-[node name="AttackMovementTimer" type="Timer" parent="CombatStateMachine/ComboAttack"]
-wait_time = 0.05
-one_shot = true
+Coreographies = [SubResource("Resource_32gtp")]
 
 [node name="EndComboAttack" parent="CombatStateMachine" instance=ExtResource("3_tl42v")]
 script = ExtResource("5_ul7gd")
@@ -54,11 +73,4 @@ animationKey = "ground_attack_3"
 hitboxShape = SubResource("RectangleShape2D_v5sal")
 attackVector = Vector2(38, -3)
 attackMovement = Vector2(30, 0)
-
-[node name="AttackMovementTimer" type="Timer" parent="CombatStateMachine/EndComboAttack"]
-wait_time = 0.05
-one_shot = true
-
-[connection signal="timeout" from="CombatStateMachine/BasicAttack/AttackMovementTimer" to="CombatStateMachine/BasicAttack" method="OnAttackMovementTimerEnd"]
-[connection signal="timeout" from="CombatStateMachine/ComboAttack/AttackMovementTimer" to="CombatStateMachine/ComboAttack" method="OnAttackMovementTimerEnd"]
-[connection signal="timeout" from="CombatStateMachine/EndComboAttack/AttackMovementTimer" to="CombatStateMachine/EndComboAttack" method="OnAttackMovementTimerEnd"]
+Coreographies = [SubResource("Resource_8g0p2")]

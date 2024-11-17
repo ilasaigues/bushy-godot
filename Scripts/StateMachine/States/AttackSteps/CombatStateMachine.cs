@@ -11,7 +11,7 @@ namespace BushyCore
         [Signal]
         public delegate void CombateAnimationUpdateEventHandler(string animation_key, Vector2 direction);
         [Signal]
-        public delegate void CombatMovementUpdateEventHandler(Vector2 direction);
+        public delegate void CombatMovementUpdateEventHandler(Vector2 velocity, Vector2 acceleration);
         [Signal]
         public delegate void CombatEndEventHandler();
 
@@ -77,9 +77,9 @@ namespace BushyCore
 
         public void BasicAttackRequested() => currentAttack.HandleAttackAction();
 
-        public void HandleCoreography(Vector2 speed)
+        public void HandleCoreography(Vector2 velocity, Vector2 acceleration)
         {
-            EmitSignal(SignalName.CombatMovementUpdate, speed);
+            EmitSignal(SignalName.CombatMovementUpdate, velocity, acceleration);
         }
     }
 }

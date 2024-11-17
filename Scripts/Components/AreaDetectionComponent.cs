@@ -35,7 +35,6 @@ namespace BushyCore
 
 		public void OnAreaEntered(Area2D area2D)
 		{
-			GD.Print("Entered an area");
 			if (area2D is HedgeArea2D hedgeArea2D)
 			{
 				GD.Print("Hedge");

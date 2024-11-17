@@ -52,12 +52,17 @@ public partial class ActionsComponent : Node
 			if (value) EmitSignal(SignalName.JumpActionEnd);
 		}
 	}
+	private bool _IsSpeeding;
+	public bool IsSpeeding { get; private set;}
 
 	private bool _IsDashRequested;
 	public bool IsDashRequested { 
 		get { return _IsDashRequested; } 
 		set {
 			_IsDashRequested = value;
+			
+			if (value)
+				_IsSpeeding = value;
 			
 			if (_IsDashRequested) 
 				EmitSignal(SignalName.DashActionStart);
@@ -69,6 +74,8 @@ public partial class ActionsComponent : Node
 		get { return _IsDashCancelled; } 
 		set {
 			_IsDashCancelled = value;
+			if (true)
+				_IsSpeeding = false;
 			
 			if (_IsDashCancelled) 
 				EmitSignal(SignalName.DashActionEnd);
@@ -85,14 +92,6 @@ public partial class ActionsComponent : Node
 				EmitSignal(SignalName.AttackActionStart);
 		} 
 
-	}
-
-	private bool _IsDashHeld;
-	public bool IsDashHeld { 
-		get { return _IsDashHeld; } 
-		set {
-			_IsDashHeld = value;
-		}
 	}
 	private StateMachine stateMachine;
 

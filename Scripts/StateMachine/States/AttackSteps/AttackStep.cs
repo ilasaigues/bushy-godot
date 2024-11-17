@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -9,7 +11,7 @@ namespace BushyCore
 {
     [Scene]
     [Tool]
-    partial class AttackStep : Node2D
+    public partial class AttackStep : Node2D
     {
         [Signal]
         public delegate void BattleAnimationChangeEventHandler(string animationKey, Vector2 direction);
@@ -18,7 +20,7 @@ namespace BushyCore
         [Signal]
         public delegate void ComboStepEventHandler(AttackStep attackStep, AttackStepConfig config); 
         [Signal]
-        public delegate void ForceCoreographyEventHandler(Vector2 speed);
+        public delegate void ForceCoreographyEventHandler(Vector2 velocity, Vector2 acceleration);
 
         [Export]
         public string animationKey;
@@ -35,17 +37,27 @@ namespace BushyCore
         protected Vector2 attackVector;
         [Export]
         protected Vector2 attackMovement;
+        [Export]
+        protected Godot.Collections.Array<PhaseCoreography> Coreographies;
         
+        [Node]
+        protected Timer CoreographyTimer;
         public HitboxComponent HitboxComponent;
 
         public override void _Ready()
         {
+            this.AddToGroup();
+            this.WireNodes();
             HitboxComponent = GetNode<HitboxComponent>("HitboxComponent");
             HitboxComponent.collisionShape2D.Shape = hitboxShape;
         }
 
-        public void InitState() {}   
+        public void InitState() {
+            CoreographyTimer.Timeout += OnCoreographyTimeout;
+        }   
+
         public virtual void CombatUpdate(double delta) {}
+
         public virtual void StepEnter(AttackStepConfig config) {
             currentPhase = AttackStepPhase.WINDUP;
             attackStepConfigs = config;
@@ -54,6 +66,7 @@ namespace BushyCore
             EmitSignal(SignalName.BattleAnimationChange, animationKey, config.Direction);
             CoreographMovement();
         }
+
         public virtual void StepExit() {
             SpawnHitbox(false);
         }
@@ -90,7 +103,28 @@ namespace BushyCore
 
             CoreographMovement();
         }
-        protected virtual void CoreographMovement() {}
+        protected virtual void CoreographMovement() {
+            var coreography = Coreographies.FirstOrDefault(x => x.Phase == currentPhase, null);
+
+            if (coreography == null) return;
+
+            if (coreography.BeginOnTimerEnd) {
+                return;
+            }
+
+            CoreographyTimer.WaitTime = coreography.TimerDuration;
+            CoreographyTimer.Start();
+            
+            EmitSignal(SignalName.ForceCoreography, 
+                coreography.VelocityVector * attackStepConfigs.Direction.Normalized(),
+                coreography.AccelerationVector * attackStepConfigs.Direction.Normalized()
+            );
+        }
+
+        protected void OnCoreographyTimeout()
+        {
+            EmitSignal(SignalName.ForceCoreography, Vector2.Zero, Vector2.Zero);
+        }
 
         protected virtual void SpawnHitbox(bool enable) {
             HitboxComponent.ToggleEnable(enable);
@@ -98,7 +132,7 @@ namespace BushyCore
 
         public void HandleStepConfigChange(AttackStepConfig configs) { this.attackStepConfigs = configs; }
 
-        protected enum AttackStepPhase 
+        public enum AttackStepPhase 
         {
             WINDUP,
             ACTION,
@@ -107,15 +141,6 @@ namespace BushyCore
         }
 
         public virtual void HandleAttackAction() {}
-
-        public override void _Notification(int what)
-        {
-            if (what == NotificationSceneInstantiated)
-            {
-                this.AddToGroup();
-                this.WireNodes();
-            }
-        }
 
         public override void _Draw()
         {

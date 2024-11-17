@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Godot;
 using GodotUtilities;
@@ -11,6 +12,8 @@ namespace BushyCore
         [Node]
         CombatStateMachine CombatStateMachine;
         
+        private AxisMovement xAxisMovement;
+        private AxisMovement yAxisMovement;
 		public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
 		{
 			base.InitState(mc, cv, ac, anim, col);
@@ -20,6 +23,16 @@ namespace BushyCore
             CombatStateMachine.CombatEnd += OnBattleEnd;
 
             CombatStateMachine.CombatMovementUpdate += OnCombatMovementUpdate;
+
+            this.xAxisMovement = new AxisMovement.Builder()
+				.Acc(0).Dec(0).Speed(Int32.MaxValue).OverDec(0).TurnDec(0).Movement(mc)
+				.Direction(() => { return 1; })
+				.ColCheck((dir) => { return mc.IsOnWall; })
+				.Variables(cv)
+				.Build();
+            this.yAxisMovement = this.xAxisMovement.ToBuilder().Copy()
+				.ColCheck((dir) => { return dir > 0 ? mc.IsOnFloor : mc.IsOnCeiling; })
+                .Build();
 		}
 
         protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
@@ -59,7 +72,12 @@ namespace BushyCore
         public override void StateUpdateInternal(double delta)
         {
             CombatStateMachine.CombatUpdate(delta);
+
             // Movement component changes
+            xAxisMovement.HandleMovement(delta);
+            yAxisMovement.HandleMovement(delta);
+            Vector2 velocity = new Vector2((float)xAxisMovement.Velocity, (float)yAxisMovement.Velocity);
+            movementComponent.Velocities[VelocityType.Locked] = velocity;
         } 
 
         public void OnBattleAnimationChange(string animationKey, Vector2 direction)
@@ -86,10 +104,13 @@ namespace BushyCore
                 CombatStateMachine.UpdateCombatStepConfigs(new AttackStepConfig(direction));
         }
 
-        public void OnCombatMovementUpdate(Vector2 direction)
+        public void OnCombatMovementUpdate(Vector2 velocity, Vector2 acceleration)
         {
             movementComponent.StartCoreography();
-            movementComponent.Velocities[VelocityType.Locked] = direction;
+            xAxisMovement = xAxisMovement.ToBuilder().Vel(velocity.X).Acc((int) acceleration.X).Build();
+            yAxisMovement = yAxisMovement.ToBuilder().Vel(velocity.Y).Acc((int) acceleration.Y).Build();
+            
+            movementComponent.Velocities[VelocityType.Locked] = velocity;
         }
 
         protected override void AnimationUpdate() {}

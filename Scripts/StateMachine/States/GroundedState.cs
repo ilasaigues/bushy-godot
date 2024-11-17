@@ -134,7 +134,7 @@ namespace BushyCore
 		{
 			if (canBufferJump && actionsComponent.IsJumpRequested && actionsComponent.CanJump)
 			{		
-				if(actionsComponent.CanDash && actionsComponent.IsDashHeld)
+				if(actionsComponent.CanDash && actionsComponent.IsSpeeding)
 				{
 					actionsComponent.Dash(IntendedDirection);
 				}
@@ -150,6 +150,7 @@ namespace BushyCore
 
 		public void DashActionRequested()
 		{
+
 			if (actionsComponent.CanDash)
 			{
 				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
@@ -162,7 +163,7 @@ namespace BushyCore
 			{
 				RunAndEndState(() => 
 				{
-					if(actionsComponent.CanDash && actionsComponent.IsDashHeld)
+					if(actionsComponent.CanDash && actionsComponent.IsSpeeding)
 					{
 						actionsComponent.Dash(IntendedDirection);
 					}
