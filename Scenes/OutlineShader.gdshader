@@ -3,7 +3,7 @@ shader_type canvas_item;
 uniform vec4 outline_color : source_color;
 
 void vertex() {
-	
+
 }
 
 bool HighlightCheck(vec4 pixel, sampler2D tex, vec2 position){
@@ -31,7 +31,3 @@ void fragment() {
 	vec4 sprite = texture(TEXTURE,UV);
 	COLOR = Replace(sprite, HighlightCheck(sprite, TEXTURE,UV));
 }
-
-
-
-
