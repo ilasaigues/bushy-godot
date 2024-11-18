@@ -28,7 +28,7 @@ namespace BushyCore
             }
         }
 
-		public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
+		public override void InitState(MovementComponent mc, CharacterVariables cv, PlayerActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
 		{
 			base.InitState(mc, cv, ac, anim, col);
 

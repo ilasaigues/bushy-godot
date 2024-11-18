@@ -11,10 +11,10 @@ namespace BushyCore
     {
         [Node]
         CombatStateMachine CombatStateMachine;
-        
+
         private AxisMovement xAxisMovement;
         private AxisMovement yAxisMovement;
-		public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
+		public override void InitState(MovementComponent mc, CharacterVariables cv, PlayerActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
 		{
 			base.InitState(mc, cv, ac, anim, col);
 
@@ -23,6 +23,7 @@ namespace BushyCore
             CombatStateMachine.CombatEnd += OnBattleEnd;
 
             CombatStateMachine.CombatMovementUpdate += OnCombatMovementUpdate;
+            CombatStateMachine.CombatAttackHit += OnCombatAttackHit;
 
             this.xAxisMovement = new AxisMovement.Builder()
 				.Acc(0).Dec(0).Speed(Int32.MaxValue).OverDec(0).TurnDec(0).Movement(mc)
@@ -113,6 +114,12 @@ namespace BushyCore
             movementComponent.Velocities[VelocityType.Locked] = velocity;
         }
 
+        public void OnCombatAttackHit()
+        {
+
+        }
+
+        // public void OnComboCoyoteTimerEnd() => comboCounter = 0;
         protected override void AnimationUpdate() {}
 
         protected override void VelocityUpdate() {}

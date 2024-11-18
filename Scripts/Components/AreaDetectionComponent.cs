@@ -37,7 +37,6 @@ namespace BushyCore
 		{
 			if (area2D is HedgeArea2D hedgeArea2D)
 			{
-				GD.Print("Hedge");
 				EmitSignal(SignalName.OnHedgeEnter, hedgeArea2D.HedgeNode);
 			}
 		}

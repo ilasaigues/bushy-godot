@@ -10,6 +10,9 @@ public partial class HitboxComponent : Area2D
 	public bool IsDebug;
 	[Export]
 	public Color DebugColor;
+
+	[Signal]
+	public delegate void HitboxImpactEventHandler();
 	
 	public override void _Ready()
 	{
@@ -31,5 +34,13 @@ public partial class HitboxComponent : Area2D
 	{
 		collisionShape2D.Disabled = !enabled;
 		QueueRedraw();
+	}
+
+	public void OnHitboxImpact(Area2D area2D)
+	{
+		// Make sure this is an enemy then emit event
+		// Obtain hurtbox component from the area ipmacted and provide it to the CombatState Machine?
+		// What amount of damage does this inflict?
+		EmitSignal(SignalName.HitboxImpact);
 	}
 }

@@ -51,7 +51,10 @@ namespace BushyCore
 
 			constantVelocity.X = characterVariables.DashVelocity;
 			animationComponent.Play("dash_end");
-			collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
+
+            base.collisionComponent.CallDeferred(
+                CharacterCollisionComponent.MethodName.SwitchShape, 
+                (int) CharacterCollisionComponent.ShapeMode.CILINDER);
 			
 			collisionComponent.ToggleHedgeCollision(false);
 				

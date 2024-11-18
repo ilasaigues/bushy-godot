@@ -13,10 +13,13 @@ namespace BushyCore
         [Signal]
         public delegate void CombatMovementUpdateEventHandler(Vector2 velocity, Vector2 acceleration);
         [Signal]
+        public delegate void CombatAttackHitEventHandler();
+        [Signal]
         public delegate void CombatEndEventHandler();
 
         private Dictionary<Type, AttackStep> attackSteps;
         private AttackStep currentAttack;
+
         public override void _Ready()
 		{	
 			attackSteps = GetChildren()
@@ -28,6 +31,7 @@ namespace BushyCore
                     attackStep.BattleAnimationChange += UpdateCombatAnimation;
                     attackStep.ComboStep += ChangeAttackStep;
                     attackStep.ForceCoreography += HandleCoreography;
+                    attackStep.HitboxComponent.HitboxImpact += OnAttackImpact;
 					return attackStep;
 				})
 				.ToDictionary(s => s.GetType());
@@ -76,10 +80,14 @@ namespace BushyCore
         public void OnAnimationStepFinished(StringName _animationKey) => currentAttack.ChangePhase(4); 
 
         public void BasicAttackRequested() => currentAttack.HandleAttackAction();
+        // public void BasicAttackRequested() => currentAttack.HandleAttackAction();
+        // public void BasicAttackRequested() => currentAttack.HandleAttackAction();
 
         public void HandleCoreography(Vector2 velocity, Vector2 acceleration)
         {
             EmitSignal(SignalName.CombatMovementUpdate, velocity, acceleration);
         }
+
+        public void OnAttackImpact() => EmitSignal(SignalName.CombatAttackHit);
     }
 }

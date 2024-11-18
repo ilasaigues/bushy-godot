@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=11 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
+[ext_resource type="Texture2D" uid="uid://kb10o0qoh0oe" path="res://Assets/Player/Test_Spritesheet.png" id="5_2vepk"]
 [ext_resource type="PackedScene" uid="uid://cvihx0b7fk6dc" path="res://Scenes/Levels/tree_top.tscn" id="8_28kkd"]
 [ext_resource type="PackedScene" uid="uid://bco5h8a4p3ito" path="res://Scenes/Levels/test_forest.tscn" id="8_m158k"]
 [ext_resource type="PackedScene" uid="uid://cp0lnw8h4618y" path="res://Scenes/HedgeNode.tscn" id="10_qw50u"]
@@ -26,6 +27,9 @@ _data = {
 "points": PackedVector2Array(0, 0, 0, 0, 0, 0)
 }
 point_count = 1
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fwrlw"]
+size = Vector2(13, 15)
 
 [node name="Game" type="Node2D"]
 
@@ -68,3 +72,17 @@ Velocity = 5.0
 position = Vector2(-245, 328)
 scale = Vector2(5, 5)
 curve = SubResource("Curve2D_dqvjy")
+
+[node name="Sprite2D" type="Sprite2D" parent="Main"]
+position = Vector2(305, 266)
+texture = ExtResource("5_2vepk")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="Area2D" type="Area2D" parent="Main/Sprite2D"]
+collision_layer = 16
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Main/Sprite2D/Area2D"]
+position = Vector2(-0.5, 0.5)
+shape = SubResource("RectangleShape2D_fwrlw")

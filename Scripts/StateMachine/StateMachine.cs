@@ -13,7 +13,7 @@ namespace BushyCore
 		[Export]
 		private CharacterVariables characterVariables;
 		[Export]
-		private ActionsComponent actionsComponent;
+		private PlayerActionsComponent actionsComponent;
 		[Export]
 		private AnimationComponent animationComponent;
 		[Export]

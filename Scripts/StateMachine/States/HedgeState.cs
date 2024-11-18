@@ -34,7 +34,11 @@ namespace BushyCore
                 this.WireNodes();
             }
         }
-        public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
+        public override void InitState(MovementComponent mc, 
+			CharacterVariables cv,
+			PlayerActionsComponent ac,
+			AnimationComponent anim,
+			CharacterCollisionComponent col)
         {
             base.InitState(mc, cv, ac, anim, col);
 
@@ -152,7 +156,6 @@ namespace BushyCore
 
         protected override void VelocityUpdate()
         {
-			Debug.WriteLine($"hedge velocities: {xAxisMovement.Velocity} - {yAxisMovement.Velocity}");
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float) xAxisMovement.Velocity, (float)yAxisMovement.Velocity);
 		}
 

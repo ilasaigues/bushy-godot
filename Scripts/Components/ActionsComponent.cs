@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BushyCore;
 using Godot;
 
@@ -52,7 +53,6 @@ public partial class ActionsComponent : Node
 			if (value) EmitSignal(SignalName.JumpActionEnd);
 		}
 	}
-	private bool _IsSpeeding;
 	public bool IsSpeeding { get; private set;}
 
 	private bool _IsDashRequested;
@@ -60,9 +60,9 @@ public partial class ActionsComponent : Node
 		get { return _IsDashRequested; } 
 		set {
 			_IsDashRequested = value;
-			
+		
 			if (value)
-				_IsSpeeding = value;
+				IsSpeeding = value;
 			
 			if (_IsDashRequested) 
 				EmitSignal(SignalName.DashActionStart);
@@ -74,13 +74,15 @@ public partial class ActionsComponent : Node
 		get { return _IsDashCancelled; } 
 		set {
 			_IsDashCancelled = value;
-			if (true)
-				_IsSpeeding = false;
+
+			if (value)
+				IsSpeeding = false;
 			
 			if (_IsDashCancelled) 
 				EmitSignal(SignalName.DashActionEnd);
 		}
 	}
+
 	
 	private bool _IsAttackRequested;
 	public bool IsAttackRequested {
@@ -91,7 +93,6 @@ public partial class ActionsComponent : Node
 			if (_IsAttackRequested) 
 				EmitSignal(SignalName.AttackActionStart);
 		} 
-
 	}
 	private StateMachine stateMachine;
 

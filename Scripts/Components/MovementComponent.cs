@@ -166,7 +166,6 @@ public partial class MovementComponent : Node2D
 
 			SnappedToFloor = true;
 			this._raysOnFloor++;
-
 			if (collider is HedgeStaticBody2D)
 			{	
 				_raysOnHedge++;
