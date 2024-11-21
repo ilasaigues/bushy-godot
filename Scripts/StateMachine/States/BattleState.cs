@@ -25,6 +25,7 @@ namespace BushyCore
             CombatStateMachine.CombatMovementUpdate += OnCombatMovementUpdate;
             CombatStateMachine.CombatAttackHit += OnCombatAttackHit;
 
+            // Create axis components with no max speed that will always be aplying the intended acceleration
             this.xAxisMovement = new AxisMovement.Builder()
 				.Acc(0).Dec(0).Speed(Int32.MaxValue).OverDec(0).TurnDec(0).Movement(mc)
 				.Direction(() => { return 1; })
@@ -56,8 +57,12 @@ namespace BushyCore
                 ? movementComponent.FacingDirection
                 : actionsComponent.MovementDirection;
 
-            var attackConfig = new AttackStepConfig(attackDirection.Normalized());    
-            CombatStateMachine.ChangeAttackStep<BasicAttackStep>(attackConfig);
+            var attackConfig = new AttackStepConfig(attackDirection.Normalized());   
+
+            if (movementComponent.IsOnFloor) 
+                CombatStateMachine.ChangeAttackStep<BasicAttackStep>(attackConfig);
+            else 
+                CombatStateMachine.ChangeAttackStep<AirAttackStep>(attackConfig);
         }
 
         public override void StateExit()
@@ -118,8 +123,6 @@ namespace BushyCore
         {
 
         }
-
-        // public void OnComboCoyoteTimerEnd() => comboCounter = 0;
         protected override void AnimationUpdate() {}
 
         protected override void VelocityUpdate() {}

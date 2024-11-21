@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bhv5xfj6xpkug"]
+[gd_scene load_steps=16 format=3 uid="uid://bhv5xfj6xpkug"]
 
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/BattleState.cs" id="1_xcdp0"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/CombatStateMachine.cs" id="2_70a26"]
@@ -7,6 +7,8 @@
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/ComboAttackStep.cs" id="4_iiwny"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/PhaseCoreography.cs" id="5_l1a55"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/EndComboAttackStep.cs" id="5_ul7gd"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/AirAttackStep.cs" id="8_cjc0p"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AttackSteps/AirComboAttackStep.cs" id="9_e6yhv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q0nsg"]
 size = Vector2(20, 10)
@@ -74,3 +76,19 @@ hitboxShape = SubResource("RectangleShape2D_v5sal")
 attackVector = Vector2(38, -3)
 attackMovement = Vector2(30, 0)
 Coreographies = [SubResource("Resource_8g0p2")]
+
+[node name="AirAttack" parent="CombatStateMachine" node_paths=PackedStringArray("AirAttackCombo_2") instance=ExtResource("3_tl42v")]
+script = ExtResource("8_cjc0p")
+AirAttackCombo_2 = NodePath("../AirComboAttack")
+animationKey = "ground_attack_1"
+hitboxShape = SubResource("RectangleShape2D_gq3yv")
+attackVector = Vector2(30, 0)
+attackMovement = Vector2(50, 0)
+
+[node name="AirComboAttack" parent="CombatStateMachine" node_paths=PackedStringArray("AirAttackCombo_1") instance=ExtResource("3_tl42v")]
+script = ExtResource("9_e6yhv")
+AirAttackCombo_1 = NodePath("../AirAttack")
+animationKey = "ground_attack_2"
+hitboxShape = SubResource("RectangleShape2D_gq3yv")
+attackVector = Vector2(30, 0)
+attackMovement = Vector2(50, 0)

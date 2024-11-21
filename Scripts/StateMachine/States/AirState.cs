@@ -66,6 +66,7 @@ namespace BushyCore
             SetupFromConfigs(configs);
 			actionsComponent.DashActionStart += DashActionRequested;
 			actionsComponent.JumpActionEnd += JumpActionEnded;
+			actionsComponent.AttackActionStart += AttackActionRequested;
 
             if (canFallIntoHedge)
             {
@@ -99,6 +100,7 @@ namespace BushyCore
         {
 			actionsComponent.DashActionStart -= DashActionRequested;
 			actionsComponent.JumpActionEnd -= JumpActionEnded;
+			actionsComponent.AttackActionStart -= AttackActionRequested;
             
             if (!movementComponent.IsInHedge)
                 collisionComponent.ToggleHedgeCollision(true);
@@ -172,9 +174,10 @@ namespace BushyCore
             }
         }
 
-        public void OnHedgeEnter(HedgeNode hedgeNode)
-        {
-        }
+		public void AttackActionRequested()
+		{
+			RunAndEndState(() => actionsComponent.MainAttack());
+		}
 
         protected override void VelocityUpdate()
         {

@@ -66,6 +66,7 @@ namespace BushyCore
 
 			actionsComponent.DashActionStart += DashActionRequested;
 			actionsComponent.JumpActionEnd += JumpActionEnded;
+			actionsComponent.AttackActionStart += AttackActionRequested;
 
             base.collisionComponent.CallDeferred(
                 CharacterCollisionComponent.MethodName.SwitchShape, 
@@ -90,6 +91,7 @@ namespace BushyCore
         {
 			actionsComponent.DashActionStart -= DashActionRequested;
 			actionsComponent.JumpActionEnd -= JumpActionEnded;
+			actionsComponent.AttackActionStart -= AttackActionRequested;
             if (!movementComponent.IsInHedge)
                 collisionComponent.ToggleHedgeCollision(true);
             base.StateExit();
@@ -134,6 +136,11 @@ namespace BushyCore
 				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
 			}
 		} 
+
+		public void AttackActionRequested()
+		{
+			RunAndEndState(() => actionsComponent.MainAttack());
+		}
 
         public void JumpActionEnded()
         {
