@@ -7,11 +7,6 @@ public partial class VisualComponent : Node2D
 	private AnimationPlayer animPlayer;
 	AnimationLibrary library;
 
-    public override void _Ready()
-    {
-       	
-    }
-
     public void Init()
 	{
 		library = new AnimationLibrary();
@@ -45,5 +40,11 @@ public partial class VisualComponent : Node2D
 			animPlayer.Stop();
 			animPlayer.Play("animations/" + newAnimation.ResourceName);
 		}
+	}
+
+	public void Flip(bool horizontalFlip, bool verticalFlip)
+	{
+		sprite.FlipH = horizontalFlip;
+		sprite.FlipV = verticalFlip;
 	}
 }
