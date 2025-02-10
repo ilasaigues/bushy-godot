@@ -14,9 +14,11 @@ namespace BushyCore
 
         private AxisMovement xAxisMovement;
         private AxisMovement yAxisMovement;
-		public override void InitState(MovementComponent mc, CharacterVariables cv, PlayerActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
+        private bool airborneCombat;
+		public override void InitState(MovementComponent mc, CharacterVariables cv, PlayerActionsComponent ac, AnimationComponent anim, 
+            CharacterCollisionComponent col, StateMachine sm)
 		{
-			base.InitState(mc, cv, ac, anim, col);
+			base.InitState(mc, cv, ac, anim, col, sm);
 
             // Subscribe the SM Battle state to the Combate SM signlas for exiting/updating animations
             CombatStateMachine.CombateAnimationUpdate += OnBattleAnimationChange;
@@ -24,6 +26,8 @@ namespace BushyCore
 
             CombatStateMachine.CombatMovementUpdate += OnCombatMovementUpdate;
             CombatStateMachine.CombatAttackHit += OnCombatAttackHit;
+
+            CombatStateMachine.InitMachine(mc);
 
             // Create axis components with no max speed that will always be aplying the intended acceleration
             this.xAxisMovement = new AxisMovement.Builder()
@@ -40,6 +44,8 @@ namespace BushyCore
         protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
         {
             base.StateEnterInternal(configs);
+
+            this.airborneCombat = !movementComponent.IsOnFloor;
             
             // Subscribe Combat State machine to action requests
             actionsComponent.AttackActionStart += CombatStateMachine.BasicAttackRequested;
@@ -50,8 +56,11 @@ namespace BushyCore
             animationComponent.AnimationFinished += CombatStateMachine.OnAnimationStepFinished;
 
 
-            // We should really use this to have more dynamic movement in attacks. Momentum and such
-            movementComponent.Velocities[VelocityType.MainMovement] = Vector2.Zero;
+            // // We should really use this to have more dynamic movement in attacks. Momentum and such
+            // movementComponent.Velocities[VelocityType.MainMovement] = Vector2.Zero;
+
+            // // We should really use this to have more dynamic movement in attacks. Momentum and such
+            // movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 
             var attackDirection = actionsComponent.MovementDirection == Vector2.Zero 
                 ? movementComponent.FacingDirection
@@ -73,6 +82,8 @@ namespace BushyCore
             actionsComponent.AttackActionStart -= CombatStateMachine.BasicAttackRequested;
 
             actionsComponent.MovementDirectionChange -= OnMovementDirectionChange;
+
+            this.stateMachine.MachineState.X_AxisControlEnabled = true;
         }
 
         public override void StateUpdateInternal(double delta)
@@ -84,10 +95,15 @@ namespace BushyCore
             yAxisMovement.HandleMovement(delta);
             Vector2 velocity = new Vector2((float)xAxisMovement.Velocity, (float)yAxisMovement.Velocity);
             movementComponent.Velocities[VelocityType.Locked] = velocity;
+
+            this.stateMachine.MachineState.CurrentAnimationLevel = CascadePhaseConfig.AnimationLevel.UNINTERRUPTIBLE;
+            this.stateMachine.MachineState.IsCommitedAction = true;
+            this.stateMachine.MachineState.X_AxisControlEnabled = airborneCombat ? true : !movementComponent.IsOnFloor;
         } 
 
         public void OnBattleAnimationChange(string animationKey, Vector2 direction)
         {
+            this.airborneCombat = !movementComponent.IsOnFloor;
             movementComponent.StartCoreography();
             movementComponent.CoreographFaceDirection(direction);
             animationComponent.Play(animationKey);
@@ -96,11 +112,7 @@ namespace BushyCore
         public void OnBattleEnd()
         {
             RunAndEndState(() => {
-                if (movementComponent.IsOnFloor)
-                {
-                    actionsComponent.Land();
-                }
-                actionsComponent.Fall();
+                actionsComponent.Idle(this.stateMachine);
             });
         }
 

@@ -38,9 +38,10 @@ namespace BushyCore
 			CharacterVariables cv,
 			PlayerActionsComponent ac,
 			AnimationComponent anim,
-			CharacterCollisionComponent col)
+			CharacterCollisionComponent col,
+			StateMachine sm)
         {
-            base.InitState(mc, cv, ac, anim, col);
+            base.InitState(mc, cv, ac, anim, col, sm);
 
 			var builder = new AxisMovement.Builder()
 				.Acc(characterVariables.HedgeAcceleration)
@@ -177,19 +178,19 @@ namespace BushyCore
 				{
 					movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(this.characterVariables.DashJumpSpeed * Mathf.Sign(direction.X),0);
 					actionsComponent.CanDash = false;
-					actionsComponent.Jump(this.characterVariables.DashJumpSpeed, false, true);
+					actionsComponent.Jump(this.stateMachine, this.characterVariables.DashJumpSpeed, false, true);
 				}
 					
 				if (isExitDashBuffer)
 				{
 					actionsComponent.CanDash = false;
-					actionsComponent.Dash(direction);
+					actionsComponent.Dash(this.stateMachine, direction);
 				}
 					
 				if (isExitJumpBuffer) 
-					actionsComponent.Jump();
+					actionsComponent.Jump(this.stateMachine);
 				
-				actionsComponent.Fall();
+				actionsComponent.Fall(this.stateMachine);
 			});
 		}
 

@@ -19,24 +19,26 @@ namespace BushyCore
 		[Export]
 		private CharacterCollisionComponent collisionComponent;
 
+		public CascadePhaseConfig MachineState { get; set; } 
 		private Dictionary<System.Type, BaseState> states;
 		private BaseState currentState;
 		public override void _Ready()
 		{	
-			actionsComponent.SetStateMachine(this);
 			states = GetChildren()
 				.Where(n => n is BaseState)
 				.Select(bs => {
 					var baseState = (BaseState) bs;
-					baseState.InitState(movementComponent, characterVariables, actionsComponent, animationComponent, collisionComponent);
+					baseState.InitState(movementComponent, characterVariables, actionsComponent, animationComponent, collisionComponent, this);
 					return baseState;
 				})
 				.ToDictionary(s => s.GetType());
 
 			currentState = states.Values.First();
+			GD.Print(currentState.GetName());
+			currentState.StateEnter();
 		}
 
-		public override void _Process(double delta)
+		public void MachineProcess(double delta)
 		{
 			currentState.StateUpdate(delta);
 		}

@@ -19,7 +19,7 @@ namespace BushyCore
 
         private Dictionary<Type, AttackStep> attackSteps;
         private AttackStep currentAttack;
-
+        private MovementComponent MovementComponent;
         public override void _Ready()
 		{	
 			attackSteps = GetChildren()
@@ -37,6 +37,15 @@ namespace BushyCore
 				.ToDictionary(s => s.GetType());
 			currentAttack = attackSteps.Values.First();
 		}
+        public void InitMachine(MovementComponent movementComponent)
+        {
+            this.MovementComponent = movementComponent;
+            foreach (var step in attackSteps.Values)
+            {
+                step.MovementComponent = this.MovementComponent;
+            }
+            
+        }
         public void CombatUpdate(double delta) 
         {
             currentAttack.CombatUpdate(delta);
@@ -77,12 +86,10 @@ namespace BushyCore
         
         public void OnAnimationStepChange(int phase) => currentAttack.ChangePhase(phase); 
 
-        public void OnAnimationStepFinished(StringName _animationKey) => currentAttack.ChangePhase(4); 
+        public void OnAnimationStepFinished(StringName _animationKey) { Debug.WriteLine("animation ended"); currentAttack.ChangePhase(4); } 
 
         public void BasicAttackRequested() => currentAttack.HandleAttackAction();
-        // public void BasicAttackRequested() => currentAttack.HandleAttackAction();
-        // public void BasicAttackRequested() => currentAttack.HandleAttackAction();
-
+        
         public void HandleCoreography(Vector2 velocity, Vector2 acceleration)
         {
             EmitSignal(SignalName.CombatMovementUpdate, velocity, acceleration);

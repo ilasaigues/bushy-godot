@@ -100,7 +100,7 @@ namespace BushyCore
 			if (!movementComponent.IsInHedge) return;
 
 			animationComponent.Play("turn");
-			actionsComponent.EnterHedge(movementComponent.HedgeEntered, direction * Vector2.Right);
+			actionsComponent.EnterHedge(this.stateMachine, movementComponent.HedgeEntered, direction * Vector2.Right);
 		}
     	protected override void VelocityUpdate() 
 		{
@@ -138,7 +138,7 @@ namespace BushyCore
 					case 0:
 						DurationTimer.Stop();
 						movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);
-						RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed, false, true));
+						RunAndEndState(() => actionsComponent.Jump(this.stateMachine, this.characterVariables.DashJumpSpeed, false, true));
 						break;
 					case 2:
 						bufferJump = true;
@@ -170,9 +170,9 @@ namespace BushyCore
 						if (movementComponent.IsOnFloor)
 						{
 							animationComponent.Play("turn");
-							actionsComponent.Land(StateConfig.InitialGroundedJumpBuffer(bufferJump));
+							actionsComponent.Land(this.stateMachine, StateConfig.InitialGroundedJumpBuffer(bufferJump));
 						}
-						actionsComponent.Fall();
+						actionsComponent.Fall(this.stateMachine);
 					});
 					break;
 			}

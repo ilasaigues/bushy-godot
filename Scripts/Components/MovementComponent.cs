@@ -188,6 +188,8 @@ public partial class MovementComponent : Node2D
 	}
 	public void Move(CharacterBody2D characterBody2D)
 	{
+		// Debug.WriteLine("MOVE");
+		// Debug.WriteLine(this.Velocities[VelocityType.MainMovement]);
 		characterBody2D.Velocity = CurrentVelocity;
 		ApplyCourseCorrection(characterBody2D);
 		characterBody2D.MoveAndSlide();

@@ -43,6 +43,7 @@ namespace BushyCore
         [Node]
         protected Timer CoreographyTimer;
         public HitboxComponent HitboxComponent;
+        public MovementComponent MovementComponent;
 
         public override void _Ready()
         {
@@ -78,6 +79,7 @@ namespace BushyCore
         {
             var phasesCount = Enum.GetValues<AttackStepPhase>().Count();
             
+                Debug.WriteLine($"Attack phase changed reached {phase}");
             if (phase >= phasesCount)
             {
                 EmitSignal(SignalName.AttackStepCompleted);

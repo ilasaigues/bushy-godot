@@ -27,9 +27,10 @@ namespace BushyCore
             }
         }
 
-        public override void InitState(MovementComponent mc, CharacterVariables cv, PlayerActionsComponent ac, AnimationComponent anim, CharacterCollisionComponent col)
+        public override void InitState(MovementComponent mc, CharacterVariables cv, PlayerActionsComponent ac, AnimationComponent anim, 
+            CharacterCollisionComponent col, StateMachine sm)
         {
-            base.InitState(mc, cv, ac, anim, col);
+            base.InitState(mc, cv, ac, anim, col, sm);
 
 			this.xAxisMovement = new AxisMovement.Builder()
 				.Acc(characterVariables.AirHorizontalAcceleration)
@@ -46,6 +47,10 @@ namespace BushyCore
 
         protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
+			var animationLevel = this.stateMachine.MachineState.CurrentAnimationLevel;
+
+			if (animationLevel == CascadePhaseConfig.AnimationLevel.UNINTERRUPTIBLE) return;
+
             animationComponent.ClearQueue();
             animationComponent.Play("jump");
             animationComponent.Queue("ascent");
@@ -66,7 +71,6 @@ namespace BushyCore
 
 			actionsComponent.DashActionStart += DashActionRequested;
 			actionsComponent.JumpActionEnd += JumpActionEnded;
-			actionsComponent.AttackActionStart += AttackActionRequested;
 
             base.collisionComponent.CallDeferred(
                 CharacterCollisionComponent.MethodName.SwitchShape, 
@@ -91,7 +95,6 @@ namespace BushyCore
         {
 			actionsComponent.DashActionStart -= DashActionRequested;
 			actionsComponent.JumpActionEnd -= JumpActionEnded;
-			actionsComponent.AttackActionStart -= AttackActionRequested;
             if (!movementComponent.IsInHedge)
                 collisionComponent.ToggleHedgeCollision(true);
             base.StateExit();
@@ -114,37 +117,33 @@ namespace BushyCore
         void CheckTransitions()
         {
             if (CanJumpIntoHedge && movementComponent.IsInHedge)
-                actionsComponent.EnterHedge(movementComponent.HedgeEntered, (float) xAxisMovement.Velocity * Vector2.Right);
+                actionsComponent.EnterHedge(this.stateMachine, movementComponent.HedgeEntered, (float) xAxisMovement.Velocity * Vector2.Right);
             
             if (actionsComponent.IsJumpCancelled)
-                actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), xAxisMovement.HasOvershootDeceleration, CanJumpIntoHedge);
+                actionsComponent.Fall(this.stateMachine, new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), xAxisMovement.HasOvershootDeceleration, CanJumpIntoHedge);
 
             if (movementComponent.IsOnCeiling)
-                actionsComponent.Fall();
+                actionsComponent.Fall(this.stateMachine);
         }
 
         void DurationTimerTimeout()
         {
             if (!this.IsActive) return;
-            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpSpeed), xAxisMovement.HasOvershootDeceleration, CanJumpIntoHedge));
+            RunAndEndState(() => actionsComponent.Fall(this.stateMachine, new Vector2(targetVelocity, characterVariables.JumpSpeed), xAxisMovement.HasOvershootDeceleration, CanJumpIntoHedge));
         }
 
 		public void DashActionRequested()
 		{
-			if (actionsComponent.CanDash)
+			var isCommitedToAction = this.stateMachine.MachineState.IsCommitedAction;
+			if (actionsComponent.CanDash && !isCommitedToAction)
 			{
-				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
+				RunAndEndState(() => actionsComponent.Dash(this.stateMachine, this.IntendedDirection));
 			}
 		} 
 
-		public void AttackActionRequested()
-		{
-			RunAndEndState(() => actionsComponent.MainAttack());
-		}
-
         public void JumpActionEnded()
         {
-            RunAndEndState(() => actionsComponent.Fall(new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), canFallIntoHedge: CanJumpIntoHedge));
+            RunAndEndState(() => actionsComponent.Fall(this.stateMachine, new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), canFallIntoHedge: CanJumpIntoHedge));
         }
     }
 }

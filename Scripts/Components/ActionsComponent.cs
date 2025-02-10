@@ -102,47 +102,52 @@ public partial class ActionsComponent : Node
 	}
 
 	// State machine changes WILL throw state end exceptions. After this method is called, state will end immediately 
-	public void Jump(params StateConfig.IBaseStateConfig[] configs)
+	public void Jump(StateMachine machine, params StateConfig.IBaseStateConfig[] configs)
 	{
-		this.stateMachine.ChangeState<JumpState>(configs);
+		machine.ChangeState<JumpState>(configs);
 	}
 
-	public void Jump(float horizontalVelocity, bool isConstantVel = false, bool canEnterHedge = false)
+	public void Jump(StateMachine machine, float horizontalVelocity, bool isConstantVel = false, bool canEnterHedge = false)
 	{
-		this.stateMachine.ChangeState<JumpState>(StateConfig.InitialVelocityVector(new Vector2(horizontalVelocity,0), isConstantVel, canEnterHedge));
+		machine.ChangeState<JumpState>(StateConfig.InitialVelocityVector(new Vector2(horizontalVelocity,0), isConstantVel, canEnterHedge));
 	}
 	// State machine changes WILL throw state end exceptions. After this method is called, state will end immediately
-	public void Fall()
+	public void Fall(StateMachine machine)
 	{
-		this.stateMachine.ChangeState<AirState>(StateConfig.InitialVerticalVelocity(0));
+		machine.ChangeState<AirState>(StateConfig.InitialVerticalVelocity(0));
 	}
 	// State machine changes WILL throw state end exceptions. After this method is called, state will end immediately
-	public void Fall(Vector2 previousVel, bool isConstantHorizontal = false, bool canFallIntoHedge = false)
+	public void Fall(StateMachine machine, Vector2 previousVel, bool isConstantHorizontal = false, bool canFallIntoHedge = false)
 	{
-		this.stateMachine.ChangeState<AirState>(StateConfig.InitialVelocityVector(previousVel, isConstantHorizontal, canFallIntoHedge));
+		machine.ChangeState<AirState>(StateConfig.InitialVelocityVector(previousVel, isConstantHorizontal, canFallIntoHedge));
 	}
 	// State machine changes WILL throw state and axceptions. After this method is called, state will end immediately
-	public void Dash(Vector2 dashDir)
+	public void Dash(StateMachine machine, Vector2 dashDir)
 	{
 		this.LastDashTime = Time.GetTicksMsec();
-		this.stateMachine.ChangeState<DashState>(StateConfig.InitialVelocityVector(dashDir));
+		machine.ChangeState<DashState>(StateConfig.InitialVelocityVector(dashDir));
 	}
-	public void Land(params StateConfig.IBaseStateConfig[] configs)
+	public void Land(StateMachine machine, params StateConfig.IBaseStateConfig[] configs)
 	{
-		this.stateMachine.ChangeState<GroundedState>(configs);
-	}
-
-	public void EnterHedge(HedgeNode hedgeBody, Vector2 direction)
-	{
-		this.stateMachine.ChangeState<HedgeState>(StateConfig.InitialHedgeCollider(hedgeBody, direction));	
-	}
-	public void EnterHedge(params StateConfig.IBaseStateConfig[] configs)
-	{
-		this.stateMachine.ChangeState<HedgeState>(configs);
+		machine.ChangeState<GroundedState>(configs);
 	}
 
-	public void MainAttack(params StateConfig.IBaseStateConfig[] configs)
+	public void EnterHedge(StateMachine machine, HedgeNode hedgeBody, Vector2 direction)
 	{
-		this.stateMachine.ChangeState<BattleState>(configs);
+		machine.ChangeState<HedgeState>(StateConfig.InitialHedgeCollider(hedgeBody, direction));	
+	}
+	public void EnterHedge(StateMachine machine, params StateConfig.IBaseStateConfig[] configs)
+	{
+		machine.ChangeState<HedgeState>(configs);
+	}
+
+	public void MainAttack(StateMachine machine, params StateConfig.IBaseStateConfig[] configs)
+	{
+		machine.ChangeState<BattleState>(configs);
+	}
+
+	public void Idle(StateMachine machine)
+	{
+		machine.ChangeState<IdleState>();
 	}
 }
