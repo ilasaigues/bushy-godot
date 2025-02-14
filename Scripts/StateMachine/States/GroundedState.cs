@@ -22,9 +22,10 @@ namespace BushyCore
 			this.WireNodes();
 		}
 
-		public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationPlayer anim, CharacterCollisionComponent col)
+		public override void InitState(MovementComponent mc, CharacterVariables cv, PlayerActionsComponent ac, AnimationComponent anim, 
+			CharacterCollisionComponent col, StateMachine sm)
 		{
-			base.InitState(mc, cv, ac, anim, col);
+			base.InitState(mc, cv, ac, anim, col, sm);
 
 			this.xAxisMovement = new AxisMovement.Builder()
 				.Acc(characterVariables.GroundHorizontalAcceleration)
@@ -34,6 +35,7 @@ namespace BushyCore
 				.TurnDec(characterVariables.HorizontalTurnDeceleration)
 				.Movement(mc)
 				.Direction(() => { return ac.MovementDirection.X; })
+				.ColCheck((dir) => { return mc.IsOnWall; })
 				.Variables(cv)
 				.Build();
 			
@@ -44,6 +46,7 @@ namespace BushyCore
 			canBufferJump = true;
 			SetCanDash();
 			
+			Debug.WriteLine("GROUNDED " + movementComponent.Velocities[VelocityType.MainMovement].X);
 			xAxisMovement.SetInitVel(movementComponent.Velocities[VelocityType.MainMovement].X);
 
 			actionsComponent.CanJump = true;
@@ -95,6 +98,10 @@ namespace BushyCore
 
 		protected override void AnimationUpdate()
 		{
+			var animationLevel = this.stateMachine.MachineState.CurrentAnimationLevel;
+
+			if (animationLevel == CascadePhaseConfig.AnimationLevel.UNINTERRUPTIBLE) return;
+
 			float direction = actionsComponent.MovementDirection.X;
 
 			if(direction != 0)
@@ -129,23 +136,30 @@ namespace BushyCore
 
 		void CheckTransitions()
 		{
-			if (canBufferJump && actionsComponent.IsJumpRequested && actionsComponent.CanJump)
-			{	
-				actionsComponent.Jump();
-			}
+			var isCommitedToAction = this.stateMachine.MachineState.IsCommitedAction;
 
+			if (!isCommitedToAction && canBufferJump && actionsComponent.IsJumpRequested && actionsComponent.CanJump)
+			{		
+				if(actionsComponent.CanDash && actionsComponent.IsSpeeding)
+				{
+					actionsComponent.Dash(this.stateMachine, IntendedDirection);
+				}
+				actionsComponent.Jump(this.stateMachine);
+			}
+		
 			if (movementComponent.SnappedToFloor) return;
 			
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 			
-			actionsComponent.Fall();
+			actionsComponent.Fall(this.stateMachine);
 		}
 
 		public void DashActionRequested()
 		{
-			if (actionsComponent.CanDash)
+			var isCommitedToAction = this.stateMachine.MachineState.IsCommitedAction;
+			if (actionsComponent.CanDash && !isCommitedToAction)
 			{
-				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
+				RunAndEndState(() => actionsComponent.Dash(this.stateMachine, this.IntendedDirection));
 			}
 		}
 
@@ -153,10 +167,16 @@ namespace BushyCore
 		{
 			if (actionsComponent.CanJump)
 			{
-				RunAndEndState(() => actionsComponent.Jump());
+				RunAndEndState(() => 
+				{
+					if(actionsComponent.CanDash && actionsComponent.IsSpeeding)
+					{
+						actionsComponent.Dash(this.stateMachine, IntendedDirection);
+					}
+					actionsComponent.Jump(this.stateMachine);
+				});
 			}
 		} 
-
 		void HandleMovement(double deltaTime)
 		{
 			xAxisMovement.HandleMovement(deltaTime);
@@ -183,9 +203,19 @@ namespace BushyCore
 
 		protected override void VelocityUpdate()
 		{
+			var machineState = this.stateMachine.MachineState;
+			if (machineState != null ? !machineState.X_AxisControlEnabled : false)
+			{
+				movementComponent.Velocities[VelocityType.MainMovement] = Vector2.Zero;
+				movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
+				return;
+			}
+
 			var downwardVel = movementComponent.IsOnEdge ? 0 : 15;
 			var slopeVerticalComponent = Mathf.Tan(movementComponent.FloorAngle) * (float) xAxisMovement.Velocity;
-			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorNormal *  (float) verticalVelocity * downwardVel;
+			movementComponent.Velocities[VelocityType.Gravity] = movementComponent.FloorAngle != 0 ? 
+				movementComponent.FloorNormal *  (float) verticalVelocity * downwardVel
+				: Vector2.Zero;
 			movementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float) xAxisMovement.Velocity, slopeVerticalComponent);
 		}
 	}

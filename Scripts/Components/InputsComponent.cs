@@ -8,20 +8,26 @@ namespace BushyCore
 	public partial class InputsComponent : Node
 	{
 		[Export]
-		private ActionsComponent actionsComponent;
+		private PlayerActionsComponent actionsComponent;
 
 		[Export]
 		private float JumpBufferTime;
 		[Export]
 		private float DashBufferTime;
+		[Export]
+		private float AttackBufferTime;
 
 		public override void _Ready()
 		{
 			InputManager.Instance.HorizontalAxis.OnAxisUpdated += OnHorizontalAxisChanged;
 			InputManager.Instance.VerticalAxis.OnAxisUpdated += OnVerticalAxisChanged;
 			InputManager.Instance.DashAction.OnInputJustPressed += OnDashRequested;
+			InputManager.Instance.DashAction.OnInputReleased += OnDashReleased;
 			InputManager.Instance.JumpAction.OnInputJustPressed += OnJumpRequested;
 			InputManager.Instance.JumpAction.OnInputReleased += OnJumpReleased;
+			InputManager.Instance.AttackAction.OnInputJustPressed += OnAttackRequested;
+			InputManager.Instance.BurstAction.OnInputJustPressed += OnBurstRequested;
+			InputManager.Instance.HarpoonAction.OnInputJustPressed += OnHarpoonRequested;
 		}
 
 		public override void _ExitTree()
@@ -33,6 +39,9 @@ namespace BushyCore
 			InputManager.Instance.DashAction.OnInputReleased -= OnDashReleased;
 			InputManager.Instance.JumpAction.OnInputJustPressed -= OnJumpRequested;
 			InputManager.Instance.JumpAction.OnInputReleased -= OnJumpReleased;
+			InputManager.Instance.AttackAction.OnInputJustPressed -= OnAttackRequested;
+			InputManager.Instance.BurstAction.OnInputJustPressed -= OnBurstRequested;
+			InputManager.Instance.HarpoonAction.OnInputJustPressed -= OnHarpoonRequested;
 		}
 
 		private void OnDashRequested() 
@@ -43,10 +52,43 @@ namespace BushyCore
 		{
 			actionsComponent.IsDashCancelled = true;
 		}
+		private void OnAttackRequested()
+		{
+			actionsComponent.IsAttackRequested = true;
+		}
+		private void OnBurstRequested()
+		{
+			actionsComponent.IsBurstRequested = true;
+		}
+		private void OnHarpoonRequested()
+		{
+			actionsComponent.IsHarpoonRequested = true;
+		}
+		private void AttackCheck()
+		{
+			if (actionsComponent.IsAttackRequested && InputManager.Instance.AttackAction.TimePressed > AttackBufferTime)
+			{
+				actionsComponent.IsAttackRequested = false;
+			}
+		}
+		private void BurstCheck()
+		{
+			if (actionsComponent.IsBurstRequested && InputManager.Instance.BurstAction.TimePressed > AttackBufferTime)
+			{
+				actionsComponent.IsBurstRequested = false;
+			}
+		}
+		private void HarpoonCheck()
+		{
+			if (actionsComponent.IsHarpoonRequested && InputManager.Instance.HarpoonAction.TimePressed > AttackBufferTime)
+			{
+				actionsComponent.IsHarpoonRequested = false;
+			}
+		}
 
 		private void DashCheck()
 		{
-			if (InputManager.Instance.DashAction.TimePressed > DashBufferTime)
+			if (actionsComponent.IsDashRequested && InputManager.Instance.DashAction.TimePressed > DashBufferTime)
 			{
 				actionsComponent.IsDashRequested = false;
 			}
@@ -75,6 +117,9 @@ namespace BushyCore
 		{
 			this.DashCheck();
 			this.JumpCheck();
+			this.AttackCheck();
+			this.BurstCheck();
+			this.HarpoonCheck();
 		}
 
 		private void OnHorizontalAxisChanged(float value)

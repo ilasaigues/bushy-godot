@@ -48,11 +48,16 @@ namespace BushyCore
 			DurationTimer.WaitTime = characterVariables.DashInitTime;
 			DurationTimer.Start();
 			movementComponent.CourseCorrectionEnabled = true;
+
+			constantVelocity.X = characterVariables.DashVelocity;
+			animationComponent.Play("dash_end");
+
+            base.collisionComponent.CallDeferred(
+                CharacterCollisionComponent.MethodName.SwitchShape, 
+                (int) CharacterCollisionComponent.ShapeMode.CILINDER);
 			
 			collisionComponent.ToggleHedgeCollision(false);
-
-			if (movementComponent.IsOnFloor)
-				collisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.CILINDER);
+				
 		}
 
 
@@ -95,11 +100,10 @@ namespace BushyCore
 			if (!movementComponent.IsInHedge) return;
 
 			animationComponent.Play("turn");
-			actionsComponent.EnterHedge(movementComponent.HedgeEntered, direction * Vector2.Right);
+			actionsComponent.EnterHedge(this.stateMachine, movementComponent.HedgeEntered, direction * Vector2.Right);
 		}
     	protected override void VelocityUpdate() 
 		{
-			if (state == 0) return;
 
 			float verticalComponent = 0;
 
@@ -134,7 +138,7 @@ namespace BushyCore
 					case 0:
 						DurationTimer.Stop();
 						movementComponent.Velocities[VelocityType.MainMovement] = new Vector2(characterVariables.DashJumpSpeed * direction,0);
-						RunAndEndState(() => actionsComponent.Jump(this.characterVariables.DashJumpSpeed, false, true));
+						RunAndEndState(() => actionsComponent.Jump(this.stateMachine, this.characterVariables.DashJumpSpeed, false, true));
 						break;
 					case 2:
 						bufferJump = true;
@@ -152,8 +156,6 @@ namespace BushyCore
 				case 0:
 					DurationTimer.Stop();
 					DurationTimer.WaitTime = characterVariables.DashTime;
-					constantVelocity.X = characterVariables.DashVelocity;
-					animationComponent.Play("dash_end");
 					DurationTimer.Start();
 					break;
 				case 1:
@@ -168,9 +170,9 @@ namespace BushyCore
 						if (movementComponent.IsOnFloor)
 						{
 							animationComponent.Play("turn");
-							actionsComponent.Land(StateConfig.InitialGroundedJumpBuffer(bufferJump));
+							actionsComponent.Land(this.stateMachine, StateConfig.InitialGroundedJumpBuffer(bufferJump));
 						}
-						actionsComponent.Fall();
+						actionsComponent.Fall(this.stateMachine);
 					});
 					break;
 			}

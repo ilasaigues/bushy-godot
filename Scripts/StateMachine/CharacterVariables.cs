@@ -5,6 +5,7 @@ namespace BushyCore
     [Tool]
     public partial class CharacterVariables : Resource
     {
+        [ExportCategory("Grounded")]
         [Export] 
         public int GroundHorizontalAcceleration { get; private set; }
         [Export] 
@@ -17,7 +18,7 @@ namespace BushyCore
         public int GroundHorizontalOvercappedDeceleration { get; private set; }
         [Export]
         public int MaxOnWallHorizontalMovementSpeed { get; private set; }
-
+        [ExportCategory("Air")]
         [Export]
         public int JumpSpeed { get; private set; }
         [Export]
@@ -43,7 +44,7 @@ namespace BushyCore
         public Vector2 AirSpeedThresholds { get; private set; }
         [Export]
         public float AirApexGravity { get; private set; }
-
+        [ExportCategory("Dash")]
         [Export]
         public float DashInitTime { get; private set; }
         [Export]
@@ -59,7 +60,7 @@ namespace BushyCore
         [Export]
         public float DashJumpSpeed { get; private set; }
         
-
+        [ExportCategory("Hedge")]
         [Export] 
         public int HedgeAcceleration { get; private set; }
         [Export] 

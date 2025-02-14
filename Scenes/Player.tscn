@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=43 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
@@ -10,13 +10,18 @@
 [ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine/PlayerVariables.tres" id="6_pknnn"]
 [ext_resource type="PackedScene" uid="uid://bm6r2edmdx3an" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
 [ext_resource type="PackedScene" uid="uid://btpni3inhihi7" path="res://Scenes/States/GroundedState.tscn" id="7_jmv6p"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/CascadeMachine.cs" id="7_qq6ox"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/StateMachine.cs" id="8_5bl6f"]
 [ext_resource type="PackedScene" uid="uid://dv74lq75rbnkf" path="res://Scenes/States/JumpState.tscn" id="8_e1xim"]
 [ext_resource type="Script" path="res://Scripts/Components/InputsComponent.cs" id="9_03rmc"]
 [ext_resource type="PackedScene" uid="uid://bxnlnnba3b4fj" path="res://Scenes/States/AirState.tscn" id="9_n3pxo"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/IdleState.cs" id="9_w141r"]
 [ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
 [ext_resource type="PackedScene" uid="uid://ikw2snd4s3rd" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
 [ext_resource type="PackedScene" uid="uid://pwejeh2nevkj" path="res://Scenes/States/HedgeState.tscn" id="12_sohlx"]
+[ext_resource type="PackedScene" uid="uid://bhv5xfj6xpkug" path="res://Scenes/States/BattleState.tscn" id="14_a32x2"]
 [ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
+[ext_resource type="Script" path="res://Scripts/Components/AnimationComponent.cs" id="16_w750l"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_raavv"]
 size = Vector2(8, 13)
@@ -30,6 +35,21 @@ radius = 5.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_j2efp"]
 radius = 3.0
+
+[sub_resource type="Animation" id="Animation_iwg24"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [17]
+}
 
 [sub_resource type="Animation" id="Animation_32tpq"]
 resource_name = "ascent"
@@ -99,6 +119,111 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
 "values": [17, 18, 19]
+}
+
+[sub_resource type="Animation" id="Animation_b35n3"]
+resource_name = "ground_attack_1"
+length = 0.500008
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0833333, 0.166667, 0.25, 0.333333, 0.416667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [21, 22, 23, 24, 25, 26]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimationComponent")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.166667, 0.28, 0.416667),
+"transitions": PackedFloat32Array(1, 1, 1),
+"values": [{
+"args": [1],
+"method": &"ChangeAnimationStep"
+}, {
+"args": [2],
+"method": &"ChangeAnimationStep"
+}, {
+"args": [3],
+"method": &"ChangeAnimationStep"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_fcr6u"]
+resource_name = "ground_attack_2"
+length = 0.500008
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0833333, 0.166667, 0.25, 0.333333, 0.416667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [27, 28, 29, 30, 31, 32]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimationComponent")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.166667, 0.3641),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [1],
+"method": &"ChangeAnimationStep"
+}, {
+"args": [3],
+"method": &"ChangeAnimationStep"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_a51xw"]
+resource_name = "ground_attack_3"
+length = 1.33334
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2DComponent:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0833333, 0.166667, 0.25, 0.333333, 0.416667, 0.5, 0.583333, 0.666667, 0.75, 0.833333, 0.916667, 1, 1.08333, 1.16667, 1.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimationComponent")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.833333, 1.08333),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [1],
+"method": &"ChangeAnimationStep"
+}, {
+"args": [3],
+"method": &"ChangeAnimationStep"
+}]
 }
 
 [sub_resource type="Animation" id="Animation_6ovo3"]
@@ -224,10 +349,14 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_uncl2"]
 _data = {
+"RESET": SubResource("Animation_iwg24"),
 "ascent": SubResource("Animation_32tpq"),
 "dash_end": SubResource("Animation_dq7ya"),
 "dash_start": SubResource("Animation_0av21"),
 "fall": SubResource("Animation_digef"),
+"ground_attack_1": SubResource("Animation_b35n3"),
+"ground_attack_2": SubResource("Animation_fcr6u"),
+"ground_attack_3": SubResource("Animation_a51xw"),
 "idle": SubResource("Animation_6ovo3"),
 "jump": SubResource("Animation_v6fop"),
 "land": SubResource("Animation_ejrbn"),
@@ -239,12 +368,10 @@ _data = {
 
 [node name="Player" type="CharacterBody2D"]
 z_index = 1
-position = Vector2(-2, 1)
 collision_mask = 15
 script = ExtResource("1_1vn0y")
 
 [node name="AreaDetectionComponent" parent="." instance=ExtResource("2_kbshe")]
-position = Vector2(-1, 0)
 scale = Vector2(0.7, 0.7)
 
 [node name="CollisionComponent" type="CollisionShape2D" parent="." node_paths=PackedStringArray("AreaDetectionComponent")]
@@ -258,35 +385,49 @@ AreaDetectionComponent = NodePath("../AreaDetectionComponent")
 
 [node name="Sprite2DComponent" type="Sprite2D" parent="." node_paths=PackedStringArray("movementComponent")]
 texture_filter = 1
-position = Vector2(3, -1.5)
 texture = ExtResource("2_c3m6v")
-offset = Vector2(-2, 0)
 hframes = 9
 vframes = 8
-frame = 13
+frame = 17
 script = ExtResource("3_2v3uq")
 movementComponent = NodePath("../MovementComponent")
 
 [node name="MovementComponent" parent="." node_paths=PackedStringArray("CollisionComponent") instance=ExtResource("3_wt20f")]
 CollisionComponent = NodePath("../CollisionComponent")
 
-[node name="StateMachine" parent="." node_paths=PackedStringArray("movementComponent", "actionsComponent", "animationComponent", "collisionComponent") instance=ExtResource("4_wtgcq")]
-movementComponent = NodePath("../MovementComponent")
+[node name="CascadeMachine" type="Node2D" parent="."]
+script = ExtResource("7_qq6ox")
+
+[node name="ActionsMachine" type="Node2D" parent="CascadeMachine" node_paths=PackedStringArray("movementComponent", "actionsComponent", "animationComponent", "collisionComponent")]
+script = ExtResource("8_5bl6f")
+movementComponent = NodePath("../../MovementComponent")
 characterVariables = ExtResource("6_pknnn")
-actionsComponent = NodePath("../ActionsComponent")
-animationComponent = NodePath("../AnimationComponent")
-collisionComponent = NodePath("../CollisionComponent")
+actionsComponent = NodePath("../../ActionsComponent")
+animationComponent = NodePath("../../AnimationComponent")
+collisionComponent = NodePath("../../CollisionComponent")
 
-[node name="GroundedState" parent="StateMachine" instance=ExtResource("7_jmv6p")]
+[node name="IdleState" type="Node2D" parent="CascadeMachine/ActionsMachine"]
+script = ExtResource("9_w141r")
 
-[node name="JumpState" parent="StateMachine" instance=ExtResource("8_e1xim")]
+[node name="BattleState" parent="CascadeMachine/ActionsMachine" instance=ExtResource("14_a32x2")]
 
-[node name="AirState" parent="StateMachine" instance=ExtResource("9_n3pxo")]
+[node name="MovementMachine" parent="CascadeMachine" node_paths=PackedStringArray("movementComponent", "actionsComponent", "animationComponent", "collisionComponent") instance=ExtResource("4_wtgcq")]
+movementComponent = NodePath("../../MovementComponent")
+characterVariables = ExtResource("6_pknnn")
+actionsComponent = NodePath("../../ActionsComponent")
+animationComponent = NodePath("../../AnimationComponent")
+collisionComponent = NodePath("../../CollisionComponent")
+
+[node name="GroundedState" parent="CascadeMachine/MovementMachine" instance=ExtResource("7_jmv6p")]
+
+[node name="JumpState" parent="CascadeMachine/MovementMachine" instance=ExtResource("8_e1xim")]
+
+[node name="AirState" parent="CascadeMachine/MovementMachine" instance=ExtResource("9_n3pxo")]
 position = Vector2(-1, 0)
 
-[node name="DashState" parent="StateMachine" instance=ExtResource("10_hkenu")]
+[node name="DashState" parent="CascadeMachine/MovementMachine" instance=ExtResource("10_hkenu")]
 
-[node name="HedgeState" parent="StateMachine" instance=ExtResource("12_sohlx")]
+[node name="HedgeState" parent="CascadeMachine/MovementMachine" instance=ExtResource("12_sohlx")]
 
 [node name="ActionsComponent" parent="." instance=ExtResource("7_2bflq")]
 
@@ -294,20 +435,22 @@ position = Vector2(-1, 0)
 libraries = {
 "": SubResource("AnimationLibrary_uncl2")
 }
+script = ExtResource("16_w750l")
 
 [node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
 script = ExtResource("9_03rmc")
 actionsComponent = NodePath("../ActionsComponent")
 JumpBufferTime = 0.08
 DashBufferTime = 0.08
+AttackBufferTime = 0.08
 
 [node name="LineTrail" parent="." instance=ExtResource("10_dffrb")]
 maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
-position = Vector2(0, 0)
 scale = Vector2(1.0125, 1.0125)
 
 [connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeEnter"]
 [connection signal="OnHedgeExit" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeExit"]
-[connection signal="OnHedgeExit" from="AreaDetectionComponent" to="StateMachine/HedgeState" method="OnHedgeExit"]
+[connection signal="OnHedgeExit" from="AreaDetectionComponent" to="CascadeMachine/MovementMachine/HedgeState" method="OnHedgeExit"]
+[connection signal="CoreographyUpdate" from="MovementComponent" to="Sprite2DComponent" method="ForceOrientation"]

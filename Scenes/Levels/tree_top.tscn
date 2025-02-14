@@ -6,8 +6,6 @@
 texture = ExtResource("top")
 texture_region_size = Vector2i(480, 270)
 0:0/0 = 0
-0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
-0:0/0/physics_layer_0/angular_velocity = 0.0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-149, 68, -70, 68, -64, 69, -37, 69, -31, 68, 51, 68, 57, 69, 92, 69, 98, 68, 142, 68, 142, 11, 175, 11, 175, 135, -180, 135, -180, 0, -149, 0)
 
 [sub_resource type="TileSet" id="TileSet_0"]

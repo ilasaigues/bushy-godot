@@ -28,9 +28,10 @@ namespace BushyCore
             }
         }
 
-		public override void InitState(MovementComponent mc, CharacterVariables cv, ActionsComponent ac, AnimationPlayer anim, CharacterCollisionComponent col)
+		public override void InitState(MovementComponent mc, CharacterVariables cv, PlayerActionsComponent ac, AnimationComponent anim,
+            CharacterCollisionComponent col, StateMachine sm)
 		{
-			base.InitState(mc, cv, ac, anim, col);
+			base.InitState(mc, cv, ac, anim, col, sm);
 
 			this.xAxisMovement = new AxisMovement.Builder()
 				.Acc(characterVariables.AirHorizontalAcceleration)
@@ -40,6 +41,7 @@ namespace BushyCore
 				.TurnDec(characterVariables.HorizontalTurnDeceleration)
 				.Movement(mc)
 				.Direction(() => { return ac.MovementDirection.X; })
+				.ColCheck((dir) => { return mc.IsOnWall; })
 				.Variables(cv)
 				.Build();
 		
@@ -98,7 +100,7 @@ namespace BushyCore
         {
 			actionsComponent.DashActionStart -= DashActionRequested;
 			actionsComponent.JumpActionEnd -= JumpActionEnded;
-            
+			
             if (!movementComponent.IsInHedge)
                 collisionComponent.ToggleHedgeCollision(true);
 
@@ -122,6 +124,10 @@ namespace BushyCore
 
         protected override void AnimationUpdate()
         {
+			var animationLevel = this.stateMachine.MachineState.CurrentAnimationLevel;
+
+			if (animationLevel == CascadePhaseConfig.AnimationLevel.UNINTERRUPTIBLE) return;
+
             if(movementComponent.CurrentVelocity.Y > 0 && animationComponent.CurrentAnimation != "fall") 
             {
                 animationComponent.ClearQueue();
@@ -153,11 +159,12 @@ namespace BushyCore
 
         void CheckTransitions() 
         {
-            if (canCoyoteJump && actionsComponent.IsJumpRequested)
-                actionsComponent.Jump();
+			var isCommitedToAction = this.stateMachine.MachineState.IsCommitedAction;
+            if (canCoyoteJump && actionsComponent.IsJumpRequested && !isCommitedToAction)
+                actionsComponent.Jump(this.stateMachine);
             
             if (canFallIntoHedge && movementComponent.IsInHedge) 
-                actionsComponent.EnterHedge(movementComponent.HedgeEntered, (float) xAxisMovement.Velocity * Vector2.Right); 
+                actionsComponent.EnterHedge(this.stateMachine, movementComponent.HedgeEntered, (float) xAxisMovement.Velocity * Vector2.Right); 
 
             if (verticalVelocity < 0f && movementComponent.IsOnCeiling)
                 verticalVelocity = 0;
@@ -166,15 +173,13 @@ namespace BushyCore
         
             if (verticalVelocity > 0) 
             {
-                animationComponent.Play("land");
-                actionsComponent.Land(StateConfig.InitialGrounded(xAxisMovement.HasOvershootDeceleration));
+
+                var animationLevel = this.stateMachine.MachineState.CurrentAnimationLevel;
+                if (animationLevel != CascadePhaseConfig.AnimationLevel.UNINTERRUPTIBLE) animationComponent.Play("land");
+                
+                actionsComponent.Land(this.stateMachine, StateConfig.InitialGrounded(xAxisMovement.HasOvershootDeceleration));
             }
         }
-
-        public void OnHedgeEnter(HedgeNode hedgeNode)
-        {
-        }
-
         protected override void VelocityUpdate()
         {
             movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
@@ -183,9 +188,10 @@ namespace BushyCore
 
 		public void DashActionRequested()
 		{
-			if (actionsComponent.CanDash)
+			var isCommitedToAction = this.stateMachine.MachineState.IsCommitedAction;
+			if (actionsComponent.CanDash && !isCommitedToAction)
 			{
-				RunAndEndState(() => actionsComponent.Dash(this.IntendedDirection));
+				RunAndEndState(() => actionsComponent.Dash(this.stateMachine, this.IntendedDirection));
 			}
 		} 
 

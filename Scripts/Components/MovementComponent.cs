@@ -37,7 +37,8 @@ public partial class MovementComponent : Node2D
 	public bool IsOnEdge { get { return _raysOnFloor == 1; } }
 	public HedgeNode HedgeEntered;
 	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge > 2; }}
-
+	
+	private bool _isCoreography;
 	private int _raysOnFloor;
 	private int _raysOnHedge;
 	
@@ -73,6 +74,7 @@ public partial class MovementComponent : Node2D
 		Gravity,
 		InheritedVelocity,
 		Dash,
+		Locked,
 	}
 	public Dictionary<VelocityType, Vector2> Velocities = new Dictionary<VelocityType, Vector2>();
 
@@ -141,6 +143,10 @@ public partial class MovementComponent : Node2D
 		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f 
 			? FacingDirection 
 			: this.Velocities[VelocityType.MainMovement].X * Vector2.Right;
+
+		_isCoreography = this.Velocities[VelocityType.MainMovement] == Vector2.Zero 
+			? _isCoreography
+			: false;
 	}
 	
 	private void CheckRaycastFloor(RayCast2D rayCast2D)
@@ -160,7 +166,6 @@ public partial class MovementComponent : Node2D
 
 			SnappedToFloor = true;
 			this._raysOnFloor++;
-
 			if (collider is HedgeStaticBody2D)
 			{	
 				_raysOnHedge++;
@@ -183,9 +188,14 @@ public partial class MovementComponent : Node2D
 	}
 	public void Move(CharacterBody2D characterBody2D)
 	{
+		// Debug.WriteLine("MOVE");
+		// Debug.WriteLine(this.Velocities[VelocityType.MainMovement]);
 		characterBody2D.Velocity = CurrentVelocity;
 		ApplyCourseCorrection(characterBody2D);
 		characterBody2D.MoveAndSlide();
+		float y = (IsOnFloor || IsOnCeiling) && FloorNormal.X == 0 ? parentController.GlobalPosition.Round().Y : parentController.GlobalPosition.Y;
+		float x = IsOnWall ? parentController.GlobalPosition.Round().X : parentController.GlobalPosition.X;
+		parentController.GlobalPosition = new Vector2(x,y);
 	}
 	public void SetParentController(PlayerController val) { this.parentController = val; }
 
@@ -240,6 +250,8 @@ public partial class MovementComponent : Node2D
 
 	public void SetRaycastPosition()
 	{
+		if (Engine.IsEditorHint())
+			return;
 		float colliderSizeX = CollisionComponent.Shape.GetRect().Size.X;
 		float colliderSizeY = CollisionComponent.Shape.GetRect().Size.Y;
 
@@ -265,6 +277,19 @@ public partial class MovementComponent : Node2D
 		this.HedgeEntered = null;
 	}
 
+	public void StartCoreography()
+	{
+		this._isCoreography = true;
+	}
+
+	public void CoreographFaceDirection(Vector2 direction)
+	{
+		if (_isCoreography)
+			EmitSignal(SignalName.CoreographyUpdate, direction);
+	}
+
+	[Signal]
+	public delegate void CoreographyUpdateEventHandler(Vector2 direction);
 	public override void _Notification(int what)
 	{
 		if (what == NotificationSceneInstantiated)
