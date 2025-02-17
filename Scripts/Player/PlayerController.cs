@@ -58,7 +58,6 @@ namespace BushyCore
 			MovementComponent.Move(this);
 			if (MovementComponent.IsOnFloor)
 			{
-				GD.Print(Position.Y);
 				cameraFollow.UpdateFloorHeight(Position.Y);
 			}
 		}

@@ -72,7 +72,6 @@ public partial class CameraFollow : Camera2D
         {
             verticalLocked = false;
         }
-        GD.Print("Vertical locked: " + verticalLocked);
         // Handle vertical locking
         if (verticalLocked)
         {

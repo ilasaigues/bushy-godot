@@ -10,6 +10,7 @@ public partial class CameraSecondaryTarget : Area2D
 
     public void OnBodyEnter(Node2D body)
     {
+        GD.Print("Body: "+body.Name);
         if (body is PlayerController pc)
         {
             pc.SetSecondaryTarget(this, positionOverride);
