@@ -6,5 +6,5 @@ using System.Diagnostics;
 
 public partial class CameraSecondaryTarget : Area2D
 {
-    public bool positionOverride = false;
+    [Export]public bool positionOverride = false;
 }
