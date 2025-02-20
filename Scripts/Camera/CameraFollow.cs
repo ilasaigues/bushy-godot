@@ -9,7 +9,8 @@ public partial class CameraFollow : Camera2D
     [Export] public float DeadzoneSize = 50.0f;
     [Export] public float VerticalLockThresholdAbove = 20.0f;
     [Export] public float VerticalLockThresholdBelow = 20.0f;
-    private Node2D target;
+    [Export] public CameraTargetBehaviour _targetBehaviour;
+    [Export] private Node2D _targetNode;
     private Node2D midTarget;
     private Node2D overrideTarget;
     private bool verticalLocked = true;
@@ -18,35 +19,31 @@ public partial class CameraFollow : Camera2D
     private Vector2 currentPosition;
     private Vector2 lookAheadOffset;
 
-
-    public Func<Vector2> TargetVelocityGetter;
-
-    private Vector2 previousFramePosition;
-
     private int lookAheadDirection = 1;
 
 
+    public override void _EnterTree()
+    {
+        _targetBehaviour.TargetNode = _targetNode;
+        _targetBehaviour.Camera = this;
+    }
+
     public override void _PhysicsProcess(double delta)
     {
-        if (target == null)
+        if (_targetBehaviour == null)
             return;
 
-        Vector2 targetPosition = target.GlobalPosition;
+        Vector2 targetPosition = _targetBehaviour.TargetNode.GlobalPosition;
         Vector2 desiredPosition = currentPosition;
 
         // handle lookahead based on speed
-        var velocity = (targetPosition - previousFramePosition) / (float)delta;
-        previousFramePosition = targetPosition;
+        var velocity = _targetBehaviour.GetVelocity();
 
-        if (TargetVelocityGetter != null)
-        {
-            velocity = TargetVelocityGetter();
-        }
-        if (velocity.X > 2)
+        if (velocity.X > 1)
         {
             lookAheadDirection = 1;
         }
-        else if (velocity.X < -2)
+        else if (velocity.X < -1)
         {
             lookAheadDirection = -1;
         }
@@ -68,7 +65,10 @@ public partial class CameraFollow : Camera2D
             }
         }
 
-        if (targetPosition.Y < floorHeight - VerticalLockThresholdAbove || targetPosition.Y > floorHeight + VerticalLockThresholdBelow)
+        bool belowLowerThreshold = targetPosition.Y < floorHeight - VerticalLockThresholdAbove;
+        bool aboveUpperThreshold = targetPosition.Y > floorHeight + VerticalLockThresholdBelow;
+
+        if (belowLowerThreshold || aboveUpperThreshold)
         {
             verticalLocked = false;
         }
@@ -98,12 +98,18 @@ public partial class CameraFollow : Camera2D
         // Add lookAhead and smoothly interpolate camera position
         currentPosition = currentPosition.Lerp(desiredPosition, Damping);
         GlobalPosition = currentPosition.Lerp(desiredPosition + lookAheadOffset, Damping);
+
+        if(!_targetBehaviour.ShouldLockVertical)
+        {
+            _targetBehaviour.SetFloorHeight(GlobalPosition.Y);
+        }
     }
 
+
     // Call this function to set the target
-    public void SetTarget(Node2D newTarget)
+    public void SetTargetBehaviour(CameraTargetBehaviour newTargetBehaviour)
     {
-        target = newTarget;
+        _targetBehaviour = newTargetBehaviour;
     }
 
     // Call this function to set secondary targets
