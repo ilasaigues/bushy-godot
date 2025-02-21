@@ -1,13 +1,15 @@
 using Godot;
 using System;
 using GodotUtilities;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace BushyCore {
+namespace BushyCore
+{
 	[Scene]
 	public partial class PlayerController : CharacterBody2D
 	{
 		[Node]
-		private MovementComponent MovementComponent;
+		public MovementComponent MovementComponent;
 		[Node]
 		private CharacterCollisionComponent CollisionComponent;
 
@@ -26,6 +28,7 @@ namespace BushyCore {
 			MovementComponent.SetParentController(this);
 			CollisionComponent.SetParentController(this);
 		}
+
 		public override void _PhysicsProcess(double delta)
 		{
 			MovementComponent.UpdateState(this);

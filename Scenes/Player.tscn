@@ -19,7 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
 [ext_resource type="PackedScene" uid="uid://ikw2snd4s3rd" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
 [ext_resource type="PackedScene" uid="uid://pwejeh2nevkj" path="res://Scenes/States/HedgeState.tscn" id="12_sohlx"]
-[ext_resource type="PackedScene" uid="uid://bhv5xfj6xpkug" path="res://Scenes/States/BattleState.tscn" id="14_a32x2"]
+[ext_resource type="PackedScene" path="res://Scenes/States/BattleState.tscn" id="14_a32x2"]
 [ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
 [ext_resource type="Script" path="res://Scripts/Components/AnimationComponent.cs" id="16_w750l"]
 
