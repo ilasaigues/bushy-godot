@@ -86,7 +86,7 @@ namespace BushyCore
         
         public void OnAnimationStepChange(int phase) => currentAttack.ChangePhase(phase); 
 
-        public void OnAnimationStepFinished(StringName _animationKey) { Debug.WriteLine("animation ended"); currentAttack.ChangePhase(4); } 
+        public void OnAnimationStepFinished(StringName _animationKey) { currentAttack.ChangePhase(4); } 
 
         public void BasicAttackRequested() => currentAttack.HandleAttackAction();
         

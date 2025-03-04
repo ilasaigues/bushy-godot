@@ -3,8 +3,14 @@
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/GroundedState.cs" id="1_gfxa6"]
 
 [node name="GroundedState" type="Node2D"]
+position = Vector2(-5, 0)
 script = ExtResource("1_gfxa6")
 
 [node name="DashCooldownTimer" type="Timer" parent="."]
 
+[node name="AxisControlDisabledTimer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
 [connection signal="timeout" from="DashCooldownTimer" to="." method="DashCooldownTimerTimeout"]
+[connection signal="timeout" from="AxisControlDisabledTimer" to="." method="AxisControlDisabledTimout"]

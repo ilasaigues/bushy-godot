@@ -24,8 +24,8 @@ namespace BushyCore
         public override void CombatUpdate(double delta)
         {
             if (currentPhase == AttackStepPhase.RECOVERY && bufferComboAttack)
-                EmitSignal(SignalName.ComboStep, AirAttackCombo_2, attackStepConfigs);
-
+                EmitComboIfAirborne();
+                
             base.CombatUpdate(delta);
         }
 
@@ -37,11 +37,17 @@ namespace BushyCore
                     bufferComboAttack = true;
                     break;
                 case AttackStepPhase.RECOVERY:
-                    EmitSignal(SignalName.ComboStep, AirAttackCombo_2, attackStepConfigs);
+                    EmitComboIfAirborne();
                     break;
                 default: 
                     break;
             }
+        }
+
+        private void EmitComboIfAirborne()
+        {
+            if (!this.MovementComponent.IsOnFloor)
+                EmitSignal(SignalName.ComboStep, AirAttackCombo_2, attackStepConfigs);
         }
     }
 }

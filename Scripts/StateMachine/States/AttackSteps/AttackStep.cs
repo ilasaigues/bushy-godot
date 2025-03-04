@@ -79,7 +79,6 @@ namespace BushyCore
         {
             var phasesCount = Enum.GetValues<AttackStepPhase>().Count();
             
-                Debug.WriteLine($"Attack phase changed reached {phase}");
             if (phase >= phasesCount)
             {
                 EmitSignal(SignalName.AttackStepCompleted);

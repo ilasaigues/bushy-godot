@@ -72,6 +72,8 @@ namespace BushyCore
             {
                 collisionComponent.ToggleHedgeCollision(false);
             }
+
+            Debug.WriteLine("Air state enter");
         }
         
         private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
@@ -105,6 +107,7 @@ namespace BushyCore
                 collisionComponent.ToggleHedgeCollision(true);
 
             base.StateExit();
+            Debug.WriteLine("Air state exit");
         }
 
         public override void StateUpdateInternal(double delta)

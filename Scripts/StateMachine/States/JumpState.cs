@@ -49,11 +49,13 @@ namespace BushyCore
 		{
 			var animationLevel = this.stateMachine.MachineState.CurrentAnimationLevel;
 
-			if (animationLevel == CascadePhaseConfig.AnimationLevel.UNINTERRUPTIBLE) return;
+			if (animationLevel != CascadePhaseConfig.AnimationLevel.UNINTERRUPTIBLE) 
+            {
+                animationComponent.ClearQueue();
+                animationComponent.Play("jump");
+                animationComponent.Queue("ascent");
+            }
 
-            animationComponent.ClearQueue();
-            animationComponent.Play("jump");
-            animationComponent.Queue("ascent");
 
             targetVelocity = characterVariables.AirHorizontalMovementSpeed;
             verticalVelocity = characterVariables.JumpSpeed;
@@ -98,6 +100,8 @@ namespace BushyCore
             if (!movementComponent.IsInHedge)
                 collisionComponent.ToggleHedgeCollision(true);
             base.StateExit();
+
+            Debug.WriteLine("Jump state exit");
         }
         public override void StateUpdateInternal(double delta)
         {

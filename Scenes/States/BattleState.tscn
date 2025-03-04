@@ -49,9 +49,10 @@ script = ExtResource("1_xcdp0")
 [node name="CombatStateMachine" type="Node2D" parent="."]
 script = ExtResource("2_70a26")
 
-[node name="BasicAttack" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_2") instance=ExtResource("3_tl42v")]
+[node name="BasicAttack" parent="CombatStateMachine" node_paths=PackedStringArray("BasicAttackCombo_2", "AirAttackCombo_1") instance=ExtResource("3_tl42v")]
 script = ExtResource("3_5147q")
 BasicAttackCombo_2 = NodePath("../ComboAttack")
+AirAttackCombo_1 = NodePath("../AirComboAttack")
 animationKey = "ground_attack_1"
 hitboxShape = SubResource("RectangleShape2D_q0nsg")
 attackVector = Vector2(30, 0)

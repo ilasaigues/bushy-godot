@@ -10,8 +10,12 @@ namespace BushyCore
 	{
 		[Node]
 		private Timer DashCooldownTimer;
+		[Node]
+		private Timer AxisControlDisabledTimer;
+
 		private double verticalVelocity;
 		private bool canBufferJump;
+		private bool? ignoreAxisControlDisabled;
 
 		private AxisMovement xAxisMovement;
 		public override void _Ready()
@@ -43,11 +47,17 @@ namespace BushyCore
 
 		protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
+			ignoreAxisControlDisabled = null;
 			canBufferJump = true;
 			SetCanDash();
 			
-			Debug.WriteLine("GROUNDED " + movementComponent.Velocities[VelocityType.MainMovement].X);
-			xAxisMovement.SetInitVel(movementComponent.Velocities[VelocityType.MainMovement].X);
+			this.AxisControlDisabledTimer.WaitTime = 0.3f;
+
+			// Landing velocity si esta cayendo con alguna accion comprometida
+			var controlEnabled = !this.stateMachine?.MachineState?.IsCommitedAction ?? true;
+			var mainVelocity = movementComponent.Velocities[VelocityType.MainMovement].X;
+			var initialVelocity = controlEnabled ? mainVelocity : mainVelocity / 30;  
+			xAxisMovement.SetInitVel(initialVelocity);
 
 			actionsComponent.CanJump = true;
 			movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;;
@@ -90,6 +100,12 @@ namespace BushyCore
 			verticalVelocity = -10f;
 
 			base.StateUpdateInternal(delta);
+
+			if (this.stateMachine.MachineState.IsCommitedAction && ignoreAxisControlDisabled == null)
+			{
+				AxisControlDisabledTimer.Start();
+				ignoreAxisControlDisabled = true;
+			}
 
 			HandleMovement(delta);
 			CheckTransitions();
@@ -194,6 +210,12 @@ namespace BushyCore
 				DashCooldownTimer.Start();
 		}
 
+		void AxisControlDisabledTimout() 
+		{ 	
+			if (!this.IsActive) return;
+			this.ignoreAxisControlDisabled = false; 
+		}
+
 		void DashCooldownTimerTimeout()
 		{
 			if (!this.IsActive) return;
@@ -201,10 +223,14 @@ namespace BushyCore
 			actionsComponent.CanDash = true;
 		}
 
+
 		protected override void VelocityUpdate()
 		{
-			var machineState = this.stateMachine.MachineState;
-			if (machineState != null ? !machineState.X_AxisControlEnabled : false)
+			// Do not remove Axis control from state until Timer goes off
+			var disableAxisMovement = this.stateMachine?.MachineState != null;
+			disableAxisMovement &= !(this.stateMachine.MachineState?.X_AxisControlEnabled ?? true) && !(ignoreAxisControlDisabled ?? true);
+
+			if (disableAxisMovement)
 			{
 				movementComponent.Velocities[VelocityType.MainMovement] = Vector2.Zero;
 				movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;

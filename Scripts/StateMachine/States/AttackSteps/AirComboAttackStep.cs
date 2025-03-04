@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using Godot;
 using GodotUtilities;
 
@@ -22,10 +20,9 @@ namespace BushyCore
 
         public override void CombatUpdate(double delta)
         {
-            var airBorne = !this.MovementComponent.IsOnFloor;
-            if (airBorne && currentPhase == AttackStepPhase.RECOVERY && bufferComboAttack)
-                EmitSignal(SignalName.ComboStep, AirAttackCombo_1, attackStepConfigs);
-
+            if (currentPhase == AttackStepPhase.RECOVERY && bufferComboAttack)
+                EmitComboIfAirborne();
+                
             base.CombatUpdate(delta);
         }
 
@@ -37,11 +34,18 @@ namespace BushyCore
                     bufferComboAttack = true;
                     break;
                 case AttackStepPhase.RECOVERY:
-                    EmitSignal(SignalName.ComboStep, AirAttackCombo_1, attackStepConfigs);
+                    if (!this.MovementComponent.IsOnFloor)
+                        EmitSignal(SignalName.ComboStep, AirAttackCombo_1, attackStepConfigs);
                     break;
                 default: 
                     break;
             }
+        }
+
+        private void EmitComboIfAirborne()
+        {
+            if (!this.MovementComponent.IsOnFloor)
+                EmitSignal(SignalName.ComboStep, AirAttackCombo_1, attackStepConfigs);
         }
     }
 }

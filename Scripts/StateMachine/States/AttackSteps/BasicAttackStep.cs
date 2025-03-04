@@ -11,6 +11,8 @@ namespace BushyCore
         // Estos exports esta bien que se pasen por editor?
         [Export]
         public AttackStep BasicAttackCombo_2;
+        [Export]
+        public AttackStep AirAttackCombo_1;
         private bool bufferComboAttack = false;
 
         public override void StepEnter(AttackStepConfig config) {
@@ -38,8 +40,14 @@ namespace BushyCore
                     bufferComboAttack = true;
                     break;
                 case AttackStepPhase.COMBO:
+                    if (MovementComponent.IsOnFloor)
+                        EmitSignal(SignalName.ComboStep, BasicAttackCombo_2, attackStepConfigs);
+                    break;
                 case AttackStepPhase.RECOVERY:
-                    EmitSignal(SignalName.ComboStep, BasicAttackCombo_2, attackStepConfigs);
+                    if (MovementComponent.IsOnFloor)
+                        EmitSignal(SignalName.ComboStep, BasicAttackCombo_2, attackStepConfigs);
+                    else 
+                        EmitSignal(SignalName.ComboStep, AirAttackCombo_1, attackStepConfigs);
                     break;
                 default: 
                     break;

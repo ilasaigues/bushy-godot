@@ -55,13 +55,6 @@ namespace BushyCore
             animationComponent.AnimationStepChange += CombatStateMachine.OnAnimationStepChange;
             animationComponent.AnimationFinished += CombatStateMachine.OnAnimationStepFinished;
 
-
-            // // We should really use this to have more dynamic movement in attacks. Momentum and such
-            // movementComponent.Velocities[VelocityType.MainMovement] = Vector2.Zero;
-
-            // // We should really use this to have more dynamic movement in attacks. Momentum and such
-            // movementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-
             var attackDirection = actionsComponent.MovementDirection == Vector2.Zero 
                 ? movementComponent.FacingDirection
                 : actionsComponent.MovementDirection;
@@ -133,7 +126,7 @@ namespace BushyCore
 
         public void OnCombatAttackHit()
         {
-
+            this.stateMachine.MachineState.X_AxisControlEnabled = false;
         }
         protected override void AnimationUpdate() {}
 
