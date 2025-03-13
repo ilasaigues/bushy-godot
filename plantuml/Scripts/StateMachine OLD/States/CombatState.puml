@@ -1,0 +1,5 @@
+@startuml
+class CombatState <<partial>> {
+}
+BaseStateOLD <|-- CombatState
+@enduml

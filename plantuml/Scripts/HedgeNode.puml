@@ -1,0 +1,11 @@
+@startuml
+class HedgeNode <<partial>> {
+    + <<override>> _Notification(what:int) : void
+    + <<override>> _Ready() : void
+    + SubscribeMovementComponent(mc:MovementComponent) : void
+    + UnSubscribeMovementComponent(mc:MovementComponent) : void
+    + <<override>> _Process(delta:double) : void
+}
+Path2D <|-- HedgeNode
+HedgeNode --> "HedgeStaticBody2D" HedgeStaticBody2D
+@enduml

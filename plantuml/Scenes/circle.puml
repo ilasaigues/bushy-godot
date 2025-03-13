@@ -1,0 +1,7 @@
+@startuml
+class circle <<partial>> {
+    + <<override>> _Ready() : void
+    + <<override>> _Process(delta:double) : void
+}
+ColorRect <|-- circle
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+class HedgeStaticBody2D <<partial>> {
+    + <<override>> _Notification(what:int) : void
+}
+AnimatableBody2D <|-- HedgeStaticBody2D
+HedgeStaticBody2D --> "HedgeNode" HedgeNode
+HedgeStaticBody2D --> "ColorRect" ColorRect
+HedgeStaticBody2D --> "CollisionShape2D" CollisionShape2D
+@enduml

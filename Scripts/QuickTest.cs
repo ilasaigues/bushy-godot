@@ -3,7 +3,7 @@ using System;
 
 public partial class QuickTest : Node
 {
-    public override void _Ready()
+    /*public override void _Ready()
     {
         base._Ready();
         InputManager.Instance.JumpAction.OnInputJustPressed += SpaceJustPressed;
@@ -19,7 +19,7 @@ public partial class QuickTest : Node
     private void WhileSpacePressed()
     {
         var extra = "";
-        if (InputManager.Instance.JumpAction.TimePressed <= 1)
+        if (InputManager.Instance.JumpAction.TimeHeld <= 1)
         {
             extra = ". First Second";
         }
@@ -29,6 +29,6 @@ public partial class QuickTest : Node
     private void SpaceReleased()
     {
         GD.Print("Space Press End");
-    }
+    }*/
 
 }

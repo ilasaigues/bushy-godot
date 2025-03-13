@@ -6,20 +6,20 @@ using System.Diagnostics;
 using System.IO;
 
 namespace BushyCore
-{	
-	[Scene] 
-	public partial class HedgeNode : Path2D
-	{
+{
+    [Scene]
+    public partial class HedgeNode : Path2D
+    {
         [Export]
         private double Velocity;
         [Node]
         private PathFollow2D PathFollow2D;
         [Node]
-        private HedgeStaticBody2D HedgeStaticBody2D;
+        public HedgeStaticBody2D HedgeStaticBody2D;
 
         private List<MovementComponent> componentsInHedge;
         private Vector2 oldPos;
-		public override void _Notification(int what)
+        public override void _Notification(int what)
         {
             if (what == NotificationSceneInstantiated)
             {
@@ -45,13 +45,14 @@ namespace BushyCore
 
         public override void _Process(double delta)
         {
-            PathFollow2D.Progress += (float) (delta * Velocity);
+            PathFollow2D.Progress += (float)(delta * Velocity);
             var direction = PathFollow2D.Position - oldPos;
             if (direction == Vector2.Zero)
                 return;
-            var velocity = direction.Normalized() * (float) Velocity *  Transform.Scale;
-            
-            componentsInHedge.ForEach((mc) => {
+            var velocity = direction.Normalized() * (float)Velocity * Transform.Scale;
+
+            componentsInHedge.ForEach((mc) =>
+            {
                 mc.Velocities[MovementComponent.VelocityType.InheritedVelocity] = velocity;
             });
             oldPos = PathFollow2D.Position;

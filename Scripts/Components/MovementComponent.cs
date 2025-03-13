@@ -14,11 +14,11 @@ public partial class MovementComponent : Node2D
 	// Where is the character body facing
 	public Vector2 FacingDirection { get; private set; }
 	// IsOnFloor references whether the node collider is actually touching the floor
-	public bool IsOnFloor { get; private set; } 
+	public bool IsOnFloor { get; private set; }
 	// IsOnRoof references whether the node collider is actually touching the roof
-	public bool IsOnCeiling { get; private set; } 
+	public bool IsOnCeiling { get; private set; }
 	// IsOnRoof references whether the node collider is next to wall in the facing direction
-	public bool IsOnWall { get; private set; } 
+	public bool IsOnWall { get; private set; }
 	// SnappedToFloor references whether the node collider is within snapping distance from the floor
 	public bool SnappedToFloor { get; private set; }
 	// Lowest point of collision between the component and the floor
@@ -26,25 +26,26 @@ public partial class MovementComponent : Node2D
 	// Normal between the component and the lowest point of collision with the ground (only relevant if controller is on floor)
 	public Vector2 FloorNormal { get; private set; }
 	// Angle between Vector2.UP and the Floor normal calculated clockwise
-	public float FloorAngle 
+	public float FloorAngle
 	{
-		get { 
-			return FloorNormal.Y != 0 
-				? Mathf.Sign(FloorNormal.X) * Mathf.Atan(Mathf.Abs(FloorNormal.X)/Mathf.Abs(FloorNormal.Y)) 
-				: Mathf.Pi/2 * Mathf.Sign(FloorNormal.X); 
-		} 
+		get
+		{
+			return FloorNormal.Y != 0
+				? Mathf.Sign(FloorNormal.X) * Mathf.Atan(Mathf.Abs(FloorNormal.X) / Mathf.Abs(FloorNormal.Y))
+				: Mathf.Pi / 2 * Mathf.Sign(FloorNormal.X);
+		}
 	}
 	public bool IsOnEdge { get { return _raysOnFloor == 1; } }
 	public HedgeNode HedgeEntered;
-	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge > 2; }}
-	
+	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge > 2; } }
+
 	private bool _isCoreography;
 	private int _raysOnFloor;
 	private int _raysOnHedge;
-	
+
 
 	public bool CourseCorrectionEnabled;
-	
+
 	[Node]
 	private RayCast2D GroundRayCastL;
 	[Node]
@@ -87,7 +88,7 @@ public partial class MovementComponent : Node2D
 		Velocities.Add(VelocityType.MainMovement, Vector2.Zero);
 		Velocities.Add(VelocityType.Gravity, Vector2.Zero);
 		Velocities.Add(VelocityType.InheritedVelocity, Vector2.Zero);
-		Velocities.Add(VelocityType.Dash, Vector2.Zero);	
+		Velocities.Add(VelocityType.Dash, Vector2.Zero);
 
 		GroundRayCastL.Enabled = false;
 		GroundRayCastR.Enabled = false;
@@ -102,12 +103,11 @@ public partial class MovementComponent : Node2D
 
 		SetRaycastPosition();
 	}
-	
+
 	public void UpdateState(CharacterBody2D characterBody2D)
 	{
 		IsOnFloor = SnappedToFloor = characterBody2D.IsOnFloor();
-
-		if (!IsOnFloor) 
+		if (!IsOnFloor)
 		{
 			SnappedToFloor = false;
 			FloorHeight = null;
@@ -115,7 +115,7 @@ public partial class MovementComponent : Node2D
 
 		IsOnCeiling = characterBody2D.IsOnCeiling();
 		IsOnWall = characterBody2D.IsOnWall();
-		
+
 		FloorNormal = characterBody2D.GetFloorNormal();
 
 		var colCount = characterBody2D.GetSlideCollisionCount();
@@ -130,7 +130,7 @@ public partial class MovementComponent : Node2D
 		// Helps player stay snapped to the floor while going down slopes
 		characterBody2D.FloorSnapLength = 5.0f;
 		characterBody2D.FloorStopOnSlope = false;
-		
+
 		this._raysOnFloor = 0;
 		this._raysOnHedge = 0;
 
@@ -140,25 +140,25 @@ public partial class MovementComponent : Node2D
 		CheckRaycastHedge(CeilRayCastL);
 		CheckRaycastHedge(CeilRayCastR);
 
-		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f 
-			? FacingDirection 
+		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f
+			? FacingDirection
 			: this.Velocities[VelocityType.MainMovement].X * Vector2.Right;
 
-		_isCoreography = this.Velocities[VelocityType.MainMovement] == Vector2.Zero 
+		_isCoreography = this.Velocities[VelocityType.MainMovement] == Vector2.Zero
 			? _isCoreography
 			: false;
 	}
-	
+
 	private void CheckRaycastFloor(RayCast2D rayCast2D)
 	{
 		rayCast2D.ForceRaycastUpdate();
 
 		GodotObject collider = rayCast2D.GetCollider();
 
-		if (collider != null) 
+		if (collider != null)
 		{
 			Vector2 point = rayCast2D.GetCollisionPoint();
-			if (FloorHeight == null || point.Y < FloorHeight) 
+			if (FloorHeight == null || point.Y < FloorHeight)
 			{
 				FloorHeight = point.Y;
 				FloorNormal = rayCast2D.GetCollisionNormal();
@@ -167,7 +167,7 @@ public partial class MovementComponent : Node2D
 			SnappedToFloor = true;
 			this._raysOnFloor++;
 			if (collider is HedgeStaticBody2D)
-			{	
+			{
 				_raysOnHedge++;
 			}
 		}
@@ -178,10 +178,10 @@ public partial class MovementComponent : Node2D
 
 		GodotObject collider = rayCast2D.GetCollider();
 
-		if (collider != null) 
+		if (collider != null)
 		{
 			if (collider is HedgeStaticBody2D)
-			{	
+			{
 				_raysOnHedge++;
 			}
 		}
@@ -195,23 +195,23 @@ public partial class MovementComponent : Node2D
 		characterBody2D.MoveAndSlide();
 		float y = (IsOnFloor || IsOnCeiling) && FloorNormal.X == 0 ? parentController.GlobalPosition.Round().Y : parentController.GlobalPosition.Y;
 		float x = IsOnWall ? parentController.GlobalPosition.Round().X : parentController.GlobalPosition.X;
-		parentController.GlobalPosition = new Vector2(x,y);
+		parentController.GlobalPosition = new Vector2(x, y);
 	}
 	public void SetParentController(PlayerController val) { this.parentController = val; }
 
 	private void ApplyCourseCorrection(CharacterBody2D characterBody2D)
 	{
-		if (!CourseCorrectionEnabled) return; 
+		if (!CourseCorrectionEnabled) return;
 
 		var colSize = this.CollisionComponent.Shape.GetRect().Size;
-		var extent = Mathf.Sign(this.FacingDirection.X) * colSize.X/2;
-		
+		var extent = Mathf.Sign(this.FacingDirection.X) * colSize.X / 2;
+
 		// Lower corner check
 		this.CourseCorrectRayXd.TargetPosition = 20 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
 		this.CourseCorrectRayXu.TargetPosition = 20 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
-		
+
 		this.CourseCorrectRayXu.Position = new Vector2(extent, -3f);
-		this.CourseCorrectRayXd.Position = new Vector2(extent, colSize.Y/2);
+		this.CourseCorrectRayXd.Position = new Vector2(extent, colSize.Y / 2);
 
 		this.CourseCorrectRayXu.ForceRaycastUpdate();
 		this.CourseCorrectRayXd.ForceRaycastUpdate();
@@ -227,9 +227,9 @@ public partial class MovementComponent : Node2D
 			parentController.GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y - 3f);
 			return;
 		}
-		
+
 		// Upper corner check
-		this.CourseCorrectRayXu.Position = new Vector2(extent, -colSize.Y/2);
+		this.CourseCorrectRayXu.Position = new Vector2(extent, -colSize.Y / 2);
 		this.CourseCorrectRayXd.Position = new Vector2(extent, 3f);
 
 		this.CourseCorrectRayXu.ForceRaycastUpdate();
@@ -255,23 +255,23 @@ public partial class MovementComponent : Node2D
 		float colliderSizeX = CollisionComponent.Shape.GetRect().Size.X;
 		float colliderSizeY = CollisionComponent.Shape.GetRect().Size.Y;
 
-		GroundRayCastL.Position = new Vector2(-colliderSizeX/2, colliderSizeY/2);
-		GroundRayCastR.Position = new Vector2(colliderSizeX/2, colliderSizeY/2);
-		
-		CeilRayCastR.Position = new Vector2(colliderSizeX/2, -colliderSizeY/2);
-		CeilRayCastL.Position = new Vector2(-colliderSizeX/2, -colliderSizeY/2);
+		GroundRayCastL.Position = new Vector2(-colliderSizeX / 2, colliderSizeY / 2);
+		GroundRayCastR.Position = new Vector2(colliderSizeX / 2, colliderSizeY / 2);
 
-		CourseCorrectRayXu.Position = new Vector2(colliderSizeX/2,0);
-		CourseCorrectRayXd.Position = new Vector2(colliderSizeX/2,0);
-		CourseCorrectRayYl.Position = new Vector2(0,colliderSizeY/2);
-		CourseCorrectRayYr.Position = new Vector2(0,colliderSizeY/2);
+		CeilRayCastR.Position = new Vector2(colliderSizeX / 2, -colliderSizeY / 2);
+		CeilRayCastL.Position = new Vector2(-colliderSizeX / 2, -colliderSizeY / 2);
+
+		CourseCorrectRayXu.Position = new Vector2(colliderSizeX / 2, 0);
+		CourseCorrectRayXd.Position = new Vector2(colliderSizeX / 2, 0);
+		CourseCorrectRayYl.Position = new Vector2(0, colliderSizeY / 2);
+		CourseCorrectRayYr.Position = new Vector2(0, colliderSizeY / 2);
 	}
 
 	public void OnHedgeEnter(HedgeNode hedgeNode)
 	{
 		this.HedgeEntered = hedgeNode;
 	}
-	
+
 	public void OnHedgeExit(HedgeNode hedgeNode)
 	{
 		this.HedgeEntered = null;

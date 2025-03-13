@@ -1,0 +1,10 @@
+@startuml
+class ComboAttackStep <<partial>> {
+    + <<override>> StepEnter(config:AttackStepConfig) : void
+    + <<override>> CombatUpdate(delta:double) : void
+    + <<override>> HandleAttackAction() : void
+    + RemoveToolRef() : void
+}
+AttackStep <|-- ComboAttackStep
+ComboAttackStep --> "BasicAttackCombo_3" AttackStep
+@enduml

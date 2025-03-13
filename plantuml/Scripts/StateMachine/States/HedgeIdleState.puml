@@ -1,0 +1,11 @@
+@startuml
+class HedgeIdleState <<partial>> {
+    + <<override>> EnterState(configs:StateConfig.IBaseStateConfig[]) : void
+    + <<override>> ExitState() : void
+}
+class "IChildState`2"<T1,T2> {
+}
+BasePlayerState <|-- HedgeIdleState
+"IChildState`2" "<PlayerController,HedgeState>" <|-- HedgeIdleState
+HedgeIdleState --> "ParentState" HedgeState
+@enduml

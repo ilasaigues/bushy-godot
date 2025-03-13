@@ -180,7 +180,7 @@ _targetNode = NodePath("../Player")
 
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
-position = Vector2(-816, 58)
+position = Vector2(-819, 53)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)

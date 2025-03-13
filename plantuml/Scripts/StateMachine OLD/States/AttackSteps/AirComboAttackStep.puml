@@ -1,0 +1,9 @@
+@startuml
+class AirComboAttackStep <<partial>> {
+    + <<override>> StepEnter(config:AttackStepConfig) : void
+    + <<override>> CombatUpdate(delta:double) : void
+    + <<override>> HandleAttackAction() : void
+}
+AttackStep <|-- AirComboAttackStep
+AirComboAttackStep --> "AirAttackCombo_1" AttackStep
+@enduml

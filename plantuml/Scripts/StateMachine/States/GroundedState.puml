@@ -1,0 +1,17 @@
+@startuml
+class GroundedState <<partial>> {
+    + VerticalVelocity : double
+    + <<override>> _Ready() : void
+    + <<override>> EnterState(configs:StateConfig.IBaseStateConfig[]) : void
+    + <<override>> OnInputButtonChanged(actionType:InputAction.InputActionType, action:InputAction) : void
+    + <<override>> ExitState() : void
+    + <<override>> ProcessState(prevStatus:StateExecutionStatus, delta:double) : StateExecutionStatus
+    + <<override>> UpdateAnimation() : StateAnimationLevel
+}
+class "IParentState`2"<T1,T2> {
+}
+BasePlayerState <|-- GroundedState
+"IParentState`2" "<PlayerController,GroundedState>" <|-- GroundedState
+GroundedState --> "DashCooldownTimer" Timer
+GroundedState --> "HorizontalAxisMovement" AxisMovement
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+class HitboxComponent <<partial>> {
+    + IsDebug : bool
+    + <<override>> _Ready() : void
+    + <<override>> _Draw() : void
+    + ToggleEnable(enabled:bool) : void
+    + OnHitboxImpact(area2D:Area2D) : void
+}
+Area2D <|-- HitboxComponent
+HitboxComponent --> "collisionShape2D" CollisionShape2D
+HitboxComponent --> "DebugColor" Color
+@enduml

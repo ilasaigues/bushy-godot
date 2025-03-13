@@ -1,0 +1,6 @@
+@startuml
+class HedgeArea2D <<partial>> {
+}
+Area2D <|-- HedgeArea2D
+HedgeArea2D --> "HedgeNode" HedgeNode
+@enduml

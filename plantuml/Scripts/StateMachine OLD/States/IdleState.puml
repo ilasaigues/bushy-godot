@@ -1,0 +1,7 @@
+@startuml
+class IdleState <<partial>> {
+    + <<override>> StateExit() : void
+    + AttackActionRequested() : void
+}
+BaseStateOLD <|-- IdleState
+@enduml

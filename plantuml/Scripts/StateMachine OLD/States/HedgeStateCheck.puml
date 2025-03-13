@@ -1,0 +1,9 @@
+@startuml
+class HedgeStateCheck <<partial>> {
+    + <<override>> _Notification(what:int) : void
+    + CheckerInit(movementComponent:MovementComponent) : void
+    + CheckerReset(checkerDirection:Vector2) : void
+    + CheckHedgeCollision() : HedgeNode
+}
+Node2D <|-- HedgeStateCheck
+@enduml

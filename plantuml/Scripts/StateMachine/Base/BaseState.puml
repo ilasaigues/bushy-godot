@@ -1,0 +1,18 @@
+@startuml
+abstract class "BaseState`1"<T> <<partial>> {
+    + {abstract} Agent : T <<get>> <<set>>
+    + TimeSinceStateStart : double <<get>> <<set>>
+    + {abstract} EnterState(configs:StateConfig.IBaseStateConfig[]) : void
+    + <<virtual>> ProcessState(prevStatus:StateExecutionStatus, delta:double) : StateExecutionStatus
+    + {abstract} ExitState() : void
+    + <<virtual>> UpdateAnimation() : StateAnimationLevel
+    + <<virtual>> OnRigidBodyInteraction(node:Node2D, enter:bool) : void
+    + <<virtual>> OnAreaChange(area:Area2D, enter:bool) : void
+    + <<virtual>> OnInputButtonChanged(actionType:InputAction.InputActionType, Action:InputAction) : void
+    + <<virtual>> OnInputAxisChanged(axis:InputAxis) : void
+}
+class "IState`1"<T> {
+}
+Node <|-- "BaseState`1"
+"IState`1" "<T>" <|-- "BaseState`1"
+@enduml

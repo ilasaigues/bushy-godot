@@ -1,10 +1,10 @@
 [gd_scene load_steps=23 format=3 uid="uid://c8fhmgmolp7by"]
 
-[ext_resource type="Texture2D" uid="uid://m3y00yel1d44" path="res://Scripts/StateMachine/States/bushy dat.png" id="1_bi2fn"]
+[ext_resource type="Texture2D" uid="uid://m3y00yel1d44" path="res://Scripts/StateMachine OLD/States/bushy dat.png" id="1_bi2fn"]
 [ext_resource type="Texture2D" uid="uid://baqb8u2tj8ql5" path="res://Assets/Player/Idle Test.png" id="2_7b6sm"]
 [ext_resource type="Shader" path="res://light.gdshader" id="3_r2hyt"]
-[ext_resource type="Texture2D" uid="uid://d3kbhfsxjqv7b" path="res://Scripts/StateMachine/States/Forest Pallete.png" id="4_fejph"]
-[ext_resource type="Texture2D" uid="uid://bs7wuia1gspve" path="res://Scripts/StateMachine/States/bushy dat2.png" id="5_c16qj"]
+[ext_resource type="Texture2D" uid="uid://d3kbhfsxjqv7b" path="res://Scripts/StateMachine OLD/States/Forest Pallete.png" id="4_fejph"]
+[ext_resource type="Texture2D" uid="uid://bs7wuia1gspve" path="res://Scripts/StateMachine OLD/States/bushy dat2.png" id="5_c16qj"]
 [ext_resource type="Script" path="res://Scenes/circle.cs" id="6_6yykf"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fpbqj"]

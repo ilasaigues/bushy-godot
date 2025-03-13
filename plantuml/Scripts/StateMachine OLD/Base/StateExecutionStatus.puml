@@ -1,0 +1,25 @@
+@startuml
+enum StateAnimationLevel {
+    Regular= 0,
+    Uninterruptible= 1,
+}
+enum StateExecutionResult {
+    Continue= 0,
+    Block= 1,
+}
+enum MovementLockFlags {
+    None= 0,
+    HorizontalLock= 1,
+    VerticalLock= 2,
+}
+struct StateExecutionStatus {
+    + CanMoveHorizontal : bool <<get>>
+    + CanMoveVertical : bool <<get>>
+    + CanChangeAnimation : bool <<get>>
+    + StateExecutionStatus(executionResult:StateExecutionResult, movementLockFlags:MovementLockFlags, animationLevel:StateAnimationLevel)
+    + StateExecutionStatus(previous:StateExecutionStatus, executionResult:StateExecutionResult, movementLockFlags:MovementLockFlags, animationLevel:StateAnimationLevel)
+}
+StateExecutionStatus o-> "StateExecutionResult" StateExecutionResult
+StateExecutionStatus o-> "MovementLockFlags" MovementLockFlags
+StateExecutionStatus o-> "AnimationLevel" StateAnimationLevel
+@enduml

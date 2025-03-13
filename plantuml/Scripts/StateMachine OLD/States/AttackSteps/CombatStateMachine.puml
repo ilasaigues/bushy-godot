@@ -1,0 +1,18 @@
+@startuml
+class CombatStateMachine <<partial>> {
+    + <<override>> _Ready() : void
+    + InitMachine(movementComponent:MovementComponent) : void
+    + CombatUpdate(delta:double) : void
+    + ChangeAttackStep(config:AttackStepConfig) : void
+    + ChangeAttackStep(nextStep:AttackStep, config:AttackStepConfig) : void
+    + EndStateMachine() : void
+    + UpdateCombatStepConfigs(stepConfig:AttackStepConfig) : void
+    + UpdateCombatAnimation(animationKey:string, direction:Vector2) : void
+    + OnAnimationStepChange(phase:int) : void
+    + OnAnimationStepFinished(_animationKey:StringName) : void
+    + BasicAttackRequested() : void
+    + HandleCoreography(velocity:Vector2, acceleration:Vector2) : void
+    + OnAttackImpact() : void
+}
+Node2D <|-- CombatStateMachine
+@enduml

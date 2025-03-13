@@ -1,0 +1,9 @@
+@startuml
+class PhaseCoreography <<partial>> {
+    + TimerDuration : float <<get>> <<set>>
+    + BeginOnTimerEnd : bool <<get>> <<set>>
+}
+Resource <|-- PhaseCoreography
+PhaseCoreography --> "VelocityVector" Vector2
+PhaseCoreography --> "AccelerationVector" Vector2
+@enduml

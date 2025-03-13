@@ -1,0 +1,37 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://t33dl5smdn5l"]
+
+[ext_resource type="Script" path="res://Scripts/StateMachine OLD/CharacterVariables.cs" id="1_7vx6x"]
+
+[resource]
+script = ExtResource("1_7vx6x")
+GroundHorizontalAcceleration = 800
+GroundHorizontalDeceleration = 800
+HorizontalTurnDeceleration = 1000
+GroundHorizontalMovementSpeed = 130
+GroundHorizontalOvercappedDeceleration = 1100
+MaxOnWallHorizontalMovementSpeed = 10
+JumpSpeed = -210
+JumpDuration = 0.12
+JumpCoyoteTime = 0.07
+AirHorizontalDeceleration = 700
+AirHorizontalMovementSpeed = 130
+AirHorizontalAcceleration = 700
+AirHorizontalOvercappedDeceleration = 800
+JumpShortHopSpeed = -60.0
+AirTerminalVelocity = 900.0
+AirGravity = 900.0
+AirSpeedThresholds = Vector2(40, -40)
+AirApexGravity = 350.0
+DashInitTime = 0.065
+DashTime = 0.1
+DashExitTime = 0.09
+DashVelocity = 350.0
+DashExitVelocity = 200.0
+DashCooldown = 600.0
+DashJumpSpeed = 300.0
+HedgeAcceleration = 650
+HedgeDeceleration = 900
+HedgeTurnDeceleration = 1100
+HedgeOvercappedDeceleration = 800
+HedgeMovementSpeed = 120
+MaxHedgeEnterSpeed = 200

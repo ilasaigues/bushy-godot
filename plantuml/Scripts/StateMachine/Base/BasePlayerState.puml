@@ -1,0 +1,8 @@
+@startuml
+abstract class BasePlayerState <<partial>> {
+}
+class "BaseState`1"<T> {
+}
+"BaseState`1" "<PlayerController>" <|-- BasePlayerState
+BasePlayerState --> "Agent" PlayerController
+@enduml

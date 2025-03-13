@@ -1,0 +1,54 @@
+@startuml
+class StateConfig <<partial>> {
+    + {static} InitialVerticalVelocity(velocity:float) : InitialVerticalVelocityConfig
+    + {static} InitialVelocityVector(velocity:Vector2, doesDecelerate:bool, canEnterHedge:bool) : InitialVelocityVectorConfig
+    + {static} StartJump() : StartJumpConfig
+    + {static} InitialSwingHookCollision(hitPoint:Vector2, earlyRelease:bool) : InitialSwingHookConfig
+    + {static} InitialHedgeCollider(hedge:HedgeNode, dir:Vector2) : InitialHedgeConfig
+    + {static} InitialGroundedJumpBuffer(canBufferJump:bool) : InitialGroundedConfig
+    + {static} InitialGrounded(doesDecelerate:bool) : InitialGroundedConfig
+}
+interface IBaseStateConfig {
+}
+struct InitialVerticalVelocityConfig {
+    + Velocity : float
+    + InitialVerticalVelocityConfig(velocity:float)
+}
+struct InitialVelocityVectorConfig {
+    + DoesDecelerate : bool
+    + CanEnterHedge : bool
+    + InitialVelocityVectorConfig(velocity:Vector2, doesDecelerate:bool, canEnterHedge:bool)
+}
+struct StartJumpConfig {
+}
+struct InitialSwingHookConfig {
+    + EarlyRelease : bool
+    + InitialSwingHookConfig(hitPoint:Vector2, earlyRelease:bool)
+}
+struct InitialHedgeConfig {
+    + InitialHedgeConfig(hedge:HedgeNode, dir:Vector2)
+}
+struct InitialGroundedConfig {
+    + IsJumpBuffered : bool
+    + DoesDecelerate : bool
+    + InitialGroundedConfig(canBufferJump:bool, doesDecelerate:bool)
+}
+GodotObject <|-- StateConfig
+StateConfig +-- IBaseStateConfig
+StateConfig +-- InitialVerticalVelocityConfig
+IBaseStateConfig <|-- InitialVerticalVelocityConfig
+StateConfig +-- InitialVelocityVectorConfig
+IBaseStateConfig <|-- InitialVelocityVectorConfig
+InitialVelocityVectorConfig --> "Velocity" Vector2
+StateConfig +-- StartJumpConfig
+IBaseStateConfig <|-- StartJumpConfig
+StateConfig +-- InitialSwingHookConfig
+IBaseStateConfig <|-- InitialSwingHookConfig
+InitialSwingHookConfig --> "HitPoint" Vector2
+StateConfig +-- InitialHedgeConfig
+IBaseStateConfig <|-- InitialHedgeConfig
+InitialHedgeConfig --> "Hedge" HedgeNode
+InitialHedgeConfig --> "Direction" Vector2
+StateConfig +-- InitialGroundedConfig
+IBaseStateConfig <|-- InitialGroundedConfig
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+class "StateMachine`1"<TAgent> {
+    + StateMachine(agent:TAgent)
+    + BindInput(newBinding:DisposableBinding) : void
+    + ClearInputBindings() : void
+    + RegisterState(state:TState) : void
+    + SetState(stateType:Type, configs:StateConfig.IBaseStateConfig[]) : void
+    + OnRigidBodyInteraction(body:Node2D, enter:bool) : void
+    + OnArea2DInteraction(area:Area2D, enter:bool) : void
+    + UpdateStateInput(actionType:InputAction.InputActionType, inputAction:InputAction) : void
+    + UpdateInputAxis(axis:InputAxis) : void
+    + ProcessState(prevStatus:StateExecutionStatus, delta:double) : StateExecutionStatus
+}
+"StateMachine`1" --> "MachineState" StateExecutionStatus
+@enduml

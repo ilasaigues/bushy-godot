@@ -1,0 +1,20 @@
+@startuml
+class HedgeState <<partial>> {
+    + <<override>> EnterState(configs:StateConfig.IBaseStateConfig[]) : void
+    + <<override>> ExitState() : void
+    + <<override>> OnAreaChange(area:Area2D, enter:bool) : void
+}
+class "IParentState`2"<T1,T2> {
+}
+class "IChildState`2"<T1,T2> {
+}
+class "Dictionary`2"<T1,T2> {
+}
+BasePlayerState <|-- HedgeState
+"IParentState`2" "<PlayerController,HedgeState>" <|-- HedgeState
+HedgeState --> "CurrentSubState<PlayerController,HedgeState>" "IChildState`2"
+HedgeState --> "SubStates<Type,IChildState<PlayerController, HedgeState>>" "Dictionary`2"
+HedgeState --> "xAxisMovement" AxisMovement
+HedgeState --> "yAxisMovement" AxisMovement
+HedgeState --> "Direction" Vector2
+@enduml

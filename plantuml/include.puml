@@ -1,0 +1,74 @@
+@startuml
+!include .\\Scenes\CameraPlaceholder.puml
+!include .\\Scenes\camera_placeholder.puml
+!include .\\Scenes\circle.puml
+!include .\\Scenes\HedgeArea2D.puml
+!include .\\Scenes\HedgePathFollow.puml
+!include .\\Scenes\HedgeStaticBody2D.puml
+!include .\\Scenes\PixelPerfect.puml
+!include .\\Scripts\Extensions.puml
+!include .\\Scripts\HedgeNode.puml
+!include .\\Scripts\InputAction.puml
+!include .\\Scripts\InputManager.puml
+!include .\\Scripts\QuickTest.puml
+!include .\\Scripts\test_forest.puml
+!include .\\Scenes\Utils\LineTrail.puml
+!include .\\Scripts\Camera\CameraFollow.puml
+!include .\\Scripts\Camera\CameraSecondaryTarget.puml
+!include .\\Scripts\Camera\CameraTargetInterface.puml
+!include .\\Scripts\Camera\PlayerCameraTargetBehaviour.puml
+!include .\\Scripts\Components\AnimationComponent.puml
+!include .\\Scripts\Components\AreaDetectionComponent.puml
+!include .\\Scripts\Components\CharacterCollisionComponent.puml
+!include .\\Scripts\Components\HitboxComponent.puml
+!include .\\Scripts\Components\InputsComponent.puml
+!include .\\Scripts\Components\MovementComponent.puml
+!include .\\Scripts\Components\PlayerInfo.puml
+!include .\\Scripts\Components\Sprite2DComponent.puml
+!include .\\Scripts\Player\PlayerController.puml
+!include .\\Scripts\StateMachine\StateMachine.puml
+!include .\\Scripts\StateMachine OLD\BushyAnimations.puml
+!include .\\Scripts\StateMachine OLD\CascadeMachine.puml
+!include .\\Scripts\StateMachine OLD\CharacterVariables.puml
+!include .\\Scripts\StateMachine OLD\StateChangedException.puml
+!include .\\Scripts\StateMachine OLD\StateConfig.puml
+!include .\\Scripts\Utils\LayerConstants.puml
+!include .\\Scripts\StateMachine\Base\BasePlayerState.puml
+!include .\\Scripts\StateMachine\Base\BaseState.puml
+!include .\\Scripts\StateMachine\Interfaces\IChildState.puml
+!include .\\Scripts\StateMachine\Interfaces\IParentState.puml
+!include .\\Scripts\StateMachine\Interfaces\IState.puml
+!include .\\Scripts\StateMachine\States\AirState.puml
+!include .\\Scripts\StateMachine\States\FallState.puml
+!include .\\Scripts\StateMachine\States\GroundedState.puml
+!include .\\Scripts\StateMachine\States\HedgeEnteringState.puml
+!include .\\Scripts\StateMachine\States\HedgeIdleState.puml
+!include .\\Scripts\StateMachine\States\HedgeMoveState.puml
+!include .\\Scripts\StateMachine\States\HedgeState.puml
+!include .\\Scripts\StateMachine\States\IdleGroundedState.puml
+!include .\\Scripts\StateMachine\States\JumpState.puml
+!include .\\Scripts\StateMachine\States\WalkState.puml
+!include .\\Scripts\StateMachine OLD\Base\StateExecutionStatus.puml
+!include .\\Scripts\StateMachine OLD\States\AirState.puml
+!include .\\Scripts\StateMachine OLD\States\AxisMovement.puml
+!include .\\Scripts\StateMachine OLD\States\BaseState.puml
+!include .\\Scripts\StateMachine OLD\States\BattleState.puml
+!include .\\Scripts\StateMachine OLD\States\CombatState.puml
+!include .\\Scripts\StateMachine OLD\States\DashState.puml
+!include .\\Scripts\StateMachine OLD\States\GroundedState.puml
+!include .\\Scripts\StateMachine OLD\States\HedgeState.puml
+!include .\\Scripts\StateMachine OLD\States\HedgeStateCheck.puml
+!include .\\Scripts\StateMachine OLD\States\IdleState.puml
+!include .\\Scripts\StateMachine OLD\States\JumpState.puml
+!include .\\Scripts\StateMachine OLD\States\AttackSteps\AirAttackStep.puml
+!include .\\Scripts\StateMachine OLD\States\AttackSteps\AirComboAttackStep.puml
+!include .\\Scripts\StateMachine OLD\States\AttackSteps\AttackStep.puml
+!include .\\Scripts\StateMachine OLD\States\AttackSteps\AttackStepConfigs.puml
+!include .\\Scripts\StateMachine OLD\States\AttackSteps\BasicAttackStep.puml
+!include .\\Scripts\StateMachine OLD\States\AttackSteps\CombatStateMachine.puml
+!include .\\Scripts\StateMachine OLD\States\AttackSteps\ComboAttackStep.puml
+!include .\\Scripts\StateMachine OLD\States\AttackSteps\EndComboAttackStep.puml
+!include .\\Scripts\StateMachine OLD\States\AttackSteps\PhaseCoreography.puml
+!include .\\.godot\mono\temp\obj\Debug\.NETCoreApp,Version=v6.0.AssemblyAttributes.puml
+!include .\\.godot\mono\temp\obj\Debug\Bushy-godot.AssemblyInfo.puml
+@enduml

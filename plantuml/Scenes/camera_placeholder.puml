@@ -1,0 +1,7 @@
+@startuml
+class camera_placeholder <<partial>> {
+    + <<override>> _Ready() : void
+    + <<override>> _Process(delta:double) : void
+}
+Camera2D <|-- camera_placeholder
+@enduml

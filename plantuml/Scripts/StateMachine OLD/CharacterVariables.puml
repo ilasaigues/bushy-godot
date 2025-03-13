@@ -1,0 +1,37 @@
+@startuml
+class CharacterVariables <<partial>> {
+    + GroundHorizontalAcceleration : int <<get>>
+    + GroundHorizontalDeceleration : int <<get>>
+    + HorizontalTurnDeceleration : int <<get>>
+    + GroundHorizontalMovementSpeed : int <<get>>
+    + GroundHorizontalOvercappedDeceleration : int <<get>>
+    + MaxOnWallHorizontalMovementSpeed : int <<get>>
+    + JumpSpeed : int <<get>>
+    + JumpDuration : float <<get>>
+    + JumpCoyoteTime : float <<get>>
+    + AirHorizontalDeceleration : int <<get>>
+    + AirHorizontalMovementSpeed : int <<get>>
+    + AirHorizontalAcceleration : int <<get>>
+    + AirHorizontalOvercappedDeceleration : int <<get>>
+    + JumpShortHopSpeed : float <<get>>
+    + AirTerminalVelocity : float <<get>>
+    + AirGravity : float <<get>>
+    + AirApexGravity : float <<get>>
+    + DashInitTime : float <<get>>
+    + DashTime : float <<get>>
+    + DashExitTime : float <<get>>
+    + DashVelocity : float <<get>>
+    + DashExitVelocity : float <<get>>
+    + DashCooldown : float <<get>>
+    + DashJumpSpeed : float <<get>>
+    + HedgeAcceleration : int <<get>>
+    + HedgeDeceleration : int <<get>>
+    + HedgeTurnDeceleration : int <<get>>
+    + HedgeOvercappedDeceleration : int <<get>>
+    + HedgeMovementSpeed : int <<get>>
+    + MaxHedgeEnterSpeed : int <<get>>
+    + CharacterVariables()
+}
+Resource <|-- CharacterVariables
+CharacterVariables --> "AirSpeedThresholds" Vector2
+@enduml

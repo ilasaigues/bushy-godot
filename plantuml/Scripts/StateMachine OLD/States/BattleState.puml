@@ -1,0 +1,14 @@
+@startuml
+class BattleState <<partial>> {
+    + <<override>> InitState(mc:MovementComponent, cv:CharacterVariables, ac:PlayerInfo, anim:AnimationComponent, col:CharacterCollisionComponent, sm:PlayerStateController) : void
+    + <<override>> StateExit() : void
+    + <<override>> StateUpdateInternal(delta:double) : void
+    + OnBattleAnimationChange(animationKey:string, direction:Vector2) : void
+    + OnBattleEnd() : void
+    + OnMovementDirectionChange(direction:Vector2) : void
+    + OnCombatMovementUpdate(velocity:Vector2, acceleration:Vector2) : void
+    + OnCombatAttackHit() : void
+    + <<override>> _Notification(what:int) : void
+}
+BaseStateOLD <|-- BattleState
+@enduml

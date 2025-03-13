@@ -1,0 +1,30 @@
+@startuml
+class DisposableBinding {
+    + DisposableBinding(onDispose:Action)
+    + Dispose() : void
+}
+class InputAction {
+    + TimeHeld : float <<get>>
+    + TimeSinceLastPressed : float <<get>>
+    + ActionID : string <<get>>
+    + Pressed : bool <<get>>
+    + InputAction(actionID:string)
+    + BindToInputJustPressed(handler:Action<InputAction>) : DisposableBinding
+    + BindToInputHeld(handler:Action<InputAction>) : DisposableBinding
+    + BindToInputReleased(handler:Action<InputAction>) : DisposableBinding
+    + PassInputEvent(inputEvent:InputEvent) : void
+    + Process(delta:double) : void
+}
+class InputAxis {
+    + Value : float <<get>>
+    + BindToAxisUpdated(handler:Action<InputAxis>) : DisposableBinding
+    + InputAxis(positive:InputAction, negative:InputAction)
+}
+enum InputActionType {
+    InputPressed,
+    InputReleased,
+    InputHeld,
+}
+IDisposable <|-- DisposableBinding
+InputAction +-- InputActionType
+@enduml

@@ -1,0 +1,7 @@
+@startuml
+class CascadeMachine <<partial>> {
+    + <<override>> _Ready() : void
+    + <<override>> _Process(deltaTime:double) : void
+}
+Node2D <|-- CascadeMachine
+@enduml

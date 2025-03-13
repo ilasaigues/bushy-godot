@@ -1,0 +1,7 @@
+@startuml
+class CollisionLayerConsts <<static>> {
+    + <<const>> PLAYER : int = 1
+    + <<const>> TILE_MAP : int = 2
+    + <<const>> HEDGE : int = 3
+}
+@enduml

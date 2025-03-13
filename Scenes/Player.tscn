@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=37 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
@@ -6,21 +6,15 @@
 [ext_resource type="PackedScene" uid="uid://58asnhoao858" path="res://Scenes/AreaDetectionComponent.tscn" id="2_kbshe"]
 [ext_resource type="Script" path="res://Scripts/Components/Sprite2DComponent.cs" id="3_2v3uq"]
 [ext_resource type="PackedScene" uid="uid://cnkptwq4h84kk" path="res://Scenes/MovementComponent.tscn" id="3_wt20f"]
-[ext_resource type="PackedScene" uid="uid://seeco12ddgj7" path="res://Scenes/StateMachine.tscn" id="4_wtgcq"]
-[ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine/PlayerVariables.tres" id="6_pknnn"]
-[ext_resource type="PackedScene" uid="uid://bm6r2edmdx3an" path="res://Scenes/PlayerActionsComponent.tscn" id="7_2bflq"]
-[ext_resource type="PackedScene" uid="uid://btpni3inhihi7" path="res://Scenes/States/GroundedState.tscn" id="7_jmv6p"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/CascadeMachine.cs" id="7_qq6ox"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/StateMachine.cs" id="8_5bl6f"]
-[ext_resource type="PackedScene" uid="uid://dv74lq75rbnkf" path="res://Scenes/States/JumpState.tscn" id="8_e1xim"]
-[ext_resource type="Script" path="res://Scripts/Components/InputsComponent.cs" id="9_03rmc"]
-[ext_resource type="PackedScene" uid="uid://bxnlnnba3b4fj" path="res://Scenes/States/AirState.tscn" id="9_n3pxo"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/IdleState.cs" id="9_w141r"]
+[ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine OLD/PlayerVariables.tres" id="6_pknnn"]
 [ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
-[ext_resource type="PackedScene" uid="uid://ikw2snd4s3rd" path="res://Scenes/States/DashState.tscn" id="10_hkenu"]
-[ext_resource type="PackedScene" uid="uid://pwejeh2nevkj" path="res://Scenes/States/HedgeState.tscn" id="12_sohlx"]
-[ext_resource type="PackedScene" path="res://Scenes/States/BattleState.tscn" id="14_a32x2"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/GroundedParentState.cs" id="11_oqy61"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/IdleGroundedState.cs" id="12_ai2cy"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/WalkState.cs" id="13_sbsf8"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/AirParentState.cs" id="14_4bytr"]
 [ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/FallState.cs" id="15_3uh34"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/JumpState.cs" id="16_iy12i"]
 [ext_resource type="Script" path="res://Scripts/Components/AnimationComponent.cs" id="16_w750l"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_raavv"]
@@ -366,10 +360,15 @@ _data = {
 "turn": SubResource("Animation_fylk2")
 }
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("AnimationComponent", "BaseStates", "ActionStates", "OverrideStates")]
 z_index = 1
 collision_mask = 15
 script = ExtResource("1_1vn0y")
+CharacterVariables = ExtResource("6_pknnn")
+AnimationComponent = NodePath("AnimationComponent")
+BaseStates = [NodePath("States/BaseStates/GroundedParentState"), NodePath("States/BaseStates/AirParentState")]
+ActionStates = []
+OverrideStates = []
 
 [node name="AreaDetectionComponent" parent="." instance=ExtResource("2_kbshe")]
 scale = Vector2(0.7, 0.7)
@@ -395,54 +394,11 @@ movementComponent = NodePath("../MovementComponent")
 [node name="MovementComponent" parent="." node_paths=PackedStringArray("CollisionComponent") instance=ExtResource("3_wt20f")]
 CollisionComponent = NodePath("../CollisionComponent")
 
-[node name="CascadeMachine" type="Node2D" parent="."]
-script = ExtResource("7_qq6ox")
-
-[node name="ActionsMachine" type="Node2D" parent="CascadeMachine" node_paths=PackedStringArray("movementComponent", "actionsComponent", "animationComponent", "collisionComponent")]
-script = ExtResource("8_5bl6f")
-movementComponent = NodePath("../../MovementComponent")
-characterVariables = ExtResource("6_pknnn")
-actionsComponent = NodePath("../../ActionsComponent")
-animationComponent = NodePath("../../AnimationComponent")
-collisionComponent = NodePath("../../CollisionComponent")
-
-[node name="IdleState" type="Node2D" parent="CascadeMachine/ActionsMachine"]
-script = ExtResource("9_w141r")
-
-[node name="BattleState" parent="CascadeMachine/ActionsMachine" instance=ExtResource("14_a32x2")]
-
-[node name="MovementMachine" parent="CascadeMachine" node_paths=PackedStringArray("movementComponent", "actionsComponent", "animationComponent", "collisionComponent") instance=ExtResource("4_wtgcq")]
-movementComponent = NodePath("../../MovementComponent")
-characterVariables = ExtResource("6_pknnn")
-actionsComponent = NodePath("../../ActionsComponent")
-animationComponent = NodePath("../../AnimationComponent")
-collisionComponent = NodePath("../../CollisionComponent")
-
-[node name="GroundedState" parent="CascadeMachine/MovementMachine" instance=ExtResource("7_jmv6p")]
-
-[node name="JumpState" parent="CascadeMachine/MovementMachine" instance=ExtResource("8_e1xim")]
-
-[node name="AirState" parent="CascadeMachine/MovementMachine" instance=ExtResource("9_n3pxo")]
-position = Vector2(-1, 0)
-
-[node name="DashState" parent="CascadeMachine/MovementMachine" instance=ExtResource("10_hkenu")]
-
-[node name="HedgeState" parent="CascadeMachine/MovementMachine" instance=ExtResource("12_sohlx")]
-
-[node name="ActionsComponent" parent="." instance=ExtResource("7_2bflq")]
-
 [node name="AnimationComponent" type="AnimationPlayer" parent="."]
 libraries = {
 "": SubResource("AnimationLibrary_uncl2")
 }
 script = ExtResource("16_w750l")
-
-[node name="InputsComponent" type="Node" parent="." node_paths=PackedStringArray("actionsComponent")]
-script = ExtResource("9_03rmc")
-actionsComponent = NodePath("../ActionsComponent")
-JumpBufferTime = 0.08
-DashBufferTime = 0.08
-AttackBufferTime = 0.08
 
 [node name="LineTrail" parent="." instance=ExtResource("10_dffrb")]
 maxPoints = 24
@@ -450,7 +406,46 @@ maxPoints = 24
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 scale = Vector2(1.0125, 1.0125)
 
+[node name="States" type="Node" parent="."]
+
+[node name="BaseStates" type="Node" parent="States"]
+
+[node name="GroundedParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("SubStates", "Agent")]
+script = ExtResource("11_oqy61")
+SubStates = [NodePath("GroundedIdleState"), NodePath("WalkState")]
+Agent = NodePath("../../..")
+
+[node name="GroundedIdleState" type="Node" parent="States/BaseStates/GroundedParentState" node_paths=PackedStringArray("Agent")]
+script = ExtResource("12_ai2cy")
+Agent = NodePath("../../../..")
+
+[node name="WalkState" type="Node" parent="States/BaseStates/GroundedParentState" node_paths=PackedStringArray("Agent")]
+script = ExtResource("13_sbsf8")
+Agent = NodePath("../../../..")
+
+[node name="AirParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("SubStates", "CoyoteJumpTimer", "Agent")]
+script = ExtResource("14_4bytr")
+SubStates = [NodePath("FallState"), NodePath("JumpState")]
+CoyoteJumpTimer = NodePath("CoyoteJumpTimer")
+Agent = NodePath("../../..")
+
+[node name="FallState" type="Node" parent="States/BaseStates/AirParentState" node_paths=PackedStringArray("Agent")]
+script = ExtResource("15_3uh34")
+Agent = NodePath("../../../..")
+
+[node name="JumpState" type="Node" parent="States/BaseStates/AirParentState" node_paths=PackedStringArray("DurationTimer", "Agent")]
+script = ExtResource("16_iy12i")
+DurationTimer = NodePath("JumpTimer")
+Agent = NodePath("../../../..")
+
+[node name="JumpTimer" type="Timer" parent="States/BaseStates/AirParentState/JumpState"]
+
+[node name="CoyoteJumpTimer" type="Timer" parent="States/BaseStates/AirParentState"]
+
+[node name="ActionStates" type="Node" parent="States"]
+
+[node name="OverrideStates" type="Node" parent="States"]
+
 [connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeEnter"]
 [connection signal="OnHedgeExit" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeExit"]
-[connection signal="OnHedgeExit" from="AreaDetectionComponent" to="CascadeMachine/MovementMachine/HedgeState" method="OnHedgeExit"]
 [connection signal="CoreographyUpdate" from="MovementComponent" to="Sprite2DComponent" method="ForceOrientation"]

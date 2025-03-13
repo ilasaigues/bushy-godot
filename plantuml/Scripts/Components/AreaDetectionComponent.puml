@@ -1,0 +1,8 @@
+@startuml
+class AreaDetectionComponent <<partial>> {
+    + <<override>> _Notification(what:int) : void
+    + OnAreaExited(area2D:Area2D) : void
+    + OnAreaEntered(area2D:Area2D) : void
+}
+Area2D <|-- AreaDetectionComponent
+@enduml

@@ -1,0 +1,6 @@
+@startuml
+class CameraSecondaryTarget <<partial>> {
+    + positionOverride : bool = false
+}
+Area2D <|-- CameraSecondaryTarget
+@enduml

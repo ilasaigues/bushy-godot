@@ -1,0 +1,12 @@
+@startuml
+class IdleGroundedState <<partial>> {
+    + <<override>> EnterState(configs:StateConfig.IBaseStateConfig[]) : void
+    + <<override>> ExitState() : void
+    + <<override>> UpdateAnimation() : StateAnimationLevel
+}
+class "IChildState`2"<T1,T2> {
+}
+BasePlayerState <|-- IdleGroundedState
+"IChildState`2" "<PlayerController,GroundedState>" <|-- IdleGroundedState
+IdleGroundedState --> "ParentState" GroundedState
+@enduml

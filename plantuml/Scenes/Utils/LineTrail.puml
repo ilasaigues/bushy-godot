@@ -1,0 +1,8 @@
+@startuml
+class LineTrail <<partial>> {
+    + <<override>> _Ready() : void
+    + <<override>> _Process(delta:double) : void
+    + <<async>> Stop() : void
+}
+Line2D <|-- LineTrail
+@enduml

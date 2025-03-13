@@ -1,0 +1,6 @@
+@startuml
+class AnimationComponent <<partial>> {
+    + ChangeAnimationStep(phase:int) : void
+}
+AnimationPlayer <|-- AnimationComponent
+@enduml

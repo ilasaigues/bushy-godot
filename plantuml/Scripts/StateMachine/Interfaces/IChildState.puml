@@ -1,0 +1,13 @@
+@startuml
+interface IBaseChildState {
+}
+interface "IChildState`2"<TAgent,TParentState> {
+}
+class "IState`1"<T> {
+}
+class "IParentState`2"<T1,T2> {
+}
+IBaseChildState --> "ParentStateType" Type
+"IState`1" "<TAgent>" <|-- "IChildState`2"
+IBaseChildState <|-- "IChildState`2"
+@enduml
