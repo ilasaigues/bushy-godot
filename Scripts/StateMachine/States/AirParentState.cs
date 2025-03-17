@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 using Godot;
 using GodotUtilities;
@@ -8,11 +8,8 @@ using static MovementComponent;
 
 namespace BushyCore
 {
-    public partial class AirParentState : BasePlayerState, IParentState<PlayerController, AirParentState>
+    public partial class AirParentState : BaseParentState<PlayerController, AirParentState>
     {
-
-        public IChildState<PlayerController, AirParentState> CurrentSubState { get; set; }
-        [Export] public BaseState<PlayerController>[] SubStates { get; set; }
 
         [Export] public Timer CoyoteJumpTimer { get; private set; }
 
@@ -26,31 +23,9 @@ namespace BushyCore
 
         public bool CanFallIntoHedge { get; set; }
 
-        private IChildState<PlayerController, AirParentState> _nextState = null;
-        private IBaseStateConfig[] _nextConfigs = null;
-        public override bool TryChangeToState(Type type, params IBaseStateConfig[] configs)
+        public override void SetAgent(PlayerController playerController)
         {
-            foreach (var subState in SubStates)
-            {
-                if (subState.GetType() == type && subState is IChildState<PlayerController, AirParentState> childState)
-                {
-                    _nextState = childState;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public override void _Ready()
-        {
-            foreach (var genericChild in GetChildren())
-            {
-                if (genericChild is IChildState<PlayerController, AirParentState> childState)
-                {
-                    childState.ParentState = this;
-                }
-            }
-            base._Ready();
+            base.SetAgent(playerController);
             this.XAxisMovement = new AxisMovement.Builder()
                 .Acc(Agent.CharacterVariables.AirHorizontalAcceleration)
                 .Dec(Agent.CharacterVariables.AirHorizontalDeceleration)
@@ -91,8 +66,6 @@ namespace BushyCore
             {
                 Agent.CollisionComponent.ToggleHedgeCollision(false);
             }
-            TryEnterSubState(configs);
-
         }
 
         private void SetupFromConfigs(IBaseStateConfig[] configs)
@@ -122,8 +95,7 @@ namespace BushyCore
             {
                 if (CanFallIntoHedge && Agent.MovementComponent.IsInHedge)
                 {
-                    throw new NotImplementedException("Need to implement hedge transition");
-                    //Agent.PlayerActionsComponent.EnterHedge(Agent.MovementComponent.HedgeEntered, (float)XAxisMovement.Velocity * Vector2.Right);
+                    throw new StateInterrupt<HedgeEnteringState>(new StateConfig.InitialHedgeConfig(Agent.MovementComponent.HedgeEntered, (float)XAxisMovement.Velocity * Vector2.Right));
                 }
 
                 if (VerticalVelocity < 0f && Agent.MovementComponent.IsOnCeiling)
@@ -135,14 +107,14 @@ namespace BushyCore
                     {
                         Agent.AnimationComponent.Play("land");
                     }
-
+                    bool IsJumpBuffered = InputManager.Instance.JumpAction.TimeSinceLastPressed <= Agent.CharacterVariables.JumpBufferTime;
                     if (TargetHorizontalVelocity != 0)
                     {
-                        throw new StateInterrupt(typeof(WalkState), InitialGrounded(XAxisMovement.HasOvershootDeceleration));
+                        throw new StateInterrupt(typeof(WalkState), new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration));
                     }
                     else
                     {
-                        throw new StateInterrupt(typeof(IdleGroundedState), InitialGrounded(XAxisMovement.HasOvershootDeceleration));
+                        throw new StateInterrupt(typeof(IdleGroundedState), new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration));
                     }
                 }
                 if (Agent.MovementComponent.CurrentVelocity.Y > 0)
@@ -156,7 +128,6 @@ namespace BushyCore
             }
             if (processConfig.CanMoveVertical)
             {
-                HandleGravity(delta);
                 VelocityUpdate();
             }
             if (processConfig.StateExecutionResult == StateExecutionResult.Block)
@@ -180,19 +151,23 @@ namespace BushyCore
             return StateAnimationLevel.Regular;
         }
 
-        void HandleGravity(double deltaTime)
+        public void HandleGravity(double deltaTime)
         {
             VerticalVelocity = Mathf.Min(Agent.CharacterVariables.AirTerminalVelocity, VerticalVelocity + GetGravity() * (float)deltaTime);
         }
 
-        public override void OnInputAxisChanged(InputAxis axis)
+        public override bool OnInputAxisChanged(InputAxis axis)
         {
-            CurrentSubState.OnInputAxisChanged(axis);
+            return CurrentSubState.OnInputAxisChanged(axis);
         }
 
-        public override void OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
+        public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
         {
-            CurrentSubState.OnInputButtonChanged(actionType, Action);
+            if (actionType == InputAction.InputActionType.InputPressed && Action == InputManager.Instance.DashAction)
+            {
+                throw new StateInterrupt<DashState>(InitialVelocityVector(Agent.MovementInputVector, false, true));
+            }
+            return CurrentSubState.OnInputButtonChanged(actionType, Action);
         }
 
         float GetGravity()
@@ -220,31 +195,6 @@ namespace BushyCore
         public void OnJumpCoyoteTimerTimeout()
         {
             CanCoyoteJump = false;
-        }
-
-
-        public void TryEnterSubState(params IBaseStateConfig[] stateConfigs)
-        {
-            if (_nextState != null)
-            {
-                CurrentSubState?.ExitState();
-                CurrentSubState = _nextState;
-                _nextState = null;
-                CurrentSubState.EnterState(stateConfigs);
-                _nextConfigs = null;
-            }
-        }
-
-        public StateExecutionStatus ProcessSubState(StateExecutionStatus processConfig, double delta)
-        {
-            TryEnterSubState(_nextConfigs);
-            return CurrentSubState.ProcessState(processConfig, delta);
-        }
-
-        public void ExitSubState()
-        {
-            TryEnterSubState(_nextConfigs);
-            CurrentSubState.ExitState();
         }
     }
 }

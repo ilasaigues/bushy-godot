@@ -5,23 +5,24 @@ using static MovementComponent;
 
 namespace BushyCore
 {
-    public partial class HedgeMoveState : BasePlayerState, IChildState<PlayerController, HedgeState>
+    public partial class HedgeMoveState : BaseChildState<PlayerController, HedgeParentState>
     {
-        public HedgeState ParentState { get; set; }
 
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
+            GD.Print("BALLS");
         }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
+            GD.Print("ASS");
             ParentState.Direction = Agent.MovementInputVector;
 
             ParentState.yAxisMovement.HandleMovement(delta);
             ParentState.xAxisMovement.HandleMovement(delta);
 
             VelocityUpdate();
-            return ParentState.ProcessState(prevStatus, delta);
+            return prevStatus;
         }
 
         protected void VelocityUpdate()

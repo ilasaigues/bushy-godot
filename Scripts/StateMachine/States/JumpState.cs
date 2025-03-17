@@ -1,15 +1,14 @@
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using Godot;
 using GodotUtilities;
 using static MovementComponent;
 
 namespace BushyCore
 {
-    public partial class JumpState : BasePlayerState, IChildState<PlayerController, AirParentState>
+    public partial class JumpState : BaseChildState<PlayerController, AirParentState>
     {
-        public override PlayerController Agent { get; set; }
-        public AirParentState ParentState { get; set; }
         [Export] public Timer DurationTimer;
         public bool JumpEnded = false;
 
@@ -17,7 +16,6 @@ namespace BushyCore
         {
             DurationTimer.WaitTime = Agent.CharacterVariables.JumpDuration;
             DurationTimer.Start();
-            DurationTimer.Timeout += JumpActionEnded;
             Agent.PlayerInfo.CanJump = false;
             ParentState.CanCoyoteJump = false;
             JumpEnded = false;
@@ -35,25 +33,40 @@ namespace BushyCore
             {
                 prevStatus.AnimationLevel |= UpdateAnimation();
             }
+            if (prevStatus.StateExecutionResult != StateExecutionResult.Block)
+            {
+                if (JumpEnded)
+                {
+                    ParentState.HandleGravity(delta);
+                }
+            }
             return new StateExecutionStatus(prevStatus);
         }
 
-        public override void OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
+        public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
         {
             if (actionType == InputAction.InputActionType.InputReleased && Action == InputManager.Instance.JumpAction)
             {
                 JumpActionEnded();
             }
+            return true;
         }
 
 
         public void JumpActionEnded()
         {
-            if (!JumpEnded && ParentState.VerticalVelocity < 0)
+            if (ParentState.VerticalVelocity < 0)
             {
                 ParentState.VerticalVelocity = Agent.CharacterVariables.JumpShortHopSpeed;
                 JumpEnded = true;
-                DurationTimer.Timeout -= JumpActionEnded;
+            }
+        }
+
+        private void JumpTimedOut()
+        {
+            if (ParentState.VerticalVelocity < 0)
+            {
+                JumpEnded = true;
             }
         }
 

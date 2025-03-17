@@ -36,7 +36,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 InputManager="*res://Scripts/InputManager.cs"
-PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
 
 [display]
 
@@ -50,10 +49,6 @@ window/stretch/scale_mode="integer"
 [dotnet]
 
 project/assembly_name="Bushy-godot"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/phantom_camera/plugin.cfg")
 
 [input]
 

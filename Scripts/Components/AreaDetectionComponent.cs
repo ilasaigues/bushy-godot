@@ -17,6 +17,8 @@ namespace BushyCore
 		[Node]
 		private CollisionShape2D CollisionShape2D;
 
+		HashSet<HedgeArea2D> _overlappingHedges = new();
+
 		public override void _Notification(int what)
 		{
 			if (what == NotificationSceneInstantiated)
@@ -30,7 +32,11 @@ namespace BushyCore
 		{
 			if (area2D is HedgeArea2D hedgeArea2D)
 			{
-				EmitSignal(SignalName.OnHedgeExit, hedgeArea2D.HedgeNode);
+				_overlappingHedges.Remove(hedgeArea2D);
+				if (_overlappingHedges.Count == 0)
+				{
+					EmitSignal(SignalName.OnHedgeExit, hedgeArea2D.HedgeNode);
+				}
 			}
 		}
 
@@ -38,6 +44,7 @@ namespace BushyCore
 		{
 			if (area2D is HedgeArea2D hedgeArea2D)
 			{
+				_overlappingHedges.Add(hedgeArea2D);
 				EmitSignal(SignalName.OnHedgeEnter, hedgeArea2D.HedgeNode);
 			}
 		}

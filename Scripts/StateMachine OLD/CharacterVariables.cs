@@ -1,18 +1,18 @@
 using Godot;
 
-namespace BushyCore 
+namespace BushyCore
 {
     [Tool]
     public partial class CharacterVariables : Resource
     {
         [ExportCategory("Grounded")]
-        [Export] 
+        [Export]
         public int GroundHorizontalAcceleration { get; private set; }
-        [Export] 
+        [Export]
         public int GroundHorizontalDeceleration { get; private set; }
-        [Export] 
+        [Export]
         public int HorizontalTurnDeceleration { get; private set; }
-        [Export] 
+        [Export]
         public int GroundHorizontalMovementSpeed { get; private set; }
         [Export]
         public int GroundHorizontalOvercappedDeceleration { get; private set; }
@@ -25,6 +25,8 @@ namespace BushyCore
         public float JumpDuration { get; private set; }
         [Export]
         public float JumpCoyoteTime { get; private set; }
+        [Export]
+        public float JumpBufferTime { get; private set; }
         [Export]
         public int AirHorizontalDeceleration { get; private set; }
         [Export]
@@ -58,21 +60,29 @@ namespace BushyCore
         [Export]
         public float DashCooldown { get; private set; }
         [Export]
+        public float DashJumpWindow { get; private set; }
+        [Export]
         public float DashJumpSpeed { get; private set; }
-        
+
         [ExportCategory("Hedge")]
-        [Export] 
+        [Export]
+        public float HedgeEnteringWaitTime { get; private set; }
+        [Export]
+        public float HedgeDashBufferTime { get; set; }
+        [Export]
+        public float HedgeJumpBufferTime { get; set; }
+        [Export]
         public int HedgeAcceleration { get; private set; }
-        [Export] 
+        [Export]
         public int HedgeDeceleration { get; private set; }
-        [Export] 
+        [Export]
         public int HedgeTurnDeceleration { get; private set; }
         [Export]
         public int HedgeOvercappedDeceleration { get; private set; }
-        [Export] 
+        [Export]
         public int HedgeMovementSpeed { get; private set; }
-        [Export] 
+        [Export]
         public int MaxHedgeEnterSpeed { get; private set; }
-        public CharacterVariables() {}
+        public CharacterVariables() { }
     }
 }

@@ -6,20 +6,23 @@ namespace BushyCore
     public abstract partial class BaseState<T> : Node, IState<T> where T : Node
     {
         public bool Active { get; set; }
-        public abstract T Agent { get; set; }
+        public T Agent { get; set; }
         public double TimeSinceStateStart { get; set; }
 
-        public virtual bool TryChangeToState(Type type, params StateConfig.IBaseStateConfig[] configs)
+        public virtual void SetAgent(T newAgent)
         {
-            return GetType() == type;
+            Agent = newAgent;
         }
 
-        public void EnterState(params StateConfig.IBaseStateConfig[] configs)
+        public virtual bool TryChangeToState(Type type, params StateConfig.IBaseStateConfig[] configs) => GetType() == type;
+
+        public virtual void EnterState(params StateConfig.IBaseStateConfig[] configs)
         {
             if (Active)
             {
                 return;
             }
+            GD.Print("Entering State: " + GetType());
             Active = true;
             EnterStateInternal(configs);
         }
@@ -44,13 +47,14 @@ namespace BushyCore
         }
         protected abstract void ExitStateInternal();
 
-        public virtual StateAnimationLevel UpdateAnimation()
+        public virtual StateAnimationLevel UpdateAnimation() => StateAnimationLevel.Regular;
+        public virtual bool OnRigidBodyInteraction(Node2D node, bool enter) => true;
+        public virtual bool OnAreaChange(Area2D area, bool enter) => true;
+        public virtual bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
         {
-            return StateAnimationLevel.Regular;
+            return true;
+
         }
-        public virtual void OnRigidBodyInteraction(Node2D node, bool enter) { }
-        public virtual void OnAreaChange(Area2D area, bool enter) { }
-        public virtual void OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action) { }
-        public virtual void OnInputAxisChanged(InputAxis axis) { }
+        public virtual bool OnInputAxisChanged(InputAxis axis) => true;
     }
 }

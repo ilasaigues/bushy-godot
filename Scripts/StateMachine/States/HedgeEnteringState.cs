@@ -1,17 +1,21 @@
 
 using Godot;
 using GodotUtilities;
+using static MovementComponent;
 
 namespace BushyCore
 {
-    public partial class HedgeEnteringState : BasePlayerState, IChildState<PlayerController, HedgeState>
+    public partial class HedgeEnteringState : BaseChildState<PlayerController, HedgeParentState>
     {
-        public HedgeState ParentState { get; set; }
-
-        [Node]
+        [Export]
         private Timer EnteringTimer;
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
+            ParentState.xAxisMovement.SetInitVel(Agent.MovementComponent.CurrentVelocity.X);
+            ParentState.yAxisMovement.SetInitVel(Agent.MovementComponent.CurrentVelocity.Y);
+
+            Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
+            EnteringTimer.WaitTime = Agent.CharacterVariables.HedgeEnteringWaitTime;
             RemoveControls();
         }
 
@@ -19,20 +23,12 @@ namespace BushyCore
         {
             EnteringTimer.Timeout -= EnteringTimerTimeout;
             ReturnControls();
-            if (Agent.MovementInputVector.Length() == 0)
-            {
-                throw new StateInterrupt<HedgeIdleState>();
-            }
-            else
-            {
-                throw new StateInterrupt<HedgeMoveState>();
-            }
         }
 
         private void RemoveControls()
         {
-            EnteringTimer.Start();
             EnteringTimer.Timeout += EnteringTimerTimeout;
+            EnteringTimer.Start();
 
             if (Mathf.Abs(ParentState.xAxisMovement.Velocity) > Agent.CharacterVariables.HedgeMovementSpeed)
                 ParentState.xAxisMovement = ParentState.xAxisMovement.ToBuilder().Copy()
@@ -56,13 +52,14 @@ namespace BushyCore
                 .Build();
         }
 
-        protected override void ExitStateInternal()
-        {
-            EnteringTimer.Timeout -= EnteringTimerTimeout;
-        }
+        protected override void ExitStateInternal() { }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
+            if (EnteringTimer.TimeLeft <= 0)
+            {
+                throw new StateInterrupt<HedgeMoveState>();
+            }
             return prevStatus;
         }
     }

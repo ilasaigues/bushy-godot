@@ -11,7 +11,6 @@ namespace BushyCore
     {
         [Export] BaseState<TAgent>[] SubStates { get; set; }
         IChildState<TAgent, TParentState> CurrentSubState { get; set; }
-        void TryEnterSubState(params IBaseStateConfig[] stateConfigs);
         StateExecutionStatus ProcessSubState(StateExecutionStatus processConfig, double delta);
         void ExitSubState();
     }

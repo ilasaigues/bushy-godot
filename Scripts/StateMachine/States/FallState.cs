@@ -6,10 +6,8 @@ using static MovementComponent;
 
 namespace BushyCore
 {
-    public partial class FallState : BasePlayerState, IChildState<PlayerController, AirParentState>
+    public partial class FallState : BaseChildState<PlayerController, AirParentState>
     {
-        public AirParentState ParentState { get; set; }
-
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
         }
@@ -24,15 +22,20 @@ namespace BushyCore
             {
                 prevStatus.AnimationLevel |= UpdateAnimation();
             }
+            if (prevStatus.StateExecutionResult != StateExecutionResult.Block)
+            {
+                ParentState.HandleGravity(delta);
+            }
             return prevStatus;
         }
 
-        public override void OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
+        public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
         {
             if (ParentState.CanCoyoteJump && actionType == InputAction.InputActionType.InputPressed && Action == InputManager.Instance.JumpAction)
             {
                 throw new StateInterrupt<JumpState>();
             }
+            return true;
         }
 
 

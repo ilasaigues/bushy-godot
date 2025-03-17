@@ -23,6 +23,7 @@ namespace BushyCore
         None = 0,
         HorizontalLock = 1,
         VerticalLock = 2,
+        All = HorizontalLock | VerticalLock,
     }
 
     public struct StateExecutionStatus

@@ -25,7 +25,7 @@ public class InputAction
     }
 
     public float TimeHeld => Pressed ? (Time.GetTicksMsec() - _timeLastPressed) / 1000f : float.MinValue;
-    public float TimeSinceLastPressed => (Time.GetTicksMsec() - _timeLastPressed) / 100f;
+    public float TimeSinceLastPressed => (Time.GetTicksMsec() - _timeLastPressed) / 1000f;
     private float _timeLastPressed = 0;
     public string ActionID { get; private set; }
     public bool Pressed { get; private set; }

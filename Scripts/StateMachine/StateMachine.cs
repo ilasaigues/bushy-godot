@@ -14,26 +14,15 @@ namespace BushyCore
         [Export] private List<BaseState<TAgent>> States = new();
         private BaseState<TAgent> _currentState;
 
-        private List<DisposableBinding> _bindings = new();
-
         public StateMachine(TAgent agent)
         {
             Agent = agent;
         }
 
-        public void BindInput(DisposableBinding newBinding)
-        {
-            _bindings.Add(newBinding);
-        }
-
-        public void ClearInputBindings()
-        {
-            _bindings.ForEach(binding => binding.Dispose());
-        }
-
         public void RegisterState<TState>(TState state) where TState : BaseState<TAgent>
         {
             States.Add(state);
+            state.SetAgent(Agent);
         }
 
         public bool SetState(Type stateType, params StateConfig.IBaseStateConfig[] configs)
@@ -42,15 +31,16 @@ namespace BushyCore
             {
                 return true;
             }
-
             foreach (var state in States)
             {
-                if (state != _currentState && state.TryChangeToState(stateType))
+                if (state.TryChangeToState(stateType))
                 {
-                    _currentState?.ExitState();
-                    _currentState = state;
-                    GD.PushWarning("Entering State: " + state.GetType());
-                    _currentState.EnterState(configs);
+                    state.EnterState(configs);
+                    if (state != _currentState)
+                    {
+                        _currentState?.ExitState();
+                        _currentState = state;
+                    }
                     return true;
                 }
             }
@@ -58,47 +48,56 @@ namespace BushyCore
             return false;
         }
 
-        public void OnRigidBodyInteraction(Node2D body, bool enter)
+        public bool OnRigidBodyInteraction(Node2D body, bool enter)
         {
-            TryOrInterrupt(
-                () => _currentState?.OnRigidBodyInteraction(body, enter)
-                );
+            return TryReturnOrInterrupt(
+                () => _currentState == null || _currentState.OnRigidBodyInteraction(body, enter)
+            );
         }
 
-        public void OnArea2DInteraction(Area2D area, bool enter)
+        public bool OnArea2DInteraction(Area2D area, bool enter)
         {
-            TryOrInterrupt(
-                () => _currentState?.OnRigidBodyInteraction(area, enter)
-                );
+            return TryReturnOrInterrupt(
+               () => _currentState == null || _currentState.OnRigidBodyInteraction(area, enter)
+            );
         }
 
-        public void UpdateStateInput(InputAction.InputActionType actionType, InputAction inputAction)
+        public bool UpdateStateInput(InputAction.InputActionType actionType, InputAction inputAction)
         {
-
-            TryOrInterrupt(
-                () => _currentState?.OnInputButtonChanged(actionType, inputAction)
-                );
-
+            return TryReturnOrInterrupt(
+               () => _currentState == null || _currentState.OnInputButtonChanged(actionType, inputAction)
+           );
         }
 
-        public void UpdateInputAxis(InputAxis axis)
+        public bool UpdateInputAxis(InputAxis axis)
         {
-            TryOrInterrupt(
-                () => _currentState?.OnInputAxisChanged(axis)
-                );
-
+            return TryReturnOrInterrupt(
+               () => _currentState == null || _currentState.OnInputAxisChanged(axis)
+           );
         }
 
-        private void TryOrInterrupt(Action handler)
+        private bool TryReturnOrInterrupt(Func<bool> handler)
         {
             try
             {
-                handler();
+                // Return the result of the handler
+                return handler();
             }
             catch (StateInterrupt interrupt)
             {
-                SetState(interrupt.NextStateType, interrupt.Configs);
+                StopCurrentState();
+                if (!SetState(interrupt.NextStateType, interrupt.Configs))
+                {
+                    throw;
+                }
+                return true;
             }
+        }
+
+        private void StopCurrentState()
+        {
+            _currentState.ExitState();
+            _currentState = null;
         }
 
         public StateExecutionStatus ProcessState(StateExecutionStatus prevStatus, double delta)
@@ -118,7 +117,11 @@ namespace BushyCore
             }
             catch (StateInterrupt ex)
             {
-                SetState(ex.NextStateType, ex.Configs);
+                StopCurrentState();
+                if (!SetState(ex.NextStateType, ex.Configs))
+                {
+                    throw;
+                }
                 return prevStatus;
             }
         }

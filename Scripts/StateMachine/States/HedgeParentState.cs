@@ -8,18 +8,16 @@ using static MovementComponent;
 
 namespace BushyCore
 {
-	public partial class HedgeState : BasePlayerState, IParentState<PlayerController, HedgeState>
+	public partial class HedgeParentState : BaseParentState<PlayerController, HedgeParentState>
 	{
-		public IChildState<PlayerController, HedgeState> CurrentSubState { get; set; }
-		[Export] public BaseState<PlayerController>[] SubStates { get; set; }
 
 		private HedgeNode HedgeNode;
 		public AxisMovement xAxisMovement;
 		public AxisMovement yAxisMovement;
 
-		[Node]
+		[Export]
 		private Timer JumpBufferTimer;
-		[Node]
+		[Export]
 		private Timer DashBufferTimer;
 		private bool isExitJumpBuffered;
 		private bool isExitDashBuffered;
@@ -28,6 +26,7 @@ namespace BushyCore
 
 		protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
+			Agent.CollisionComponent.ToggleHedgeCollision(false);
 			var builder = new AxisMovement.Builder()
 				.Acc(Agent.CharacterVariables.HedgeAcceleration)
 				.Dec(Agent.CharacterVariables.HedgeDeceleration)
@@ -53,19 +52,14 @@ namespace BushyCore
 			Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
 			Agent.PlayerInfo.CanJump = true;
 
-			/*hedgePhase = 0;
-            this.RemoveControls();*/
+			DashBufferTimer.WaitTime = Agent.CharacterVariables.HedgeDashBufferTime;
+			JumpBufferTimer.WaitTime = Agent.CharacterVariables.HedgeJumpBufferTime;
 
 			Agent.CollisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 			SetupFromConfigs(configs);
 
 			HedgeNode.SubscribeMovementComponent(Agent.MovementComponent);
 
-			/*actionsComponent.JumpActionStart += OnJumpActionRequested;
-			actionsComponent.JumpActionEnd += OnJumpActionCancelled;*/
-
-			/*actionsComponent.DashActionStart += OnDashActionRequested;
-			actionsComponent.DashActionEnd += OnDashActionCancelled;*/
 			isExitJumpBuffered = false;
 			isExitDashBuffered = false;
 		}
@@ -89,32 +83,78 @@ namespace BushyCore
 			HedgeNode.UnSubscribeMovementComponent(Agent.MovementComponent);
 		}
 
-		public override void OnAreaChange(Area2D area, bool enter)
+		public override bool OnAreaChange(Area2D area, bool enter)
 		{
 			// TODO: Check when area left is hedge, and no other hedges are overlapping
 			// Transition to Jump, Dash or Fall states
+			return true;
 		}
 
 		protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
 		{
-			return prevStatus;
+			CheckHedge();
+			return ProcessSubState(prevStatus, delta);
 		}
 
-		public void TryEnterSubState(params StateConfig.IBaseStateConfig[] stateConfigs)
+		private void CheckHedge()
 		{
-			throw new NotImplementedException();
+			if (!Agent.MovementComponent.IsInHedge)
+				OnHedgeExit();
 		}
 
-		public StateExecutionStatus ProcessSubState(StateExecutionStatus processConfig, double delta)
+		public void OnHedgeExit()
 		{
-			throw new NotImplementedException();
+			Agent.CollisionComponent.ToggleHedgeCollision(true);
+
+			var direction = Agent.MovementComponent.FacingDirection;
+			if (isExitDashBuffered && isExitJumpBuffered)
+			{
+				Agent.MovementComponent.Velocities[VelocityType.MainMovement] = new Vector2(Agent.CharacterVariables.DashJumpSpeed * Mathf.Sign(direction.X), 0);
+				Agent.PlayerInfo.CanDash = false;
+				throw new StateInterrupt<JumpState>(StateConfig.InitialVelocityVector(
+					Agent.MovementComponent.Velocities[VelocityType.MainMovement], false, true));
+			}
+
+			if (isExitDashBuffered)
+			{
+				Agent.PlayerInfo.CanDash = false;
+				throw new StateInterrupt<DashState>(StateConfig.InitialVelocityVector(new Vector2(Agent.CharacterVariables.DashVelocity * Mathf.Sign(direction.X), 0)));
+			}
+
+			if (isExitJumpBuffered)
+			{
+				throw new StateInterrupt<JumpState>(
+								   StateConfig.InitialVelocityVector(new Vector2((float)xAxisMovement.Velocity, Agent.CharacterVariables.JumpSpeed)));
+			}
+
+			throw new StateInterrupt<FallState>();
 		}
 
-		public void ExitSubState()
+		private void OnJumpActionCancelled()
 		{
-			throw new NotImplementedException();
+			JumpBufferTimer.Stop();
+			isExitJumpBuffered = false;
+		}
+		private void OnJumpBufferTimerEnd()
+		{
+			isExitJumpBuffered = false;
 		}
 
+		private void OnDashActionRequested()
+		{
+			DashBufferTimer.Start();
+			isExitDashBuffered = true;
+		}
+
+		private void OnDashActionCancelled()
+		{
+			DashBufferTimer.Stop();
+			isExitDashBuffered = false;
+		}
+		private void OnDashBufferTimerEnd()
+		{
+			isExitDashBuffered = false;
+		}
 
 		/*
 private Vector2 direction;

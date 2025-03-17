@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=41 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
@@ -16,6 +16,10 @@
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/FallState.cs" id="15_3uh34"]
 [ext_resource type="Script" path="res://Scripts/StateMachine/States/JumpState.cs" id="16_iy12i"]
 [ext_resource type="Script" path="res://Scripts/Components/AnimationComponent.cs" id="16_w750l"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/HedgeParentState.cs" id="17_1vxv0"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/DashState.cs" id="17_7fap7"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/HedgeEnteringState.cs" id="18_2l61a"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/States/HedgeMoveState.cs" id="20_apm1t"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_raavv"]
 size = Vector2(8, 13)
@@ -366,9 +370,9 @@ collision_mask = 15
 script = ExtResource("1_1vn0y")
 CharacterVariables = ExtResource("6_pknnn")
 AnimationComponent = NodePath("AnimationComponent")
-BaseStates = [NodePath("States/BaseStates/GroundedParentState"), NodePath("States/BaseStates/AirParentState")]
+BaseStates = [NodePath("States/BaseStates/AirParentState"), NodePath("States/BaseStates/GroundedParentState"), NodePath("States/BaseStates/HedgeParentState")]
 ActionStates = []
-OverrideStates = []
+OverrideStates = [NodePath("States/OverrideStates/DashState")]
 
 [node name="AreaDetectionComponent" parent="." instance=ExtResource("2_kbshe")]
 scale = Vector2(0.7, 0.7)
@@ -410,42 +414,83 @@ scale = Vector2(1.0125, 1.0125)
 
 [node name="BaseStates" type="Node" parent="States"]
 
-[node name="GroundedParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("SubStates", "Agent")]
+[node name="GroundedParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("SubStates")]
 script = ExtResource("11_oqy61")
-SubStates = [NodePath("GroundedIdleState"), NodePath("WalkState")]
-Agent = NodePath("../../..")
+SubStates = []
 
-[node name="GroundedIdleState" type="Node" parent="States/BaseStates/GroundedParentState" node_paths=PackedStringArray("Agent")]
+[node name="GroundedIdleState" type="Node" parent="States/BaseStates/GroundedParentState"]
 script = ExtResource("12_ai2cy")
-Agent = NodePath("../../../..")
 
-[node name="WalkState" type="Node" parent="States/BaseStates/GroundedParentState" node_paths=PackedStringArray("Agent")]
+[node name="WalkState" type="Node" parent="States/BaseStates/GroundedParentState"]
 script = ExtResource("13_sbsf8")
-Agent = NodePath("../../../..")
 
-[node name="AirParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("SubStates", "CoyoteJumpTimer", "Agent")]
+[node name="AirParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("CoyoteJumpTimer", "SubStates")]
 script = ExtResource("14_4bytr")
-SubStates = [NodePath("FallState"), NodePath("JumpState")]
 CoyoteJumpTimer = NodePath("CoyoteJumpTimer")
-Agent = NodePath("../../..")
+SubStates = []
 
-[node name="FallState" type="Node" parent="States/BaseStates/AirParentState" node_paths=PackedStringArray("Agent")]
+[node name="FallState" type="Node" parent="States/BaseStates/AirParentState"]
 script = ExtResource("15_3uh34")
-Agent = NodePath("../../../..")
 
-[node name="JumpState" type="Node" parent="States/BaseStates/AirParentState" node_paths=PackedStringArray("DurationTimer", "Agent")]
+[node name="JumpState" type="Node" parent="States/BaseStates/AirParentState" node_paths=PackedStringArray("DurationTimer")]
 script = ExtResource("16_iy12i")
 DurationTimer = NodePath("JumpTimer")
-Agent = NodePath("../../../..")
 
 [node name="JumpTimer" type="Timer" parent="States/BaseStates/AirParentState/JumpState"]
+process_callback = 0
+one_shot = true
 
 [node name="CoyoteJumpTimer" type="Timer" parent="States/BaseStates/AirParentState"]
+process_callback = 0
+
+[node name="HedgeParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("JumpBufferTimer", "DashBufferTimer", "SubStates")]
+script = ExtResource("17_1vxv0")
+JumpBufferTimer = NodePath("JumpTimer")
+DashBufferTimer = NodePath("DashTimer")
+SubStates = []
+
+[node name="HedgeEnteringState" type="Node" parent="States/BaseStates/HedgeParentState" node_paths=PackedStringArray("EnteringTimer")]
+script = ExtResource("18_2l61a")
+EnteringTimer = NodePath("EnteringWaitTime")
+
+[node name="EnteringWaitTime" type="Timer" parent="States/BaseStates/HedgeParentState/HedgeEnteringState"]
+one_shot = true
+
+[node name="HedgeMoveState" type="Node" parent="States/BaseStates/HedgeParentState"]
+script = ExtResource("20_apm1t")
+
+[node name="JumpTimer" type="Timer" parent="States/BaseStates/HedgeParentState"]
+
+[node name="DashTimer" type="Timer" parent="States/BaseStates/HedgeParentState"]
 
 [node name="ActionStates" type="Node" parent="States"]
 
 [node name="OverrideStates" type="Node" parent="States"]
 
+[node name="DashState" type="Node" parent="States/OverrideStates" node_paths=PackedStringArray("DashDurationTimer", "DashEndTimer", "DashJumpTimer", "SlopeRaycast2D")]
+script = ExtResource("17_7fap7")
+DashDurationTimer = NodePath("DashDuration")
+DashEndTimer = NodePath("DashEnd")
+DashJumpTimer = NodePath("DashJumpTimer")
+SlopeRaycast2D = NodePath("RayCast2D")
+
+[node name="RayCast2D" type="RayCast2D" parent="States/OverrideStates/DashState"]
+
+[node name="DashEnterDelay" type="Timer" parent="States/OverrideStates/DashState"]
+one_shot = true
+
+[node name="DashDuration" type="Timer" parent="States/OverrideStates/DashState"]
+one_shot = true
+
+[node name="DashEnd" type="Timer" parent="States/OverrideStates/DashState"]
+one_shot = true
+
+[node name="DashJumpTimer" type="Timer" parent="States/OverrideStates/DashState"]
+one_shot = true
+
 [connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeEnter"]
 [connection signal="OnHedgeExit" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeExit"]
 [connection signal="CoreographyUpdate" from="MovementComponent" to="Sprite2DComponent" method="ForceOrientation"]
+[connection signal="timeout" from="States/BaseStates/AirParentState/JumpState/JumpTimer" to="States/BaseStates/AirParentState/JumpState" method="JumpTimedOut"]
+[connection signal="timeout" from="States/OverrideStates/DashState/DashDuration" to="States/OverrideStates/DashState" method="PreEndDash"]
+[connection signal="timeout" from="States/OverrideStates/DashState/DashDuration" to="States/OverrideStates/DashState" method="AnimationUpdate"]

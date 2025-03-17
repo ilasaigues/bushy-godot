@@ -3,10 +3,8 @@ using static MovementComponent;
 
 namespace BushyCore
 {
-    public partial class IdleGroundedState : BasePlayerState, IChildState<PlayerController, GroundedParentState>
+    public partial class IdleGroundedState : BaseChildState<PlayerController, GroundedParentState>
     {
-        public GroundedParentState ParentState { get; set; }
-
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs) { }
 
         protected override void ExitStateInternal() { }
@@ -16,12 +14,13 @@ namespace BushyCore
             return prevStatus;
         }
 
-        public override void OnInputAxisChanged(InputAxis axis)
+        public override bool OnInputAxisChanged(InputAxis axis)
         {
             if (axis == InputManager.Instance.HorizontalAxis && axis.Value != 0)
             {
                 throw new StateInterrupt(typeof(WalkState));
             }
+            return true;
         }
 
         public override StateAnimationLevel UpdateAnimation()

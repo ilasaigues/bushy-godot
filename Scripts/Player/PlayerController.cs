@@ -29,11 +29,11 @@ namespace BushyCore
 		private InputManager inputManager => InputManager.Instance;
 
 		[Export]
-		private BasePlayerState[] BaseStates;
+		private BaseState<PlayerController>[] BaseStates;
 		[Export]
-		private BasePlayerState[] ActionStates;
+		private BaseState<PlayerController>[] ActionStates;
 		[Export]
-		private BasePlayerState[] OverrideStates;
+		private BaseState<PlayerController>[] OverrideStates;
 
 		private StateMachine<PlayerController> _baseStateMachine;
 		private StateMachine<PlayerController> _actionStateMachine;
@@ -83,43 +83,61 @@ namespace BushyCore
 			_baseStateMachine.SetState(typeof(FallState));
 		}
 
+		void BindInput(DisposableBinding binding)
+		{
+			_disposableBindings.Add(binding);
+		}
+
 		void BindInputs()
 		{
 
 			var im = InputManager.Instance;
-			_disposableBindings.Add(im.HorizontalAxis.BindToAxisUpdated(OnHorizontalAxisChanged));
-			_disposableBindings.Add(im.VerticalAxis.BindToAxisUpdated(OnVerticalAxisChanged));
-			foreach (var sm in _stateMachineStack)
+			BindInput(im.HorizontalAxis.BindToAxisUpdated(OnHorizontalAxisChanged));
+			BindInput(im.VerticalAxis.BindToAxisUpdated(OnVerticalAxisChanged));
+
+			foreach (var inputAction in im.InputActions)
 			{
-				foreach (var inputAction in im.InputActions)
-				{
-					sm.BindInput(inputAction.BindToInputHeld(
-						(a) =>
-						{
-							TryOrCascade(() => sm.UpdateStateInput(InputAction.InputActionType.InputHeld, a));
-						}));
-					sm.BindInput(inputAction.BindToInputJustPressed(
-						(a) =>
-						{
-							TryOrCascade(() => sm.UpdateStateInput(InputAction.InputActionType.InputPressed, a));
-						}));
-					sm.BindInput(inputAction.BindToInputReleased(
-						(a) =>
-						{
-							TryOrCascade(() => sm.UpdateStateInput(InputAction.InputActionType.InputReleased, a));
-						}));
-				}
-				sm.BindInput(im.HorizontalAxis.BindToAxisUpdated(
-						(a) =>
-						{
-							TryOrCascade(() => sm.UpdateInputAxis(a));
-						}));
-				sm.BindInput(im.VerticalAxis.BindToAxisUpdated(
-						(a) =>
-						{
-							TryOrCascade(() => sm.UpdateInputAxis(a));
-						}));
+				BindInput(inputAction.BindToInputHeld(
+					(a) =>
+					{
+						TryToChain(sm => sm.UpdateStateInput(InputAction.InputActionType.InputHeld, a));
+					}));
+				BindInput(inputAction.BindToInputJustPressed(
+					(a) =>
+					{
+						TryToChain(sm => sm.UpdateStateInput(InputAction.InputActionType.InputPressed, a));
+					}));
+				BindInput(inputAction.BindToInputReleased(
+					(a) =>
+					{
+						TryToChain(sm => sm.UpdateStateInput(InputAction.InputActionType.InputReleased, a));
+					}));
 			}
+			BindInput(im.HorizontalAxis.BindToAxisUpdated(
+					(a) =>
+					{
+						TryToChain(sm => sm.UpdateInputAxis(a));
+					}));
+			BindInput(im.VerticalAxis.BindToAxisUpdated(
+					(a) =>
+					{
+						TryToChain(sm => sm.UpdateInputAxis(a));
+					}));
+
+		}
+
+		private void TryToChain(Func<StateMachine<PlayerController>, bool> handler)
+		{
+			TryOrCascade(() =>
+			{
+				if (handler(_overrideStateMachine))
+				{
+					if (handler(_actionStateMachine))
+					{
+						handler(_baseStateMachine);
+					}
+				}
+			});
 		}
 
 		private void OnHorizontalAxisChanged(InputAxis horizontalAxis)
@@ -146,6 +164,7 @@ namespace BushyCore
 
 		private void CascadeThroughStates(Type stateType, params StateConfig.IBaseStateConfig[] configs)
 		{
+			GD.Print("CASCADING");
 			if (!_overrideStateMachine.SetState(stateType, configs))
 			{
 				if (!_actionStateMachine.SetState(stateType, configs))
@@ -158,12 +177,17 @@ namespace BushyCore
 			}
 		}
 
+		void ClearInputBindings()
+		{
+			_disposableBindings.ForEach(b => b.Dispose());
+			_disposableBindings.Clear();
+		}
 
 		public override void _ExitTree()
 		{
 			foreach (var sm in _stateMachineStack)
 			{
-				sm.ClearInputBindings();
+				ClearInputBindings();
 			}
 			_disposableBindings.ForEach(d => d.Dispose());
 			base._ExitTree();
@@ -185,7 +209,6 @@ namespace BushyCore
 
 		public override void _PhysicsProcess(double delta)
 		{
-			GD.Print(Velocity);
 			MovementComponent.UpdateState(this);
 			MovementComponent.Move(this);
 		}
