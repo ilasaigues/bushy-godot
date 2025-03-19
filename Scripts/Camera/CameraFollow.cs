@@ -1,10 +1,12 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using Godot;
 
 public partial class CameraFollow : Camera2D
 {
     // Export variables for configuration
-    [Export] public float LookaheadDistance = 100.0f;
+    [Export] public float DirectionOffset = 100.0f;
+    [Export][Range(0, 1)] public float LookaheadSpeed = 0.33333f;
     [Export] public float Damping = 0.1f;
     [Export] public float DeadzoneSize = 50.0f;
     [Export] public float VerticalLockThresholdAbove = 20.0f;
@@ -17,10 +19,9 @@ public partial class CameraFollow : Camera2D
     private float floorHeight = 0.0f;
 
     private Vector2 currentPosition;
-    private Vector2 lookAheadOffset;
+    private Vector2 directionOffset;
 
-    private int lookAheadDirection = 1;
-
+    private int lookDirection = 1;
 
     public override void _EnterTree()
     {
@@ -41,13 +42,14 @@ public partial class CameraFollow : Camera2D
 
         if (velocity.X > 1)
         {
-            lookAheadDirection = 1;
+            lookDirection = 1;
         }
         else if (velocity.X < -1)
         {
-            lookAheadDirection = -1;
+            lookDirection = -1;
         }
-        lookAheadOffset = lookAheadOffset.Lerp(new Vector2(LookaheadDistance * lookAheadDirection, 0), Damping);
+        directionOffset = directionOffset.Lerp(new Vector2(DirectionOffset * lookDirection, 0), Damping);
+        Offset = Offset.Lerp(velocity, (float)delta * LookaheadSpeed);
 
         // Deadzone logic
         Rect2 deadzone = new(currentPosition.X - DeadzoneSize / 2, currentPosition.Y - 2000, DeadzoneSize, 4000);
@@ -97,9 +99,9 @@ public partial class CameraFollow : Camera2D
 
         // Add lookAhead and smoothly interpolate camera position
         currentPosition = currentPosition.Lerp(desiredPosition, Damping);
-        GlobalPosition = currentPosition.Lerp(desiredPosition + lookAheadOffset, Damping);
+        GlobalPosition = currentPosition.Lerp(desiredPosition + directionOffset, Damping);
 
-        if(!_targetBehaviour.ShouldLockVertical)
+        if (!_targetBehaviour.ShouldLockVertical)
         {
             _targetBehaviour.SetFloorHeight(GlobalPosition.Y);
         }

@@ -18,8 +18,10 @@ namespace BushyCore
             DurationTimer.Start();
             Agent.PlayerInfo.CanJump = false;
             ParentState.CanCoyoteJump = false;
+            ParentState.VerticalVelocity = Agent.CharacterVariables.JumpSpeed;
             JumpEnded = false;
-            UpdateAnimation();
+            Agent.AnimationComponent.Play("jump");
+            Agent.AnimationComponent.Queue("ascent");
         }
 
         protected override void ExitStateInternal()
@@ -73,9 +75,6 @@ namespace BushyCore
 
         public override StateAnimationLevel UpdateAnimation()
         {
-            Agent.AnimationComponent.ClearQueue();
-            Agent.AnimationComponent.Play("jump");
-            Agent.AnimationComponent.Queue("ascent");
             return StateAnimationLevel.Regular;
         }
     }

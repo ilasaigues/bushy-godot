@@ -1,6 +1,7 @@
 using System.Linq;
 using Godot;
 using GodotUtilities;
+using static BushyCore.StateConfig;
 using static MovementComponent;
 
 namespace BushyCore
@@ -27,9 +28,9 @@ namespace BushyCore
                 : Mathf.Sign(Agent.MovementComponent.FacingDirection.X);
 
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-            //Agent.PlayerInfo.JumpActionStart += JumpActionRequested;
-            Agent.PlayerInfo.CanDash = false;
-
+            Agent.PlayerInfo.IsInDashMode = true;
+            Agent.PlayerInfo.DashEnabled = false;
+            Agent.PlayerInfo.LastDashTime = Time.GetTicksMsec();
             DashDurationTimer.WaitTime = Agent.CharacterVariables.DashTime;
             DashEndTimer.WaitTime = Agent.CharacterVariables.DashExitTime + DashDurationTimer.WaitTime;
             DashJumpTimer.WaitTime = Agent.CharacterVariables.DashJumpWindow;
@@ -126,15 +127,14 @@ namespace BushyCore
             {
                 if (Agent.MovementInputVector.X != 0)
                 {
-                    Agent.AnimationComponent.Play("turn");
-                    throw new StateInterrupt<WalkState>();
+                    throw new StateInterrupt<WalkState>(new InitialAnimationConfig("turn"));
                 }
                 else
                 {
-                    throw new StateInterrupt<IdleGroundedState>();
+                    throw new StateInterrupt<IdleGroundedState>(new InitialAnimationConfig("idle"));
                 }
             }
-            throw new StateInterrupt<FallState>();
+            throw new StateInterrupt<FallState>(new InitialAnimationConfig("fall"));
         }
 
         private void CheckHedge()
@@ -176,7 +176,9 @@ namespace BushyCore
         {
             if (DashJumpTimer.TimeLeft > 0)
             {
-                var jumpVelocity = new Vector2(Agent.CharacterVariables.DashJumpSpeed * direction, Agent.CharacterVariables.JumpSpeed);
+                var jumpVelocity = Agent.MovementComponent.Velocities[VelocityType.MainMovement];
+                jumpVelocity.X *= Agent.CharacterVariables.DashJumpSpeed;
+                Agent.PlayerInfo.IsInDashMode = true;
                 throw new StateInterrupt<JumpState>(new StateConfig.InitialVelocityVectorConfig(jumpVelocity, false, true));
             }
         }

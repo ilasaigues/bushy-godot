@@ -61,12 +61,13 @@ namespace BushyCore
 
             if (currDirection != 0)
             {
+                var deceleration = Deceleration * deltaTime * (Velocity > 0 ? -1 : 1);
                 var isColliding = CollisionCheck.Invoke(_axisDirection);
                 var targetVelocity = isColliding ? vars.MaxOnWallHorizontalMovementSpeed : MovementSpeed;
                 //if the input direction is opposite of the current direction, we also add a deceleration
                 if (currDirection * Velocity < 0)
                 {
-                    Velocity += currDirection * TurnDeceleration * deltaTime;
+                    Velocity += currDirection * (Acceleration + TurnDeceleration + deceleration) * deltaTime;
                 }
                 else if (Mathf.Abs(Velocity) <= Mathf.Abs(targetVelocity))
                 {
@@ -84,7 +85,7 @@ namespace BushyCore
                 if (Velocity == 0)
                     return;
 
-                double deceleration = Deceleration * deltaTime * (Velocity > 0 ? -1 : 1); ;
+                double deceleration = Deceleration * deltaTime * (Velocity > 0 ? -1 : 1);
 
                 if ((HasOvershootDeceleration && Mathf.Abs(Velocity) > MovementSpeed) || Movement.IsOnWall)
                 {

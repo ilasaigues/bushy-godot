@@ -29,25 +29,23 @@ namespace BushyCore
             return prevStatus;
         }
 
+        public override StateAnimationLevel UpdateAnimation()
+        {
+            Agent.AnimationComponent.Play("fall");
+            return StateAnimationLevel.Regular;
+        }
+
         public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
         {
             if (ParentState.CanCoyoteJump && actionType == InputAction.InputActionType.InputPressed && Action == InputManager.Instance.JumpAction)
             {
-                throw new StateInterrupt<JumpState>();
+                throw new StateInterrupt<JumpState>(
+                    new StateConfig.InitialVelocityVectorConfig(Agent.MovementComponent.Velocities[VelocityType.MainMovement])
+                );
             }
             return true;
         }
 
 
-        public override StateAnimationLevel UpdateAnimation()
-        {
-            if (Agent.MovementComponent.CurrentVelocity.Y > 0 && Agent.AnimationComponent.CurrentAnimation != "fall")
-            {
-                Agent.AnimationComponent.ClearQueue();
-                Agent.AnimationComponent.Play("peak");
-                Agent.AnimationComponent.Queue("fall");
-            }
-            return StateAnimationLevel.Regular;
-        }
     }
 }

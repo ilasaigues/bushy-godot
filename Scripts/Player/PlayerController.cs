@@ -20,8 +20,9 @@ namespace BushyCore
 
 		[Export]
 		public AnimationComponent AnimationComponent;
-
-		public PlayerInfo PlayerInfo = new PlayerInfo();
+		[Export]
+		private SpriteTrail spriteTrail;
+		public PlayerInfo PlayerInfo;
 
 		private Vector2 _movementInputVector;
 		public Vector2 MovementInputVector => _movementInputVector.Normalized();
@@ -55,6 +56,7 @@ namespace BushyCore
 		public override void _Ready()
 		{
 			base._Ready();
+			PlayerInfo = new PlayerInfo(CharacterVariables);
 			_baseStateMachine = new StateMachine<PlayerController>(this);
 			_actionStateMachine = new StateMachine<PlayerController>(this);
 			_overrideStateMachine = new StateMachine<PlayerController>(this);
@@ -193,7 +195,7 @@ namespace BushyCore
 			base._ExitTree();
 		}
 
-		public override void _Process(double delta)
+		public override void _PhysicsProcess(double delta)
 		{
 			try
 			{
@@ -205,10 +207,6 @@ namespace BushyCore
 			{
 				CascadeThroughStates(interrupt.NextStateType, interrupt.Configs);
 			}
-		}
-
-		public override void _PhysicsProcess(double delta)
-		{
 			MovementComponent.UpdateState(this);
 			MovementComponent.Move(this);
 		}

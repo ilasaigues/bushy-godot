@@ -80,5 +80,14 @@ namespace BushyCore
             return new InitialGroundedConfig(doesDecelerate: doesDecelerate);
         }
 
+        public struct InitialAnimationConfig : IBaseStateConfig
+        {
+            public string AnimationName;
+            public InitialAnimationConfig(string animationName)
+            {
+                AnimationName = animationName;
+            }
+        }
+
     }
 }

@@ -1,10 +1,15 @@
+using BushyCore;
 using Godot;
 using System;
 
 public class PlayerInfo
 {
+	readonly CharacterVariables _charVars;
 	public bool CanJump;
-	public bool CanDash;
+	public bool DashEnabled;
+	public bool DashInCooldown => (Time.GetTicksMsec() - LastDashTime) < _charVars.DashCooldown;
+	public bool CanDash => DashEnabled && !DashInCooldown;
+	public bool IsInDashMode;
 	public double LastDashTime;
 	private bool _lookingRight = true;
 	public int LookDirection
@@ -27,4 +32,8 @@ public class PlayerInfo
 	}
 	public bool CanCoyoteJump;
 	public bool CanFallIntoHedge;
+	public PlayerInfo(CharacterVariables variables)
+	{
+		_charVars = variables;
+	}
 }

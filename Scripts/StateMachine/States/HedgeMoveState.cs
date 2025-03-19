@@ -10,12 +10,10 @@ namespace BushyCore
 
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
-            GD.Print("BALLS");
         }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
-            GD.Print("ASS");
             ParentState.Direction = Agent.MovementInputVector;
 
             ParentState.yAxisMovement.HandleMovement(delta);

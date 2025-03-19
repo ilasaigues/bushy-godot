@@ -78,6 +78,7 @@ namespace BushyCore
                     TargetHorizontalVelocity = velocityConfig.Velocity.X;
                     XAxisMovement.OvershootDec(velocityConfig.DoesDecelerate);
                     CanFallIntoHedge = velocityConfig.CanEnterHedge;
+                    Agent.PlayerInfo.IsInDashMode = !velocityConfig.DoesDecelerate && velocityConfig.CanEnterHedge;
                 }
             }
         }
@@ -103,18 +104,18 @@ namespace BushyCore
 
                 if (Agent.MovementComponent.IsOnFloor && VerticalVelocity > 0)
                 {
-                    if (processConfig.CanChangeAnimation)
-                    {
-                        Agent.AnimationComponent.Play("land");
-                    }
                     bool IsJumpBuffered = InputManager.Instance.JumpAction.TimeSinceLastPressed <= Agent.CharacterVariables.JumpBufferTime;
                     if (TargetHorizontalVelocity != 0)
                     {
-                        throw new StateInterrupt(typeof(WalkState), new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration));
+                        throw new StateInterrupt<WalkState>(
+                            new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration),
+                            new InitialAnimationConfig("land"));
                     }
                     else
                     {
-                        throw new StateInterrupt(typeof(IdleGroundedState), new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration));
+                        throw new StateInterrupt<IdleGroundedState>(
+                            new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration),
+                            new InitialAnimationConfig("land"));
                     }
                 }
                 if (Agent.MovementComponent.CurrentVelocity.Y > 0)
@@ -122,6 +123,12 @@ namespace BushyCore
                     Agent.CollisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
                 }
             }
+
+            if (processConfig.CanChangeAnimation)
+            {
+                UpdateAnimation();
+            }
+
             if (processConfig.CanMoveHorizontal)
             {
                 XAxisMovement.HandleMovement(delta);
@@ -142,7 +149,9 @@ namespace BushyCore
 
         public override StateAnimationLevel UpdateAnimation()
         {
-            if (Agent.MovementComponent.CurrentVelocity.Y > 0 && Agent.AnimationComponent.CurrentAnimation != "fall")
+            if (Agent.MovementComponent.CurrentVelocity.Y > 0
+            && Agent.AnimationComponent.CurrentAnimation != "fall"
+            && Agent.AnimationComponent.CurrentAnimation != "peak")
             {
                 Agent.AnimationComponent.ClearQueue();
                 Agent.AnimationComponent.Play("peak");
@@ -163,7 +172,9 @@ namespace BushyCore
 
         public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
         {
-            if (actionType == InputAction.InputActionType.InputPressed && Action == InputManager.Instance.DashAction)
+            if (Agent.PlayerInfo.CanDash
+                && actionType == InputAction.InputActionType.InputPressed
+                && Action == InputManager.Instance.DashAction)
             {
                 throw new StateInterrupt<DashState>(InitialVelocityVector(Agent.MovementInputVector, false, true));
             }

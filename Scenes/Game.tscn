@@ -172,6 +172,7 @@ position = Vector2(-2076, -1983)
 [node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("_targetNode")]
 position = Vector2(-812, 47)
 offset = Vector2(0, -32)
+process_callback = 0
 position_smoothing_enabled = true
 position_smoothing_speed = 3.0
 script = ExtResource("6_ov3y4")

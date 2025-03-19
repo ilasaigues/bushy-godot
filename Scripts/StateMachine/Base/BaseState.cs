@@ -22,7 +22,7 @@ namespace BushyCore
             {
                 return;
             }
-            GD.Print("Entering State: " + GetType());
+            //GD.Print("Entering State: " + GetType());
             Active = true;
             EnterStateInternal(configs);
         }
