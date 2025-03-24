@@ -1,0 +1,15 @@
+@startuml
+abstract class BaseStateOLD <<partial>> {
+    + TimeSinceStateStart : double <<get>>
+    + <<virtual>> InitState(mc:MovementComponent, cv:CharacterVariables, ac:PlayerInfo, anim:AnimationComponent, col:CharacterCollisionComponent, sm:PlayerStateController) : void
+    + StateUpdate(delta:double) : void
+    + <<virtual>> StateUpdateInternal(delta:double) : void
+    + StateEnter(configs:StateConfig.IBaseStateConfig[]) : void
+    + <<virtual>> StateExit() : void
+    + BaseOnRigidBodyEnter(node:Node) : void
+    + <<virtual>> OnRigidBodyEnter(node:Node) : void
+    + <<override>> ToString() : string
+}
+Node2D <|-- BaseStateOLD
+BaseStateOLD --> "IntendedDirection" Vector2
+@enduml

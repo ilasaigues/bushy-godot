@@ -1,0 +1,12 @@
+@startuml
+abstract class StateInterrupt {
+    + StateInterrupt(nextStateType:Type, configs:StateConfig.IBaseStateConfig[])
+    + <<override>> StackTrace : string <<get>>
+}
+class "StateInterrupt`1"<TNextState> {
+    + StateInterrupt(configs:StateConfig.IBaseStateConfig[])
+}
+Exception <|-- StateInterrupt
+StateInterrupt --> "NextStateType" Type
+StateInterrupt <|-- "StateInterrupt`1"
+@enduml

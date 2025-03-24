@@ -1,0 +1,13 @@
+@startuml
+class WalkState <<partial>> {
+    + <<override>> EnterState(configs:StateConfig.IBaseStateConfig[]) : void
+    + <<override>> ExitState() : void
+    + <<override>> ProcessState(prevStatus:StateExecutionStatus, delta:double) : StateExecutionStatus
+    + <<override>> UpdateAnimation() : StateAnimationLevel
+}
+class "IChildState`2"<T1,T2> {
+}
+BasePlayerState <|-- WalkState
+"IChildState`2" "<PlayerController,GroundedState>" <|-- WalkState
+WalkState --> "ParentState" GroundedState
+@enduml

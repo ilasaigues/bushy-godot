@@ -1,0 +1,11 @@
+@startuml
+class DashState <<partial>> {
+    + <<override>> _Notification(what:int) : void
+    + <<override>> StateExit() : void
+    + <<override>> StateUpdateInternal(delta:double) : void
+    + JumpActionRequested() : void
+}
+class "BaseState`1"<T> {
+}
+"BaseState`1" "<PlayerController>" <|-- DashState
+@enduml

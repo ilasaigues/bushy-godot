@@ -1,0 +1,7 @@
+@startuml
+class test_forest <<partial>> {
+    + <<override>> _Ready() : void
+    + <<override>> _Process(delta:double) : void
+}
+TileMap <|-- test_forest
+@enduml

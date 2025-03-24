@@ -1,0 +1,8 @@
+@startuml
+class InputsComponent <<partial>> {
+    + <<override>> _Ready() : void
+    + <<override>> _ExitTree() : void
+    + <<override>> _Process(delta:double) : void
+}
+Node <|-- InputsComponent
+@enduml

@@ -1,150 +1,81 @@
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using Godot;
 using GodotUtilities;
 using static MovementComponent;
 
-namespace BushyCore 
+namespace BushyCore
 {
-    [Scene]
-    public partial class JumpState : BaseState
+    public partial class JumpState : BaseChildState<PlayerController, AirParentState>
     {
-		private double verticalVelocity;
-        private bool earlyDrop;
-        private int targetVelocity;
-		private AxisMovement xAxisMovement;
-        private bool CanJumpIntoHedge;
-        [Node]
-        private Timer DurationTimer;
-        private HedgeNode hedgeNodeEntered;
+        [Export] public Timer DurationTimer;
+        public bool JumpEnded = false;
 
-        public override void _Notification(int what)
+        protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
-            if (what == NotificationSceneInstantiated)
-            {
-                this.AddToGroup();
-                this.WireNodes();
-            }
-        }
-
-        public override void InitState(MovementComponent mc, CharacterVariables cv, PlayerActionsComponent ac, AnimationComponent anim, 
-            CharacterCollisionComponent col, StateMachine sm)
-        {
-            base.InitState(mc, cv, ac, anim, col, sm);
-
-			this.xAxisMovement = new AxisMovement.Builder()
-				.Acc(characterVariables.AirHorizontalAcceleration)
-				.Dec(characterVariables.AirHorizontalDeceleration)
-				.Speed(characterVariables.AirHorizontalMovementSpeed)
-				.OverDec(characterVariables.AirHorizontalOvercappedDeceleration)
-				.TurnDec(characterVariables.HorizontalTurnDeceleration)
-				.Movement(mc)
-				.Direction(() => { return ac.MovementDirection.X; })
-				.ColCheck((dir) => { return mc.IsOnWall; })
-				.Variables(cv)
-				.Build();
-        }
-
-        protected override void StateEnterInternal(params StateConfig.IBaseStateConfig[] configs)
-		{
-			var animationLevel = this.stateMachine.MachineState.CurrentAnimationLevel;
-
-			if (animationLevel == CascadePhaseConfig.AnimationLevel.UNINTERRUPTIBLE) return;
-
-            animationComponent.ClearQueue();
-            animationComponent.Play("jump");
-            animationComponent.Queue("ascent");
-
-            targetVelocity = characterVariables.AirHorizontalMovementSpeed;
-            verticalVelocity = characterVariables.JumpSpeed;
-            CanJumpIntoHedge = false;
-
-            earlyDrop = false;
-
-            xAxisMovement.OvershootDec(true);
-            xAxisMovement.SetInitVel(movementComponent.Velocities[VelocityType.MainMovement].X);
-            
-            DurationTimer.WaitTime = characterVariables.JumpDuration;
+            DurationTimer.WaitTime = Agent.CharacterVariables.JumpDuration;
             DurationTimer.Start();
+            Agent.PlayerInfo.CanJump = false;
+            ParentState.CanCoyoteJump = false;
+            ParentState.VerticalVelocity = Agent.CharacterVariables.JumpSpeed;
+            JumpEnded = false;
+            Agent.AnimationComponent.Play("jump");
+            Agent.AnimationComponent.Queue("ascent");
+        }
 
-            actionsComponent.CanJump = false;
+        protected override void ExitStateInternal()
+        {
+            JumpEnded = false;
+        }
 
-			actionsComponent.DashActionStart += DashActionRequested;
-			actionsComponent.JumpActionEnd += JumpActionEnded;
-
-            base.collisionComponent.CallDeferred(
-                CharacterCollisionComponent.MethodName.SwitchShape, 
-                (int) CharacterCollisionComponent.ShapeMode.CILINDER);
-
-            foreach (var config in configs)
+        protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
+        {
+            if (prevStatus.CanChangeAnimation)
             {
-                if(config is StateConfig.InitialVelocityVectorConfig velocityConfig)
+                prevStatus.AnimationLevel |= UpdateAnimation();
+            }
+            if (prevStatus.StateExecutionResult != StateExecutionResult.Block)
+            {
+                if (JumpEnded)
                 {
-                    targetVelocity = (int) MathF.Abs(velocityConfig.Velocity.X);
-                    xAxisMovement.OvershootDec(velocityConfig.DoesDecelerate);
-                    CanJumpIntoHedge = velocityConfig.CanEnterHedge;
+                    ParentState.HandleGravity(delta);
                 }
             }
-
-            if (CanJumpIntoHedge)
-                collisionComponent.ToggleHedgeCollision(false);
-		}
-
-        protected override void AnimationUpdate() {}
-        public override void StateExit()
-        {
-			actionsComponent.DashActionStart -= DashActionRequested;
-			actionsComponent.JumpActionEnd -= JumpActionEnded;
-            if (!movementComponent.IsInHedge)
-                collisionComponent.ToggleHedgeCollision(true);
-            base.StateExit();
-        }
-        public override void StateUpdateInternal(double delta)
-        {
-            base.StateUpdateInternal(delta);
-            xAxisMovement.HandleMovement(delta);
-            this.VelocityUpdate();
-            // CheckSwing();
-
-            CheckTransitions();
-        }
-        protected override void VelocityUpdate()
-        {
-            movementComponent.Velocities[VelocityType.Gravity] = new Vector2(0, (float) verticalVelocity);
-            movementComponent.Velocities[VelocityType.MainMovement] = (float) xAxisMovement.Velocity * Vector2.Right;
+            return new StateExecutionStatus(prevStatus);
         }
 
-        void CheckTransitions()
+        public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
         {
-            if (CanJumpIntoHedge && movementComponent.IsInHedge)
-                actionsComponent.EnterHedge(this.stateMachine, movementComponent.HedgeEntered, (float) xAxisMovement.Velocity * Vector2.Right);
-            
-            if (actionsComponent.IsJumpCancelled)
-                actionsComponent.Fall(this.stateMachine, new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), xAxisMovement.HasOvershootDeceleration, CanJumpIntoHedge);
-
-            if (movementComponent.IsOnCeiling)
-                actionsComponent.Fall(this.stateMachine);
+            if (actionType == InputAction.InputActionType.InputReleased && Action == InputManager.Instance.JumpAction)
+            {
+                JumpActionEnded();
+            }
+            return true;
         }
 
-        void DurationTimerTimeout()
-        {
-            if (!this.IsActive) return;
-            RunAndEndState(() => actionsComponent.Fall(this.stateMachine, new Vector2(targetVelocity, characterVariables.JumpSpeed), xAxisMovement.HasOvershootDeceleration, CanJumpIntoHedge));
-        }
-
-		public void DashActionRequested()
-		{
-			var isCommitedToAction = this.stateMachine.MachineState.IsCommitedAction;
-			if (actionsComponent.CanDash && !isCommitedToAction)
-			{
-				RunAndEndState(() => actionsComponent.Dash(this.stateMachine, this.IntendedDirection));
-			}
-		} 
 
         public void JumpActionEnded()
         {
-            RunAndEndState(() => actionsComponent.Fall(this.stateMachine, new Vector2(targetVelocity, characterVariables.JumpShortHopSpeed), canFallIntoHedge: CanJumpIntoHedge));
+            if (ParentState.VerticalVelocity < 0)
+            {
+                ParentState.VerticalVelocity = Agent.CharacterVariables.JumpShortHopSpeed;
+                JumpEnded = true;
+            }
+        }
+
+        private void JumpTimedOut()
+        {
+            if (ParentState.VerticalVelocity < 0)
+            {
+                JumpEnded = true;
+            }
+        }
+
+
+        public override StateAnimationLevel UpdateAnimation()
+        {
+            return StateAnimationLevel.Regular;
         }
     }
 }
-

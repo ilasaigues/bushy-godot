@@ -1,0 +1,8 @@
+@startuml
+class EndComboAttackStep <<partial>> {
+    + <<override>> StepEnter(config:AttackStepConfig) : void
+    + <<override>> _Notification(what:int) : void
+    + RemoveToolRef() : void
+}
+AttackStep <|-- EndComboAttackStep
+@enduml

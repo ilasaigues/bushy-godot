@@ -1,0 +1,7 @@
+@startuml
+class BushyAnimations <<partial>> {
+    + BushyAnimations()
+}
+Resource <|-- BushyAnimations
+BushyAnimations --> "Idle" Animation
+@enduml

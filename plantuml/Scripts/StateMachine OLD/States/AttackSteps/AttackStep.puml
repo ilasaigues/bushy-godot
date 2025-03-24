@@ -1,0 +1,26 @@
+@startuml
+class AttackStep <<partial>> {
+    + animationKey : string
+    + DebugHitbox : bool <<get>> <<set>>
+    + <<override>> _Ready() : void
+    + InitState() : void
+    + <<virtual>> CombatUpdate(delta:double) : void
+    + <<virtual>> StepEnter(config:AttackStepConfig) : void
+    + <<virtual>> StepExit() : void
+    + ChangePhase(phase:int) : void
+    + HandleStepConfigChange(configs:AttackStepConfig) : void
+    + <<virtual>> HandleAttackAction() : void
+    + <<override>> _Draw() : void
+    + <<override>> _ExitTree() : void
+}
+enum AttackStepPhase {
+    WINDUP,
+    ACTION,
+    COMBO,
+    RECOVERY,
+}
+Node2D <|-- AttackStep
+AttackStep --> "HitboxComponent" HitboxComponent
+AttackStep --> "MovementComponent" MovementComponent
+AttackStep +-- AttackStepPhase
+@enduml

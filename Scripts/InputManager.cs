@@ -17,7 +17,7 @@ public partial class InputManager : Node
     public InputAxis HorizontalAxis { get; private set; }
     public InputAxis VerticalAxis { get; private set; }
 
-    private List<InputAction> _inputActions = new();
+    public List<InputAction> InputActions { get; private set; } = new();
 
     public override void _Ready()
     {
@@ -26,7 +26,7 @@ public partial class InputManager : Node
         HorizontalAxis = new InputAxis(RightAction, LeftAction);
         VerticalAxis = new InputAxis(DownAction, UpAction);
 
-        _inputActions = new List<InputAction> {
+        InputActions = new List<InputAction> {
             DashAction,
             JumpAction,
             LeftAction,
@@ -41,11 +41,11 @@ public partial class InputManager : Node
 
     public override void _Input(InputEvent @event)
     {
-        _inputActions.ForEach(inputAction => inputAction.PassInputEvent(@event));
+        InputActions.ForEach(inputAction => inputAction.PassInputEvent(@event));
     }
 
     public override void _Process(double delta)
     {
-        _inputActions.ForEach(inputAction => inputAction.Process(delta));
+        InputActions.ForEach(inputAction => inputAction.Process(delta));
     }
 }

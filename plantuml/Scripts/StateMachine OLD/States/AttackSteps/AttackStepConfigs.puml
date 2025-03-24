@@ -1,0 +1,7 @@
+@startuml
+class AttackStepConfig <<partial>> {
+    + AttackStepConfig(direction:Vector2)
+}
+GodotObject <|-- AttackStepConfig
+AttackStepConfig --> "Direction" Vector2
+@enduml

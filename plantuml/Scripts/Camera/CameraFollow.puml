@@ -1,0 +1,17 @@
+@startuml
+class CameraFollow <<partial>> {
+    + LookaheadDistance : float = 100.0f
+    + Damping : float = 0.1f
+    + DeadzoneSize : float = 50.0f
+    + VerticalLockThresholdAbove : float = 20.0f
+    + VerticalLockThresholdBelow : float = 20.0f
+    + <<override>> _EnterTree() : void
+    + <<override>> _PhysicsProcess(delta:double) : void
+    + SetTargetBehaviour(newTargetBehaviour:CameraTargetBehaviour) : void
+    + SetMidTarget(newMidTarget:Node2D) : void
+    + SetOverrideTarget(newOverrideTarget:Node2D) : void
+    + UpdateFloorHeight(newHeight:float) : void
+}
+Camera2D <|-- CameraFollow
+CameraFollow --> "_targetBehaviour" CameraTargetBehaviour
+@enduml

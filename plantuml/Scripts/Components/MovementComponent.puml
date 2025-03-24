@@ -1,0 +1,39 @@
+@startuml
+class MovementComponent <<partial>> {
+    + IsOnFloor : bool <<get>>
+    + IsOnCeiling : bool <<get>>
+    + IsOnWall : bool <<get>>
+    + SnappedToFloor : bool <<get>>
+    + FloorHeight : float? <<get>>
+    + FloorAngle : float <<get>>
+    + IsOnEdge : bool <<get>>
+    + IsInHedge : bool <<get>>
+    + CourseCorrectionEnabled : bool
+    + <<override>> _Ready() : void
+    + UpdateState(characterBody2D:CharacterBody2D) : void
+    + Move(characterBody2D:CharacterBody2D) : void
+    + SetParentController(val:PlayerController) : void
+    + SetRaycastPosition() : void
+    + OnHedgeEnter(hedgeNode:HedgeNode) : void
+    + OnHedgeExit(hedgeNode:HedgeNode) : void
+    + StartCoreography() : void
+    + CoreographFaceDirection(direction:Vector2) : void
+    + <<override>> _Notification(what:int) : void
+}
+enum VelocityType {
+    MainMovement,
+    Gravity,
+    InheritedVelocity,
+    Dash,
+    Locked,
+}
+class "Dictionary`2"<T1,T2> {
+}
+Node2D <|-- MovementComponent
+MovementComponent --> "FacingDirection" Vector2
+MovementComponent --> "FloorNormal" Vector2
+MovementComponent --> "HedgeEntered" HedgeNode
+MovementComponent o-> "Velocities<VelocityType,Vector2>" "Dictionary`2"
+MovementComponent --> "CurrentVelocity" Vector2
+MovementComponent +-- VelocityType
+@enduml

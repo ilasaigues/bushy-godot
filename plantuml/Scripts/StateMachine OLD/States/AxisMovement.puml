@@ -1,0 +1,29 @@
+@startuml
+class AxisMovement {
+    + HasOvershootDeceleration : bool <<get>>
+    + Velocity : double <<get>>
+    + OvershootDec(val:bool) : void
+    + SetInitVel(val:double) : void
+    + HandleMovement(deltaTime:double) : void
+    + ToBuilder() : Builder
+}
+class Builder {
+    + Builder()
+    + Acc(val:int?) : Builder
+    + Dec(val:int?) : Builder
+    + Speed(val:int?) : Builder
+    + OverDec(val:float) : Builder
+    + TurnDec(val:int?) : Builder
+    + ThresSpeed(val:int?) : Builder
+    + Movement(movement:MovementComponent) : Builder
+    + Direction(direction:Func<float>) : Builder
+    + Variables(variables:CharacterVariables) : Builder
+    + AxisDir(axisDirection:int) : Builder
+    + HasOvershoot(hasOvershootVel:bool) : Builder
+    + Vel(velocity:double) : Builder
+    + ColCheck(collisionCheck:Func<int, bool>) : Builder
+    + Build() : AxisMovement
+    + Copy() : Builder
+}
+AxisMovement +-- Builder
+@enduml

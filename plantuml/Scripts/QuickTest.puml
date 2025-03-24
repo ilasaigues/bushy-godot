@@ -1,0 +1,6 @@
+@startuml
+class QuickTest <<partial>> {
+    + <<override>> _Ready() : void
+}
+Node <|-- QuickTest
+@enduml

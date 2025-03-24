@@ -1,0 +1,8 @@
+@startuml
+class Extensions <<static>> {
+    + {static} LerpUnclamped(a:Vector2, b:Vector2, t:float) : Vector2
+    + {static} LerpUnclamped(a:Vector2, b:Vector2, t:double) : Vector2
+    + {static} LerpUnclamped(a:Vector3, b:Vector3, t:float) : Vector3
+    + {static} LerpUnclamped(a:Vector3, b:Vector3, t:double) : Vector3
+}
+@enduml

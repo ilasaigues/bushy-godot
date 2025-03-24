@@ -1,0 +1,7 @@
+@startuml
+class PixelPerfect <<partial>> {
+    + <<override>> _Ready() : void
+    + <<override>> _Process(delta:double) : void
+}
+CanvasLayer <|-- PixelPerfect
+@enduml

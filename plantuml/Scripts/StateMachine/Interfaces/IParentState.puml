@@ -1,0 +1,7 @@
+@startuml
+interface "IParentState`2"<TAgent,TParentState> {
+}
+class "IState`1"<T> {
+}
+"IState`1" "<TAgent>" <|-- "IParentState`2"
+@enduml

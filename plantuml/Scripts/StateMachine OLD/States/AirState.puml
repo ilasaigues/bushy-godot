@@ -1,0 +1,12 @@
+@startuml
+class AirStateOld <<partial>> {
+    + <<override>> _Notification(what:int) : void
+    + <<override>> InitState(mc:MovementComponent, cv:CharacterVariables, ac:PlayerInfo, anim:AnimationComponent, col:CharacterCollisionComponent, sm:PlayerStateController) : void
+    + <<override>> StateExit() : void
+    + <<override>> StateUpdateInternal(delta:double) : void
+    + DashActionRequested() : void
+    + OnJumpCoyoteTimerTimeout() : void
+    + JumpActionEnded() : void
+}
+BaseStateOLD <|-- AirStateOld
+@enduml

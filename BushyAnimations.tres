@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://cm6s7stn44i0c"]
+
+[ext_resource type="Script" path="res://Scripts/BushyAnimations.cs" id="1_l4o1r"]
+
+[sub_resource type="Animation" id="Animation_p7qnf"]
+
+[resource]
+script = ExtResource("1_l4o1r")
+Idle = SubResource("Animation_p7qnf")

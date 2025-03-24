@@ -1,0 +1,23 @@
+@startuml
+class CharacterCollisionComponent <<partial>> {
+    + <<override>> _Ready() : void
+    + SwitchShape(mode:ShapeMode) : void
+    + SwitchShape(modeInt:int) : void
+    + SetParentController(val:PlayerController) : void
+    + ToggleHedgeCollision(isOn:bool) : void
+}
+enum ShapeMode {
+    RECTANGULAR,
+    CILINDER,
+    CIRCLE,
+    POINT,
+}
+CollisionShape2D <|-- CharacterCollisionComponent
+CharacterCollisionComponent --> "CourseCorrectRay1" RayCast2D
+CharacterCollisionComponent --> "CourseCorrectRay2" RayCast2D
+CharacterCollisionComponent --> "RectShape" Shape2D
+CharacterCollisionComponent --> "CilinderShape" Shape2D
+CharacterCollisionComponent --> "CircleShape" Shape2D
+CharacterCollisionComponent --> "PointShape" Shape2D
+CharacterCollisionComponent +-- ShapeMode
+@enduml

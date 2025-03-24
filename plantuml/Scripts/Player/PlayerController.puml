@@ -1,0 +1,16 @@
+@startuml
+class PlayerController <<partial>> {
+    + <<override>> _Notification(what:int) : void
+    + <<override>> _Ready() : void
+    + <<override>> _ExitTree() : void
+    + <<override>> _Process(delta:double) : void
+    + <<override>> _PhysicsProcess(delta:double) : void
+}
+CharacterBody2D <|-- PlayerController
+PlayerController --> "MovementComponent" MovementComponent
+PlayerController --> "CollisionComponent" CharacterCollisionComponent
+PlayerController --> "CharacterVariables" CharacterVariables
+PlayerController --> "AnimationComponent" AnimationComponent
+PlayerController o-> "PlayerInfo" PlayerInfo
+PlayerController --> "MovementInput" Vector2
+@enduml

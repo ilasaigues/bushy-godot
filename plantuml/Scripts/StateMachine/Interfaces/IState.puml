@@ -1,0 +1,7 @@
+@startuml
+interface IState {
+}
+interface "IState`1"<T> {
+}
+IState <|-- "IState`1"
+@enduml

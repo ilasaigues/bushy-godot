@@ -1,0 +1,23 @@
+@startuml
+class InputManager <<partial>> {
+    + <<override>> _Ready() : void
+    + <<override>> _Input(@event:InputEvent) : void
+    + <<override>> _Process(delta:double) : void
+}
+class "List`1"<T> {
+}
+Node <|-- InputManager
+InputManager --> "Instance" InputManager
+InputManager o-> "JumpAction" InputAction
+InputManager o-> "LeftAction" InputAction
+InputManager o-> "RightAction" InputAction
+InputManager o-> "UpAction" InputAction
+InputManager o-> "DownAction" InputAction
+InputManager o-> "DashAction" InputAction
+InputManager o-> "AttackAction" InputAction
+InputManager o-> "BurstAction" InputAction
+InputManager o-> "HarpoonAction" InputAction
+InputManager --> "HorizontalAxis" InputAxis
+InputManager --> "VerticalAxis" InputAxis
+InputManager o-> "InputActions<InputAction>" "List`1"
+@enduml

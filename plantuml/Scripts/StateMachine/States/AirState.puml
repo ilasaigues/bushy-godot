@@ -1,0 +1,22 @@
+@startuml
+class AirParentState <<partial>> {
+    + VerticalVelocity : float <<get>> <<set>>
+    + TargetHorizontalVelocity : float <<get>> <<set>>
+    + CanCoyoteJump : bool <<get>> <<set>>
+    + CanFallIntoHedge : bool <<get>> <<set>>
+    + <<override>> _Ready() : void
+    + <<override>> EnterState(configs:StateConfig.IBaseStateConfig[]) : void
+    + <<override>> ExitState() : void
+    + <<override>> ProcessState(processConfig:StateExecutionStatus, delta:double) : StateExecutionStatus
+    + <<override>> OnInputButtonChanged(actionType:InputAction.InputActionType, Action:InputAction) : void
+    + SetVerticalVelocity(newVelocity:float) : void
+    + <<override>> UpdateAnimation() : StateAnimationLevel
+    + OnJumpCoyoteTimerTimeout() : void
+}
+class "IParentState`2"<T1,T2> {
+}
+BasePlayerState <|-- AirParentState
+"IParentState`2" "<PlayerController,AirParentState>" <|-- AirParentState
+AirParentState --> "CoyoteJumpTimer" Timer
+AirParentState --> "XAxisMovement" AxisMovement
+@enduml

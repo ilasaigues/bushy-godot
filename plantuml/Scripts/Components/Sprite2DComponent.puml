@@ -1,0 +1,9 @@
+@startuml
+class Sprite2DComponent <<partial>> {
+    + <<override>> _Ready() : void
+    + <<override>> _ExitTree() : void
+    + <<override>> _Process(delta:double) : void
+    + ForceOrientation(direction:Vector2) : void
+}
+Sprite2D <|-- Sprite2DComponent
+@enduml

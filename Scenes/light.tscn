@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://dajw6wecjujr8"]
 
 [ext_resource type="Shader" path="res://light.gdshader" id="1_ujgpk"]
-[ext_resource type="Texture2D" uid="uid://d3kbhfsxjqv7b" path="res://Scripts/StateMachine/States/Forest Pallete.png" id="2_hjond"]
+[ext_resource type="Texture2D" uid="uid://d3kbhfsxjqv7b" path="res://Scripts/StateMachine OLD/States/Forest Pallete.png" id="2_hjond"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fpbqj"]
 shader = ExtResource("1_ujgpk")

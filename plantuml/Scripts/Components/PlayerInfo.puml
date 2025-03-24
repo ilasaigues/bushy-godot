@@ -1,0 +1,10 @@
+@startuml
+class PlayerInfo {
+    + CanJump : bool
+    + CanDash : bool
+    + LastDashTime : double
+    + LookDirection : int <<get>> <<set>>
+    + CanCoyoteJump : bool
+    + CanFallIntoHedge : bool
+}
+@enduml

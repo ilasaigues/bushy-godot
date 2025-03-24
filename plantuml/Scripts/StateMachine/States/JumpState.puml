@@ -1,0 +1,15 @@
+@startuml
+class JumpState <<partial>> {
+    + <<override>> EnterState(configs:StateConfig.IBaseStateConfig[]) : void
+    + <<override>> ExitState() : void
+    + <<override>> ProcessState(executionStatus:StateExecutionStatus, delta:double) : StateExecutionStatus
+    + <<override>> OnInputButtonChanged(actionType:InputAction.InputActionType, Action:InputAction) : void
+    + JumpActionEnded() : void
+}
+class "IChildState`2"<T1,T2> {
+}
+BasePlayerState <|-- JumpState
+"IChildState`2" "<PlayerController,AirParentState>" <|-- JumpState
+JumpState --> "Agent" PlayerController
+JumpState --> "ParentState" AirParentState
+@enduml

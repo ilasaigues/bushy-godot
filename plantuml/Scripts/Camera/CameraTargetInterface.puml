@@ -1,0 +1,16 @@
+@startuml
+abstract class CameraTargetBehaviour <<partial>> {
+    + SetSecondaryTarget(secondaryTarget:Node2D, positionOverride:bool) : void
+    + {abstract} SetFloorHeight(floorHeight:float) : void
+    + {abstract} ShouldLockVertical : bool <<get>>
+    + {abstract} GetVelocity() : Vector2
+}
+abstract class "CameraTargetBehaviour`1"<T> <<partial>> {
+    + Target : T <<get>> <<set>>
+}
+Resource <|-- CameraTargetBehaviour
+CameraTargetBehaviour --> "Camera" CameraFollow
+CameraTargetBehaviour --> "TargetNode" Node2D
+CameraTargetBehaviour <|-- "CameraTargetBehaviour`1"
+"CameraTargetBehaviour`1" --> "TargetNode" Node2D
+@enduml

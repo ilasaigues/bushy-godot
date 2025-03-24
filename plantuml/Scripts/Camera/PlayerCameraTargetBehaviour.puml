@@ -1,0 +1,14 @@
+@startuml
+class PlayerCameraTargetBehaviour <<partial>> {
+    + <<override>> ShouldLockVertical : bool <<get>>
+    + PlayerCameraTargetBehaviour()
+    + PlayerCameraTargetBehaviour(target:PlayerController, camera:CameraFollow)
+    + OnAreaEnterPlayer(area:Area2D) : void
+    + OnAreaExitPlayer(area:Area2D) : void
+    + <<override>> GetVelocity() : Vector2
+    + <<override>> SetFloorHeight(floorHeight:float) : void
+}
+class "CameraTargetBehaviour`1"<T> {
+}
+"CameraTargetBehaviour`1" "<PlayerController>" <|-- PlayerCameraTargetBehaviour
+@enduml
