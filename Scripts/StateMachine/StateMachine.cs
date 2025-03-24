@@ -6,23 +6,26 @@ using Godot;
 
 namespace BushyCore
 {
-    public class StateMachine<TAgent> where TAgent : Node
+    public abstract partial class StateMachine<TAgent> : Node where TAgent : Node
     {
         private TAgent Agent;
         public StateExecutionStatus MachineState { get; set; }
 
-        [Export] private List<BaseState<TAgent>> States = new();
+        private List<BaseState<TAgent>> States = new();
         private BaseState<TAgent> _currentState;
 
-        public StateMachine(TAgent agent)
+        public override void _Ready()
         {
-            Agent = agent;
+            States = GetChildren().OfType<BaseState<TAgent>>().ToList();
         }
 
-        public void RegisterState<TState>(TState state) where TState : BaseState<TAgent>
+        public void SetAgent(TAgent agent)
         {
-            States.Add(state);
-            state.SetAgent(Agent);
+            Agent = agent;
+            foreach (var state in States)
+            {
+                state.SetAgent(agent);
+            }
         }
 
         public bool SetState(Type stateType, params StateConfig.IBaseStateConfig[] configs)

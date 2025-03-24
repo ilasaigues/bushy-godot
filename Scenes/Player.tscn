@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=33 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
@@ -9,18 +9,9 @@
 [ext_resource type="Script" path="res://Scripts/Components/SpriteTrail.cs" id="6_j04v7"]
 [ext_resource type="Resource" uid="uid://t33dl5smdn5l" path="res://Scripts/StateMachine OLD/PlayerVariables.tres" id="6_pknnn"]
 [ext_resource type="PackedScene" uid="uid://dwt102y105ka0" path="res://Scenes/Utils/LineTrail.tscn" id="10_dffrb"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/GroundedParentState.cs" id="11_oqy61"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/IdleGroundedState.cs" id="12_ai2cy"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/WalkState.cs" id="13_sbsf8"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/AirParentState.cs" id="14_4bytr"]
+[ext_resource type="PackedScene" uid="uid://bos0cujm0xhtq" path="res://Scenes/States/player_cascade_machine.tscn" id="12_4qmpi"]
 [ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/FallState.cs" id="15_3uh34"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/JumpState.cs" id="16_iy12i"]
 [ext_resource type="Script" path="res://Scripts/Components/AnimationComponent.cs" id="16_w750l"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/HedgeParentState.cs" id="17_1vxv0"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/DashState.cs" id="17_7fap7"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/HedgeEnteringState.cs" id="18_2l61a"]
-[ext_resource type="Script" path="res://Scripts/StateMachine/States/HedgeMoveState.cs" id="20_apm1t"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_raavv"]
 size = Vector2(8, 13)
@@ -365,16 +356,15 @@ _data = {
 "turn": SubResource("Animation_fylk2")
 }
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("AnimationComponent", "BaseStates", "ActionStates", "OverrideStates")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("CascadeStateMachine", "AnimationComponent", "spriteTrail")]
 z_index = 1
 position = Vector2(-1, 0)
 collision_mask = 15
 script = ExtResource("1_1vn0y")
 CharacterVariables = ExtResource("6_pknnn")
+CascadeStateMachine = NodePath("PlayerCascadeMachine")
 AnimationComponent = NodePath("AnimationComponent")
-BaseStates = [NodePath("States/BaseStates/AirParentState"), NodePath("States/BaseStates/GroundedParentState"), NodePath("States/BaseStates/HedgeParentState")]
-ActionStates = []
-OverrideStates = [NodePath("States/OverrideStates/DashState")]
+spriteTrail = NodePath("SpriteTrailComponent")
 
 [node name="AreaDetectionComponent" parent="." instance=ExtResource("2_kbshe")]
 scale = Vector2(0.7, 0.7)
@@ -421,89 +411,10 @@ script = ExtResource("16_w750l")
 maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
-scale = Vector2(1.0125, 1.0125)
+scale = Vector2(1.1, 1.1)
 
-[node name="States" type="Node" parent="."]
-
-[node name="BaseStates" type="Node" parent="States"]
-
-[node name="GroundedParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("SubStates")]
-script = ExtResource("11_oqy61")
-SubStates = []
-
-[node name="GroundedIdleState" type="Node" parent="States/BaseStates/GroundedParentState"]
-script = ExtResource("12_ai2cy")
-
-[node name="WalkState" type="Node" parent="States/BaseStates/GroundedParentState"]
-script = ExtResource("13_sbsf8")
-
-[node name="AirParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("CoyoteJumpTimer", "SubStates")]
-script = ExtResource("14_4bytr")
-CoyoteJumpTimer = NodePath("CoyoteJumpTimer")
-SubStates = []
-
-[node name="FallState" type="Node" parent="States/BaseStates/AirParentState"]
-script = ExtResource("15_3uh34")
-
-[node name="JumpState" type="Node" parent="States/BaseStates/AirParentState" node_paths=PackedStringArray("DurationTimer")]
-script = ExtResource("16_iy12i")
-DurationTimer = NodePath("JumpTimer")
-
-[node name="JumpTimer" type="Timer" parent="States/BaseStates/AirParentState/JumpState"]
-process_callback = 0
-one_shot = true
-
-[node name="CoyoteJumpTimer" type="Timer" parent="States/BaseStates/AirParentState"]
-process_callback = 0
-
-[node name="HedgeParentState" type="Node" parent="States/BaseStates" node_paths=PackedStringArray("JumpBufferTimer", "DashBufferTimer", "SubStates")]
-script = ExtResource("17_1vxv0")
-JumpBufferTimer = NodePath("JumpTimer")
-DashBufferTimer = NodePath("DashTimer")
-SubStates = []
-
-[node name="HedgeEnteringState" type="Node" parent="States/BaseStates/HedgeParentState" node_paths=PackedStringArray("EnteringTimer")]
-script = ExtResource("18_2l61a")
-EnteringTimer = NodePath("EnteringWaitTime")
-
-[node name="EnteringWaitTime" type="Timer" parent="States/BaseStates/HedgeParentState/HedgeEnteringState"]
-one_shot = true
-
-[node name="HedgeMoveState" type="Node" parent="States/BaseStates/HedgeParentState"]
-script = ExtResource("20_apm1t")
-
-[node name="JumpTimer" type="Timer" parent="States/BaseStates/HedgeParentState"]
-
-[node name="DashTimer" type="Timer" parent="States/BaseStates/HedgeParentState"]
-
-[node name="ActionStates" type="Node" parent="States"]
-
-[node name="OverrideStates" type="Node" parent="States"]
-
-[node name="DashState" type="Node" parent="States/OverrideStates" node_paths=PackedStringArray("DashDurationTimer", "DashEndTimer", "DashJumpTimer", "SlopeRaycast2D")]
-script = ExtResource("17_7fap7")
-DashDurationTimer = NodePath("DashDuration")
-DashEndTimer = NodePath("DashEnd")
-DashJumpTimer = NodePath("DashJumpTimer")
-SlopeRaycast2D = NodePath("RayCast2D")
-
-[node name="RayCast2D" type="RayCast2D" parent="States/OverrideStates/DashState"]
-
-[node name="DashEnterDelay" type="Timer" parent="States/OverrideStates/DashState"]
-one_shot = true
-
-[node name="DashDuration" type="Timer" parent="States/OverrideStates/DashState"]
-one_shot = true
-
-[node name="DashEnd" type="Timer" parent="States/OverrideStates/DashState"]
-one_shot = true
-
-[node name="DashJumpTimer" type="Timer" parent="States/OverrideStates/DashState"]
-one_shot = true
+[node name="PlayerCascadeMachine" parent="." instance=ExtResource("12_4qmpi")]
 
 [connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeEnter"]
 [connection signal="OnHedgeExit" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeExit"]
 [connection signal="CoreographyUpdate" from="MovementComponent" to="Sprite2DComponent" method="ForceOrientation"]
-[connection signal="timeout" from="States/BaseStates/AirParentState/JumpState/JumpTimer" to="States/BaseStates/AirParentState/JumpState" method="JumpTimedOut"]
-[connection signal="timeout" from="States/OverrideStates/DashState/DashDuration" to="States/OverrideStates/DashState" method="PreEndDash"]
-[connection signal="timeout" from="States/OverrideStates/DashState/DashDuration" to="States/OverrideStates/DashState" method="AnimationUpdate"]
