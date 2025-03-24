@@ -127,7 +127,7 @@ namespace BushyCore
             {
                 if (Agent.MovementInputVector.X != 0)
                 {
-                    throw new StateInterrupt<WalkState>(new InitialAnimationConfig("turn"));
+                    throw new StateInterrupt<WalkState>(new InitialAnimationConfig("run"));
                 }
                 else
                 {

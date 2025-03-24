@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmxs2hthhm706"
-path="res://.godot/imported/Sprite-0001.png-491897daa45e5133038ed19d15a5f541.ctex"
+uid="uid://bmfe4bjlyi1lx"
+path="res://.godot/imported/busho_spritesheet.png-d84712ee804430e6ca4700139c9eae59.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Scripts/StateMachine OLD/Sprite-0001.png"
-dest_files=["res://.godot/imported/Sprite-0001.png-491897daa45e5133038ed19d15a5f541.ctex"]
+source_file="res://Assets/Player/busho_spritesheet.png"
+dest_files=["res://.godot/imported/busho_spritesheet.png-d84712ee804430e6ca4700139c9eae59.ctex"]
 
 [params]
 
