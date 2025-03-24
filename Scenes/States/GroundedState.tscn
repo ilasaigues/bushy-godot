@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://btpni3inhihi7"]
 
-[ext_resource type="Script" path="res://Scripts/StateMachine OLD/States/GroundedState.cs" id="1_gfxa6"]
+[ext_resource type="Script" uid="uid://bgn6lm5knvln7" path="res://Scripts/StateMachine OLD/States/GroundedState.cs" id="1_gfxa6"]
 
 [node name="GroundedState" type="Node2D"]
 script = ExtResource("1_gfxa6")

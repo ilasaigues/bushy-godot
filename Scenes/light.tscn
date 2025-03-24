@@ -1,12 +1,12 @@
 [gd_scene load_steps=11 format=3 uid="uid://dajw6wecjujr8"]
 
-[ext_resource type="Shader" path="res://light.gdshader" id="1_ujgpk"]
+[ext_resource type="Shader" uid="uid://tma0gmpdkq3d" path="res://light.gdshader" id="1_ujgpk"]
 [ext_resource type="Texture2D" uid="uid://d3kbhfsxjqv7b" path="res://Scripts/StateMachine OLD/States/Forest Pallete.png" id="2_hjond"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fpbqj"]
 shader = ExtResource("1_ujgpk")
-shader_parameter/default_light = Color(1, 1, 1, 1)
 shader_parameter/pallete = ExtResource("2_hjond")
+shader_parameter/default_light = Color(1, 1, 1, 1)
 
 [sub_resource type="Gradient" id="Gradient_5slnd"]
 offsets = PackedFloat32Array(0, 0.272381, 0.72)
@@ -40,7 +40,7 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ovwyd"]
 _data = {
-"light": SubResource("Animation_c68js")
+&"light": SubResource("Animation_c68js")
 }
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0kf8i"]

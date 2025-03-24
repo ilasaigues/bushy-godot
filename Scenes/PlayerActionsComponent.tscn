@@ -1,9 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://bm6r2edmdx3an"]
 
 [ext_resource type="PackedScene" uid="uid://wfug1namsllf" path="res://Scenes/ActionsComponent.tscn" id="1_2ugt6"]
-[ext_resource type="Script" path="res://Scripts/Components/PlayerActionsComponent.cs" id="2_ouckp"]
+
+[sub_resource type="Resource" id="Resource_7oduk"]
+metadata/__load_path__ = "res://Scripts/Components/PlayerActionsComponent.cs"
 
 [node name="ActionsComponent" instance=ExtResource("1_2ugt6")]
-script = ExtResource("2_ouckp")
+script = SubResource("Resource_7oduk")
 
 [node name="DashCooldownTimer" type="Timer" parent="." index="0"]

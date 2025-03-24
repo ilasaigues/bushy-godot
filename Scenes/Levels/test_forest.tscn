@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bco5h8a4p3ito"]
 
-[ext_resource type="Script" path="res://Scripts/test_forest.cs" id="2_6bnse"]
+[ext_resource type="Script" uid="uid://c4habea7qotew" path="res://Scripts/test_forest.cs" id="2_6bnse"]
 [ext_resource type="Texture2D" uid="uid://dj6xfnpl2yj1c" path="res://Assets/WorldTiles/Forest/test_forest_tileset.png" id="placeholder"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0"]

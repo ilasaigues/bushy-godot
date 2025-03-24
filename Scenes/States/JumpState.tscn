@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dv74lq75rbnkf"]
 
-[ext_resource type="Script" path="res://Scripts/StateMachine OLD/States/JumpState.cs" id="1_ajjs0"]
+[ext_resource type="Script" uid="uid://bayjhs7ljak15" path="res://Scripts/StateMachine OLD/States/JumpState.cs" id="1_ajjs0"]
 
 [node name="JumpState" type="Node2D"]
 script = ExtResource("1_ajjs0")
