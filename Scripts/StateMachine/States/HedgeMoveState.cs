@@ -8,6 +8,8 @@ namespace BushyCore
     public partial class HedgeMoveState : BaseChildState<PlayerController, HedgeParentState>
     {
 
+        Vector2 CurrentVelocity;
+
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
         }
@@ -16,16 +18,24 @@ namespace BushyCore
         {
             ParentState.Direction = Agent.MovementInputVector;
 
-            ParentState.yAxisMovement.HandleMovement(delta);
-            ParentState.xAxisMovement.HandleMovement(delta);
-
             VelocityUpdate();
+            prevStatus.AnimationLevel |= AnimationUpdate();
             return prevStatus;
         }
 
         protected void VelocityUpdate()
         {
-            Agent.MovementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)ParentState.xAxisMovement.Velocity, (float)ParentState.yAxisMovement.Velocity);
+            CurrentVelocity = new Vector2(
+                (float)ParentState.xAxisMovement.Velocity,
+                (float)ParentState.yAxisMovement.Velocity);
+
+            Agent.MovementComponent.Velocities[VelocityType.MainMovement] = CurrentVelocity;
+        }
+        private StateAnimationLevel AnimationUpdate()
+        {
+            Agent.Sprite2DComponent.ForceOrientation(CurrentVelocity);
+            Agent.AnimController.SetBlendValue(PlayerController.AnimConditions.BushBlendValues, CurrentVelocity);
+            return StateAnimationLevel.Uninterruptible;
         }
 
         protected override void ExitStateInternal()

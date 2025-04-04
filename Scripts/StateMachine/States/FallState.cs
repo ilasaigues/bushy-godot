@@ -10,10 +10,12 @@ namespace BushyCore
     {
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.Falling, true);
         }
 
         protected override void ExitStateInternal()
         {
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.Falling, false);
         }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
@@ -31,15 +33,15 @@ namespace BushyCore
 
         public override StateAnimationLevel UpdateAnimation()
         {
-            Agent.AnimationComponent.Play("fall");
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.Falling, true);
             return StateAnimationLevel.Regular;
         }
 
-        public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
+        protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction Action)
         {
             if (ParentState.CanCoyoteJump && actionType == InputAction.InputActionType.InputPressed && Action == InputManager.Instance.JumpAction)
             {
-                throw new StateInterrupt<JumpState>(
+                throw StateInterrupt.New<JumpState>(false,
                     new StateConfig.InitialVelocityVectorConfig(Agent.MovementComponent.Velocities[VelocityType.MainMovement])
                 );
             }

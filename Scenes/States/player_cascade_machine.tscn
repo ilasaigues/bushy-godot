@@ -1,12 +1,17 @@
-[gd_scene load_steps=13 format=3 uid="uid://bos0cujm0xhtq"]
+[gd_scene load_steps=18 format=3 uid="uid://bos0cujm0xhtq"]
 
 [ext_resource type="Script" uid="uid://dd1j72nkmfhew" path="res://Scripts/StateMachine/Implementations/PlayerCascadeStateMachine.cs" id="1_pk7ru"]
 [ext_resource type="Script" uid="uid://bpm74xg5ifstb" path="res://Scripts/StateMachine/Implementations/PlayerStateMachine.cs" id="2_owsau"]
 [ext_resource type="Script" uid="uid://fddiy2su7bqv" path="res://Scripts/StateMachine/States/GroundedParentState.cs" id="3_g3ox3"]
 [ext_resource type="Script" uid="uid://dcpbu4rio5k6m" path="res://Scripts/StateMachine/States/IdleGroundedState.cs" id="4_owwoh"]
+[ext_resource type="Script" uid="uid://4pjtvr3l06qh" path="res://Scripts/StateMachine/States/AttackParentState.cs" id="4_t2wlj"]
 [ext_resource type="Script" uid="uid://ekormyotdq1k" path="res://Scripts/StateMachine/States/WalkState.cs" id="5_51ftk"]
+[ext_resource type="Script" uid="uid://t6ya1tht7g2q" path="res://Scripts/StateMachine/States/AttackGroundState.cs" id="5_rd6ov"]
 [ext_resource type="Script" uid="uid://c33teqywm6qih" path="res://Scripts/StateMachine/States/AirParentState.cs" id="6_ldn6s"]
+[ext_resource type="Resource" uid="uid://dqudku7iyu4hc" path="res://groundAttackData.tres" id="6_rd6ov"]
 [ext_resource type="Script" uid="uid://clkbc8s1p843w" path="res://Scripts/StateMachine/States/FallState.cs" id="7_0n52n"]
+[ext_resource type="Script" uid="uid://cvlcho21guamu" path="res://Scripts/StateMachine/States/AttackAirState.cs" id="7_6rxgo"]
+[ext_resource type="Resource" uid="uid://diext71c262cl" path="res://airAttackData.tres" id="8_78rft"]
 [ext_resource type="Script" uid="uid://d1k8qll7pe3ak" path="res://Scripts/StateMachine/States/JumpState.cs" id="8_uinwk"]
 [ext_resource type="Script" uid="uid://ddn3l4ri586iy" path="res://Scripts/StateMachine/States/HedgeParentState.cs" id="9_607nu"]
 [ext_resource type="Script" uid="uid://c4kocpmh83odd" path="res://Scripts/StateMachine/States/HedgeEnteringState.cs" id="10_8y560"]
@@ -16,63 +21,9 @@
 [node name="PlayerCascadeMachine" type="Node"]
 script = ExtResource("1_pk7ru")
 
-[node name="BaseStateMachine" type="Node" parent="."]
-script = ExtResource("2_owsau")
-
-[node name="GroundedParentState" type="Node" parent="BaseStateMachine" node_paths=PackedStringArray("SubStates")]
-script = ExtResource("3_g3ox3")
-SubStates = []
-
-[node name="GroundedIdleState" type="Node" parent="BaseStateMachine/GroundedParentState"]
-script = ExtResource("4_owwoh")
-
-[node name="WalkState" type="Node" parent="BaseStateMachine/GroundedParentState"]
-script = ExtResource("5_51ftk")
-
-[node name="AirParentState" type="Node" parent="BaseStateMachine" node_paths=PackedStringArray("CoyoteJumpTimer", "SubStates")]
-script = ExtResource("6_ldn6s")
-CoyoteJumpTimer = NodePath("CoyoteJumpTimer")
-SubStates = []
-
-[node name="FallState" type="Node" parent="BaseStateMachine/AirParentState"]
-script = ExtResource("7_0n52n")
-
-[node name="JumpState" type="Node" parent="BaseStateMachine/AirParentState" node_paths=PackedStringArray("DurationTimer")]
-script = ExtResource("8_uinwk")
-DurationTimer = NodePath("JumpTimer")
-
-[node name="JumpTimer" type="Timer" parent="BaseStateMachine/AirParentState/JumpState"]
-process_callback = 0
-one_shot = true
-
-[node name="CoyoteJumpTimer" type="Timer" parent="BaseStateMachine/AirParentState"]
-process_callback = 0
-
-[node name="HedgeParentState" type="Node" parent="BaseStateMachine" node_paths=PackedStringArray("JumpBufferTimer", "DashBufferTimer", "SubStates")]
-script = ExtResource("9_607nu")
-JumpBufferTimer = NodePath("JumpTimer")
-DashBufferTimer = NodePath("DashTimer")
-SubStates = []
-
-[node name="HedgeEnteringState" type="Node" parent="BaseStateMachine/HedgeParentState" node_paths=PackedStringArray("EnteringTimer")]
-script = ExtResource("10_8y560")
-EnteringTimer = NodePath("EnteringWaitTime")
-
-[node name="EnteringWaitTime" type="Timer" parent="BaseStateMachine/HedgeParentState/HedgeEnteringState"]
-one_shot = true
-
-[node name="HedgeMoveState" type="Node" parent="BaseStateMachine/HedgeParentState"]
-script = ExtResource("11_ly2dg")
-
-[node name="JumpTimer" type="Timer" parent="BaseStateMachine/HedgeParentState"]
-
-[node name="DashTimer" type="Timer" parent="BaseStateMachine/HedgeParentState"]
-
-[node name="ActionStateMachine" type="Node" parent="."]
-script = ExtResource("2_owsau")
-
 [node name="OverrideStateMachine" type="Node" parent="."]
 script = ExtResource("2_owsau")
+OverrideLower = true
 
 [node name="DashState" type="Node" parent="OverrideStateMachine" node_paths=PackedStringArray("DashDurationTimer", "DashEndTimer", "DashJumpTimer", "SlopeRaycast2D")]
 script = ExtResource("12_h7yor")
@@ -95,6 +46,77 @@ one_shot = true
 [node name="DashJumpTimer" type="Timer" parent="OverrideStateMachine/DashState"]
 one_shot = true
 
-[connection signal="timeout" from="BaseStateMachine/AirParentState/JumpState/JumpTimer" to="BaseStateMachine/AirParentState/JumpState" method="JumpTimedOut"]
-[connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="PreEndDash"]
+[node name="ActionStateMachine" type="Node" parent="."]
+script = ExtResource("2_owsau")
+
+[node name="AttackParentState" type="Node" parent="ActionStateMachine" node_paths=PackedStringArray("AttackCooldownTimer", "ComboTimer")]
+script = ExtResource("4_t2wlj")
+AttackCooldownTimer = NodePath("AttackTimer")
+ComboTimer = NodePath("ComboTimer")
+
+[node name="GroundAttackState" type="Node" parent="ActionStateMachine/AttackParentState"]
+script = ExtResource("5_rd6ov")
+_comboData = ExtResource("6_rd6ov")
+
+[node name="AirAttackState" type="Node" parent="ActionStateMachine/AttackParentState"]
+script = ExtResource("7_6rxgo")
+_comboData = ExtResource("8_78rft")
+
+[node name="AttackTimer" type="Timer" parent="ActionStateMachine/AttackParentState"]
+one_shot = true
+
+[node name="ComboTimer" type="Timer" parent="ActionStateMachine/AttackParentState"]
+one_shot = true
+
+[node name="BaseStateMachine" type="Node" parent="."]
+script = ExtResource("2_owsau")
+
+[node name="GroundedParentState" type="Node" parent="BaseStateMachine"]
+script = ExtResource("3_g3ox3")
+
+[node name="GroundedIdleState" type="Node" parent="BaseStateMachine/GroundedParentState"]
+script = ExtResource("4_owwoh")
+
+[node name="WalkState" type="Node" parent="BaseStateMachine/GroundedParentState"]
+script = ExtResource("5_51ftk")
+
+[node name="AirParentState" type="Node" parent="BaseStateMachine" node_paths=PackedStringArray("CoyoteJumpTimer")]
+script = ExtResource("6_ldn6s")
+CoyoteJumpTimer = NodePath("CoyoteJumpTimer")
+
+[node name="FallState" type="Node" parent="BaseStateMachine/AirParentState"]
+script = ExtResource("7_0n52n")
+
+[node name="JumpState" type="Node" parent="BaseStateMachine/AirParentState" node_paths=PackedStringArray("DurationTimer")]
+script = ExtResource("8_uinwk")
+DurationTimer = NodePath("JumpTimer")
+
+[node name="JumpTimer" type="Timer" parent="BaseStateMachine/AirParentState/JumpState"]
+process_callback = 0
+one_shot = true
+
+[node name="CoyoteJumpTimer" type="Timer" parent="BaseStateMachine/AirParentState"]
+process_callback = 0
+
+[node name="HedgeParentState" type="Node" parent="BaseStateMachine" node_paths=PackedStringArray("JumpBufferTimer", "DashBufferTimer")]
+script = ExtResource("9_607nu")
+JumpBufferTimer = NodePath("JumpTimer")
+DashBufferTimer = NodePath("DashTimer")
+
+[node name="HedgeEnteringState" type="Node" parent="BaseStateMachine/HedgeParentState" node_paths=PackedStringArray("EnteringTimer")]
+script = ExtResource("10_8y560")
+EnteringTimer = NodePath("EnteringWaitTime")
+
+[node name="EnteringWaitTime" type="Timer" parent="BaseStateMachine/HedgeParentState/HedgeEnteringState"]
+one_shot = true
+
+[node name="HedgeMoveState" type="Node" parent="BaseStateMachine/HedgeParentState"]
+script = ExtResource("11_ly2dg")
+
+[node name="JumpTimer" type="Timer" parent="BaseStateMachine/HedgeParentState"]
+
+[node name="DashTimer" type="Timer" parent="BaseStateMachine/HedgeParentState"]
+
 [connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="AnimationUpdate"]
+[connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="PreEndDash"]
+[connection signal="timeout" from="BaseStateMachine/AirParentState/JumpState/JumpTimer" to="BaseStateMachine/AirParentState/JumpState" method="JumpTimedOut"]

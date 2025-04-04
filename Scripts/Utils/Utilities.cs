@@ -16,6 +16,20 @@ public static class Utils
         GD.Print(message);
         return obj;
     }
+
+    public static T WarnInPlace<T>(this T obj, string message = "")
+    {
+        if (!string.IsNullOrEmpty(message))
+        {
+            message = string.Format(message, obj.ToString());
+        }
+        else
+        {
+            message = obj.ToString();
+        }
+        GD.PushWarning(message);
+        return obj;
+    }
 }
 public static class Vector2Extension
 {

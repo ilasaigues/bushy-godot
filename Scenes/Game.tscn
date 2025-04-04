@@ -1,10 +1,11 @@
-[gd_scene load_steps=23 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=24 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Texture2D" uid="uid://b1uq3n6md5wce" path="res://Assets/Background/forest_background_1.png" id="1_02yv3"]
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="2_0axgj"]
 [ext_resource type="Texture2D" uid="uid://c5jcpcfoarc0m" path="res://Assets/Background/Forest/test_forest_background_1.png" id="2_hwlqv"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
 [ext_resource type="Texture2D" uid="uid://toa0twuk32dm" path="res://Assets/Background/Forest/test_forest_background_0.png" id="3_ukntx"]
+[ext_resource type="Script" uid="uid://bdvq1lcavyy6m" path="res://Scenes/CascadeMachineReader.cs" id="5_3so38"]
 [ext_resource type="Script" uid="uid://cu0o5wakc1mfu" path="res://Scripts/Camera/CameraFollow.cs" id="6_ov3y4"]
 [ext_resource type="Script" uid="uid://bwi54fr00adbl" path="res://Scripts/Camera/PlayerCameraTargetBehaviour.cs" id="7_lgcn2"]
 [ext_resource type="PackedScene" uid="uid://cvihx0b7fk6dc" path="res://Scenes/Levels/tree_top.tscn" id="8_28kkd"]
@@ -130,18 +131,18 @@ position = Vector2(-475, -392)
 texture = ExtResource("3_ukntx")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="Control" type="Control" parent="CanvasLayer"]
 layout_mode = 3
-anchors_preset = 0
-offset_left = 94.0
-offset_top = 10.0
-offset_right = 134.0
-offset_bottom = 50.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme = SubResource("Theme_i7rtb")
 
 [node name="Boss" type="Button" parent="CanvasLayer/Control"]
+visible = false
 layout_mode = 0
 offset_right = 8.0
 offset_bottom = 8.0
@@ -149,6 +150,7 @@ action_mode = 0
 text = "Boss"
 
 [node name="Finisher" type="Button" parent="CanvasLayer/Control"]
+visible = false
 layout_mode = 0
 offset_left = 34.0
 offset_right = 85.0
@@ -157,6 +159,7 @@ action_mode = 0
 text = "Finisher"
 
 [node name="Death" type="Button" parent="CanvasLayer/Control"]
+visible = false
 layout_mode = 0
 offset_left = 88.0
 offset_right = 128.0
@@ -164,6 +167,21 @@ offset_bottom = 22.0
 action_mode = 0
 text = "Death
 "
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/Control" node_paths=PackedStringArray("player")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "BaseStateMachine"
+fit_content = true
+scroll_active = false
+justification_flags = 160
+script = ExtResource("5_3so38")
+player = NodePath("../../../Player")
 
 [node name="test_forest" parent="." instance=ExtResource("8_m158k")]
 texture_filter = 1
@@ -181,7 +199,7 @@ _targetNode = NodePath("../Player")
 
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
-position = Vector2(-819, 53)
+position = Vector2(-813, 53)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player"]
 position = Vector2(-1, 0)

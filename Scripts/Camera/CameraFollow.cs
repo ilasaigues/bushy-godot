@@ -38,7 +38,7 @@ public partial class CameraFollow : Camera2D
         Vector2 desiredPosition = currentPosition;
 
         // handle lookahead based on speed
-        var velocity = _targetBehaviour.GetVelocity();
+        var velocity = _targetBehaviour.GetVelocity(delta);
 
         if (velocity.X > 1)
         {

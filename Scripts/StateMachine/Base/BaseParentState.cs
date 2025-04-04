@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using static BushyCore.StateConfig;
@@ -11,56 +12,116 @@ namespace BushyCore
     {
         public IChildState<TAgent, TParentState> CurrentSubState { get; set; }
 
-        [Export] public BaseState<TAgent>[] SubStates { get; set; }
+        public Dictionary<Type, BaseChildState<TAgent, TParentState>> SubStates { get; set; } = [];
 
-        private IChildState<TAgent, TParentState> _nextState = null;
-
-        public override void EnterState(params IBaseStateConfig[] configs)
+        public override void _Ready()
         {
-            base.EnterState(configs);
-            if (_nextState != null)
+            SubStates = GetChildren().OfType<BaseChildState<TAgent, TParentState>>()
+                .ToDictionary(child => child.GetType());
+        }
+
+        public override bool CanEnterState(Type type, params IBaseStateConfig[] configs)
+        {
+            return SubStates.ContainsKey(type);
+        }
+
+
+        public override void EnterState(Type type, params IBaseStateConfig[] configs)
+        {
+            base.EnterState(GetType(), configs);
+            if (SubStates.ContainsKey(type))
             {
-                CurrentSubState?.ExitState();
-                _nextState.EnterState(configs);
-                CurrentSubState = _nextState;
+                SetSubstate(type, configs);
             }
         }
 
-        public override bool TryChangeToState(Type type, params IBaseStateConfig[] configs)
+
+        public override void SetAgent(TAgent newAgent)
         {
-            foreach (var subState in SubStates)
+            base.SetAgent(newAgent);
+            foreach (var subState in SubStates.Values)
             {
-                if (subState.GetType() == type && subState is IChildState<TAgent, TParentState> childState)
+                subState.SetAgent(newAgent);
+                subState.ParentState = (TParentState)this;
+            }
+        }
+
+        private bool SetSubstate(Type nextStateType, params IBaseStateConfig[] configs)
+        {
+            if (CurrentSubState?.GetType() == nextStateType)
+            {
+                return true;
+            }
+            else
+            {
+                if (SubStates.TryGetValue(nextStateType, out var nextState))
                 {
-                    _nextState = childState;
-                    return true;
+                    if (nextState.CanEnterState(nextStateType, configs))
+                    {
+                        GD.Print("Entering subState: " + nextStateType.Name);
+
+                        CurrentSubState?.ExitState();
+                        CurrentSubState = nextState;
+                        nextState.EnterState(nextStateType, configs);
+                        return true;
+                    }
                 }
             }
             return false;
         }
 
-        public override void SetAgent(TAgent newAgent)
+        protected override bool OnRigidBodyInteractionInternal(Node2D body, bool enter)
         {
-            base.SetAgent(newAgent);
-            SubStates = GetChildren()
-            .Where(state => state is IChildState<TAgent, TParentState>)
-            .Select(state => (BaseState<TAgent>)state)
-            .ToArray();
-            foreach (var subState in SubStates)
-            {
-                ((IChildState<TAgent, TParentState>)subState).ParentState = (TParentState)this;
-                subState.SetAgent(Agent);
-            }
+            return TryOrThrow(() => CurrentSubState.OnRigidBodyInteraction(body, enter));
+        }
+
+
+        protected override bool OnAreaChangeInternal(Area2D area, bool enter)
+        {
+            return TryOrThrow(() => CurrentSubState.OnAreaChange(area, enter));
+        }
+
+        protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction inputAction)
+        {
+            return TryOrThrow(() => CurrentSubState.OnInputButtonChanged(actionType, inputAction));
+        }
+
+        protected override bool OnInputAxisChangedInternal(InputAxis axis)
+        {
+            return TryOrThrow(() => CurrentSubState.OnInputAxisChanged(axis));
         }
 
         public StateExecutionStatus ProcessSubState(StateExecutionStatus processConfig, double delta)
         {
-            return CurrentSubState.ProcessState(processConfig, delta);
+            return TryOrThrow(() => CurrentSubState.ProcessState(processConfig, delta));
         }
 
-        public void ExitSubState()
+        private T TryOrThrow<T>(Func<T> operation)
+        {
+            try
+            {
+                return operation();
+            }
+            catch (StateInterrupt interrupt)
+            {
+                if (!SetSubstate(interrupt.NextStateType, interrupt.Configs))
+                {
+                    throw;
+                }
+                return default;
+            }
+        }
+
+        protected override void ExitStateInternal()
         {
             CurrentSubState.ExitState();
+            CurrentSubState = null;
         }
+
+        public override string GetStateName()
+        {
+            return base.GetStateName() + "." + CurrentSubState?.GetStateName();
+        }
+
     }
 }

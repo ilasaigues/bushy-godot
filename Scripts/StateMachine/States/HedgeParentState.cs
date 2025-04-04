@@ -26,7 +26,7 @@ namespace BushyCore
 
 		protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
-			Agent.CollisionComponent.ToggleHedgeCollision(false);
+			// Movement axis config
 			var builder = new AxisMovement.Builder()
 				.Acc(Agent.CharacterVariables.HedgeAcceleration)
 				.Dec(Agent.CharacterVariables.HedgeDeceleration)
@@ -49,19 +49,30 @@ namespace BushyCore
 			xAxisMovement.SetInitVel(Agent.MovementComponent.CurrentVelocity.X);
 			yAxisMovement.SetInitVel(Agent.MovementComponent.CurrentVelocity.Y);
 
-			Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-			Agent.PlayerInfo.CanJump = true;
+			// Collission config
+			Agent.CollisionComponent.ToggleHedgeCollision(false);
+			Agent.CollisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 
+			// Animation config
+			Agent.AnimController.SetCondition(PlayerController.AnimConditions.Hedge, true);
+
+			// Disable gravity
+			Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
+
+			// Value intializations
+			// - Buffers
 			DashBufferTimer.WaitTime = Agent.CharacterVariables.HedgeDashBufferTime;
 			JumpBufferTimer.WaitTime = Agent.CharacterVariables.HedgeJumpBufferTime;
-
-			Agent.CollisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
-			SetupFromConfigs(configs);
-
-			HedgeNode.SubscribeMovementComponent(Agent.MovementComponent);
-
+			// - State			
+			Agent.PlayerInfo.CanJump = true;
 			isExitJumpBuffered = false;
 			isExitDashBuffered = false;
+
+			// load configs
+			SetupFromConfigs(configs);
+			// Bind player movement to hedge
+			HedgeNode.SubscribeMovementComponent(Agent.MovementComponent);
+
 		}
 
 		void SetupFromConfigs(params StateConfig.IBaseStateConfig[] configs)
@@ -78,23 +89,21 @@ namespace BushyCore
 
 		protected override void ExitStateInternal()
 		{
+			Agent.AnimController.SetCondition(PlayerController.AnimConditions.Hedge, false);
+
 			Agent.CollisionComponent.ToggleHedgeCollision(true);
 			Agent.PlayerInfo.DashEnabled = true;
 			HedgeNode.UnSubscribeMovementComponent(Agent.MovementComponent);
 		}
 
-		public override bool OnAreaChange(Area2D area, bool enter)
-		{
-			// TODO: Check when area left is hedge, and no other hedges are overlapping
-			// Transition to Jump, Dash or Fall states
-			return true;
-		}
-
 		protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
 		{
+			yAxisMovement.HandleMovement(delta);
+			xAxisMovement.HandleMovement(delta);
 			CheckHedge();
 			return ProcessSubState(prevStatus, delta);
 		}
+
 
 		private void CheckHedge()
 		{
@@ -105,28 +114,31 @@ namespace BushyCore
 		public void OnHedgeExit()
 		{
 			Agent.CollisionComponent.ToggleHedgeCollision(true);
+			Agent.Sprite2DComponent.ForceOrientation(new Vector2(Agent.MovementComponent.CurrentVelocity.X, -10));
 
 			var direction = Agent.MovementComponent.FacingDirection;
 			if (isExitDashBuffered && isExitJumpBuffered)
 			{
 				Agent.MovementComponent.Velocities[VelocityType.MainMovement] = new Vector2(Agent.CharacterVariables.DashJumpSpeed * Mathf.Sign(direction.X), 0);
 				Agent.PlayerInfo.DashEnabled = false;
-				throw new StateInterrupt<JumpState>(StateConfig.InitialVelocityVector(
-					Agent.MovementComponent.Velocities[VelocityType.MainMovement], false, true));
+				throw StateInterrupt.New<JumpState>(false,
+					StateConfig.InitialVelocityVector(
+						Agent.MovementComponent.Velocities[VelocityType.MainMovement], false, true));
 			}
 
 			if (isExitDashBuffered)
 			{
-				throw new StateInterrupt<DashState>(StateConfig.InitialVelocityVector(new Vector2(Agent.CharacterVariables.DashVelocity * Mathf.Sign(direction.X), 0)));
+				throw StateInterrupt.New<DashState>(false,
+					StateConfig.InitialVelocityVector(new Vector2(Agent.CharacterVariables.DashVelocity * Mathf.Sign(direction.X), 0)));
 			}
 
 			if (isExitJumpBuffered)
 			{
-				throw new StateInterrupt<JumpState>(
-								   StateConfig.InitialVelocityVector(Agent.MovementComponent.Velocities[VelocityType.MainMovement]));
+				throw StateInterrupt.New<JumpState>(false,
+					StateConfig.InitialVelocityVector(Agent.MovementComponent.Velocities[VelocityType.MainMovement]));
 			}
 
-			throw new StateInterrupt<FallState>();
+			throw StateInterrupt.New<FallState>();
 		}
 
 		private void OnJumpActionCancelled()

@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="ComboData" load_steps=6 format=3 uid="uid://dqudku7iyu4hc"]
+
+[ext_resource type="Script" uid="uid://c3lst8ny74pus" path="res://Scripts/ComboAttackData.cs" id="1_1tssq"]
+[ext_resource type="Script" uid="uid://b1as28poi8ux2" path="res://Scripts/ComboData.cs" id="2_0ltm7"]
+
+[sub_resource type="Resource" id="Resource_1tssq"]
+script = ExtResource("1_1tssq")
+AttackTimer = 0.3
+NextComboTimer = 0.5
+Damage = 1
+NudgeDirection = Vector2(0, 0)
+HitStopTime = 0.0
+metadata/_custom_type_script = "uid://c3lst8ny74pus"
+
+[sub_resource type="Resource" id="Resource_0ltm7"]
+script = ExtResource("1_1tssq")
+AttackTimer = 0.3
+NextComboTimer = 0.5
+Damage = 1
+NudgeDirection = Vector2(0, 0)
+HitStopTime = 0.0
+metadata/_custom_type_script = "uid://c3lst8ny74pus"
+
+[sub_resource type="Resource" id="Resource_ayl2x"]
+script = ExtResource("1_1tssq")
+AttackTimer = 1.5
+NextComboTimer = 1.5
+Damage = 2
+NudgeDirection = Vector2(0, 0)
+HitStopTime = 0.0
+metadata/_custom_type_script = "uid://c3lst8ny74pus"
+
+[resource]
+script = ExtResource("2_0ltm7")
+Attacks = Array[Resource]([SubResource("Resource_1tssq"), SubResource("Resource_0ltm7"), SubResource("Resource_ayl2x")])
+GravityEnabled = true
+Loop = false

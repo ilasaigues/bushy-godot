@@ -40,10 +40,10 @@ namespace BushyCore
             Agent.MovementComponent.CourseCorrectionEnabled = true;
 
             StartDash();
-            AnimationUpdate();
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.Dashing, true);
             base.Agent.CollisionComponent.CallDeferred(
-                CharacterCollisionComponent.MethodName.SwitchShape,
-                (int)CharacterCollisionComponent.ShapeMode.CILINDER);
+         CharacterCollisionComponent.MethodName.SwitchShape,
+         (int)CharacterCollisionComponent.ShapeMode.CILINDER);
 
             Agent.CollisionComponent.ToggleHedgeCollision(false);
         }
@@ -59,22 +59,11 @@ namespace BushyCore
             }
         }
 
-        protected void AnimationUpdate()
-        {
-            if (DashDurationTimer.TimeLeft > 0)
-            {
-                Agent.AnimationComponent.Play("dash_start");
-            }
-            else
-            {
-                Agent.AnimationComponent.Play("dash_end");
-            }
-        }
-
 
         protected override void ExitStateInternal()
         {
             base.ExitState();
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.Dashing, false);
 
             DashDurationTimer.Stop();
             DashEndTimer.Stop();
@@ -101,7 +90,7 @@ namespace BushyCore
             return new StateExecutionStatus(StateExecutionResult.Block, MovementLockFlags.All, StateAnimationLevel.Uninterruptible);
         }
 
-        public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction action)
+        protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction action)
         {
             if (actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.JumpAction)
             {
@@ -123,26 +112,19 @@ namespace BushyCore
 
         public void EndDash()
         {
+            ExitState();
             if (Agent.MovementComponent.IsOnFloor)
             {
-                if (Agent.MovementInputVector.X != 0)
-                {
-                    throw new StateInterrupt<WalkState>(new InitialAnimationConfig("run"));
-                }
-                else
-                {
-                    throw new StateInterrupt<IdleGroundedState>(new InitialAnimationConfig("idle"));
-                }
+                throw StateInterrupt.New<WalkState>(true);
             }
-            throw new StateInterrupt<FallState>(new InitialAnimationConfig("fall"));
+            throw StateInterrupt.New<FallState>(true);
         }
 
         private void CheckHedge()
         {
             if (!Agent.MovementComponent.IsInHedge) return;
 
-            Agent.AnimationComponent.Play("turn");
-            throw new StateInterrupt<HedgeEnteringState>(
+            throw StateInterrupt.New<HedgeEnteringState>(true,
                 new StateConfig.InitialHedgeConfig(Agent.MovementComponent.HedgeEntered, direction * Vector2.Right));
         }
         protected void VelocityUpdate()
@@ -179,7 +161,7 @@ namespace BushyCore
                 var jumpVelocity = Agent.MovementComponent.Velocities[VelocityType.MainMovement];
                 jumpVelocity.X *= Agent.CharacterVariables.DashJumpSpeed;
                 Agent.PlayerInfo.IsInDashMode = true;
-                throw new StateInterrupt<JumpState>(new StateConfig.InitialVelocityVectorConfig(jumpVelocity, false, true));
+                throw StateInterrupt.New<JumpState>(true, new StateConfig.InitialVelocityVectorConfig(jumpVelocity, false, true));
             }
         }
 

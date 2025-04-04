@@ -20,8 +20,7 @@ namespace BushyCore
             ParentState.CanCoyoteJump = false;
             ParentState.VerticalVelocity = Agent.CharacterVariables.JumpSpeed;
             JumpEnded = false;
-            Agent.AnimationComponent.Play("jump");
-            Agent.AnimationComponent.Queue("ascent");
+            Agent.AnimController.SetTrigger(PlayerController.AnimConditions.JumpTrigger);
         }
 
         protected override void ExitStateInternal()
@@ -41,13 +40,17 @@ namespace BushyCore
                 {
                     ParentState.HandleGravity(delta);
                 }
+                if (ParentState.VerticalVelocity > Agent.CharacterVariables.AirSpeedThresholds.X)
+                {
+                    throw StateInterrupt.New<FallState>();
+                }
             }
             return new StateExecutionStatus(prevStatus);
         }
 
-        public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
+        protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction Action)
         {
-            if (actionType == InputAction.InputActionType.InputReleased && Action == InputManager.Instance.JumpAction)
+            if (!JumpEnded && actionType == InputAction.InputActionType.InputReleased && Action == InputManager.Instance.JumpAction)
             {
                 JumpActionEnded();
             }

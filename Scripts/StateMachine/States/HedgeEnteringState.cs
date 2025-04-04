@@ -58,7 +58,7 @@ namespace BushyCore
         {
             if (EnteringTimer.TimeLeft <= 0)
             {
-                throw new StateInterrupt<HedgeMoveState>();
+                throw StateInterrupt.New<HedgeMoveState>();
             }
             return prevStatus;
         }

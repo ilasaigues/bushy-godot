@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="FloatEvent" load_steps=2 format=3 uid="uid://bavar4iqv86y6"]
+
+[ext_resource type="Script" uid="uid://cqhe1sjp4e2kq" path="res://Scripts/GodotEvents/Implementations/FloatEvent.cs" id="1_63eor"]
+
+[resource]
+script = ExtResource("1_63eor")
+_editorValue = 1.0
+CallWithEditorValue = false
+_developerDescription = "Bolas"

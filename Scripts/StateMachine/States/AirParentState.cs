@@ -62,6 +62,8 @@ namespace BushyCore
 
             SetupFromConfigs(configs);
 
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.OnAir, true);
+
             if (CanFallIntoHedge)
             {
                 Agent.CollisionComponent.ToggleHedgeCollision(false);
@@ -85,9 +87,10 @@ namespace BushyCore
 
         protected override void ExitStateInternal()
         {
+            base.ExitStateInternal();
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.OnAir, false);
             if (!Agent.MovementComponent.IsInHedge)
                 Agent.CollisionComponent.ToggleHedgeCollision(true);
-            ExitSubState();
         }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus processConfig, double delta)
@@ -96,26 +99,24 @@ namespace BushyCore
             {
                 if (CanFallIntoHedge && Agent.MovementComponent.IsInHedge)
                 {
-                    throw new StateInterrupt<HedgeEnteringState>(new StateConfig.InitialHedgeConfig(Agent.MovementComponent.HedgeEntered, (float)XAxisMovement.Velocity * Vector2.Right));
+                    throw StateInterrupt.New<HedgeEnteringState>(false, new StateConfig.InitialHedgeConfig(Agent.MovementComponent.HedgeEntered, (float)XAxisMovement.Velocity * Vector2.Right));
                 }
 
                 if (VerticalVelocity < 0f && Agent.MovementComponent.IsOnCeiling)
                     VerticalVelocity = 0;
 
-                if (Agent.MovementComponent.IsOnFloor && VerticalVelocity > 0)
+                if (Agent.MovementComponent.IsOnFloor && VerticalVelocity >= 0)
                 {
                     bool IsJumpBuffered = InputManager.Instance.JumpAction.TimeSinceLastPressed <= Agent.CharacterVariables.JumpBufferTime;
-                    if (TargetHorizontalVelocity != 0)
+                    if (Agent.MovementInputVector.X != 0)
                     {
-                        throw new StateInterrupt<WalkState>(
-                            new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration),
-                            new InitialAnimationConfig("land"));
+                        throw StateInterrupt.New<WalkState>(false,
+                            new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration));
                     }
                     else
                     {
-                        throw new StateInterrupt<IdleGroundedState>(
-                            new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration),
-                            new InitialAnimationConfig("land"));
+                        throw StateInterrupt.New<IdleGroundedState>(false,
+                            new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration));
                     }
                 }
                 if (Agent.MovementComponent.CurrentVelocity.Y > 0)
@@ -150,12 +151,9 @@ namespace BushyCore
         public override StateAnimationLevel UpdateAnimation()
         {
             if (Agent.MovementComponent.CurrentVelocity.Y > 0
-            && Agent.AnimationComponent.CurrentAnimation != "fall"
-            && Agent.AnimationComponent.CurrentAnimation != "peak")
+            && !Agent.AnimController.GetCondition(PlayerController.AnimConditions.Falling))
             {
-                Agent.AnimationComponent.ClearQueue();
-                Agent.AnimationComponent.Play("peak");
-                Agent.AnimationComponent.Queue("fall");
+                Agent.AnimController.SetCondition(PlayerController.AnimConditions.Falling, true);
             }
             return StateAnimationLevel.Regular;
         }
@@ -165,19 +163,26 @@ namespace BushyCore
             VerticalVelocity = Mathf.Min(Agent.CharacterVariables.AirTerminalVelocity, VerticalVelocity + GetGravity() * (float)deltaTime);
         }
 
-        public override bool OnInputAxisChanged(InputAxis axis)
+        protected override bool OnInputAxisChangedInternal(InputAxis axis)
         {
             return CurrentSubState.OnInputAxisChanged(axis);
         }
 
-        public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
+        protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction Action)
         {
             if (Agent.PlayerInfo.CanDash
                 && actionType == InputAction.InputActionType.InputPressed
                 && Action == InputManager.Instance.DashAction)
             {
-                throw new StateInterrupt<DashState>(InitialVelocityVector(Agent.MovementInputVector, false, true));
+                throw StateInterrupt.New<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
             }
+
+            if (actionType == InputAction.InputActionType.InputPressed
+                && Action == InputManager.Instance.AttackAction)
+            {
+                throw StateInterrupt.New<AttackAirState>(false);
+            }
+
             return CurrentSubState.OnInputButtonChanged(actionType, Action);
         }
 

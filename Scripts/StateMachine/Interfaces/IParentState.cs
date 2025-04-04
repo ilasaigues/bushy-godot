@@ -5,13 +5,15 @@ using static BushyCore.StateConfig;
 
 namespace BushyCore
 {
-    public interface IParentState<TAgent, TParentState> : IState<TAgent>
+    public interface IParentState
+    {
+        StateExecutionStatus ProcessSubState(StateExecutionStatus processConfig, double delta);
+    }
+    public interface IParentState<TAgent, TParentState> : IParentState, IState<TAgent>
         where TAgent : Node
         where TParentState : IParentState<TAgent, TParentState>
     {
-        [Export] BaseState<TAgent>[] SubStates { get; set; }
+        public Dictionary<Type, BaseChildState<TAgent, TParentState>> SubStates { get; set; }
         IChildState<TAgent, TParentState> CurrentSubState { get; set; }
-        StateExecutionStatus ProcessSubState(StateExecutionStatus processConfig, double delta);
-        void ExitSubState();
     }
 }

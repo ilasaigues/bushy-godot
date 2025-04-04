@@ -1,0 +1,7 @@
+[gd_resource type="AnimationNode" script_class="AnimationNodeAlias" load_steps=2 format=3 uid="uid://b2cs24kko12l6"]
+
+[ext_resource type="Script" uid="uid://bi5gs0shyh6iy" path="res://Scripts/AnimationNodeAlias.cs" id="1_4o4gd"]
+
+[resource]
+script = ExtResource("1_4o4gd")
+metadata/_custom_type_script = "uid://bi5gs0shyh6iy"

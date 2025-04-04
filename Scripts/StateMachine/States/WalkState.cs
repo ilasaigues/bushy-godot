@@ -1,4 +1,5 @@
 
+using System;
 using Godot;
 using static BushyCore.StateConfig;
 using static MovementComponent;
@@ -11,72 +12,57 @@ namespace BushyCore
 
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
-            SetupFromConfigs(configs);
-            _previousDirection = 0;
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.Running, true);
+            _previousDirection = Mathf.Sign(
+                Agent.MovementComponent.CurrentVelocity.Rotate(Agent.MovementComponent.FloorAngle).X);
         }
-
-        private void SetupFromConfigs(params IBaseStateConfig[] configs)
-        {
-            bool hitTheGroundRunning = false;
-            foreach (var config in configs)
-            {
-                if (config is InitialGroundedConfig groundedConfig)
-                {
-                    hitTheGroundRunning = true;
-                }
-            }
-            if (!hitTheGroundRunning)
-            {
-                Agent.AnimationComponent.Queue("run_start");
-            }
-        }
-
 
         protected override void ExitStateInternal()
         {
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.Running, false);
+            _previousDirection = 0;
         }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
             UpdateAnimation();
+            CheckVelocity();
             return prevStatus;
         }
 
+        protected void CheckVelocity()
+        {
+            if (Math.Abs(Agent.MovementComponent.Velocities[VelocityType.MainMovement].X) < 2 && Agent.MovementInputVector.X == 0)
+            {
+                throw new StateInterrupt(typeof(IdleGroundedState));
+            }
+        }
 
         public override StateAnimationLevel UpdateAnimation()
         {
             var newDirection = Mathf.Sign(
-                Agent.MovementComponent.CurrentVelocity.Rotate(Agent.MovementComponent.FloorAngle)
-                .X);
-
-            var anim = Agent.AnimationComponent;
-            if (newDirection == _previousDirection) // continue running
+                Agent.MovementComponent.Velocities[VelocityType.MainMovement].X);
+            if (newDirection != 0)
             {
-                anim.Queue("run");
-                return StateAnimationLevel.Regular;
-            }
-            else // 180° turn
-            {
-                anim.Stop();
-                anim.ClearQueue();
-                anim.Play("turn");
-                anim.Queue("run_start");
-                anim.Queue("run");
-                _previousDirection = newDirection;
+                var anim = Agent.AnimController;
+                if (newDirection * _previousDirection == -1)
+                {
+                    //GD.PrintRich("[color=red]BIJA[/color]");
+                    anim.SetTrigger(PlayerController.AnimConditions.TurnTrigger);
+                    _previousDirection = newDirection;
+                }
             }
             return StateAnimationLevel.Regular;
         }
 
-        public override bool OnInputAxisChanged(InputAxis axis)
+        /*protected override bool OnInputAxisChangedInternal(InputAxis axis)
         {
             if (axis == InputManager.Instance.HorizontalAxis && axis.Value == 0)
             {
-                Agent.AnimationComponent.ClearQueue();
-                Agent.AnimationComponent.Queue("idle");
                 throw new StateInterrupt(typeof(IdleGroundedState));
             }
             return true;
         }
-
+*/
     }
 }
