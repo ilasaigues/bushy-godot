@@ -246,10 +246,6 @@ advance_condition = &"OnAir"
 advance_mode = 2
 advance_condition = &"Dashing"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_c43xd"]
-advance_mode = 2
-advance_expression = "!GetCondition(\"Dashing\")"
-
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_avx33"]
 switch_mode = 2
 advance_mode = 2
@@ -278,6 +274,10 @@ advance_expression = "CheckTrigger(\"AttackTrigger\")"
 switch_mode = 2
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ycx1c"]
+switch_mode = 2
+advance_mode = 2
+
 [resource]
 states/AirAttack/node = SubResource("AnimationNodeStateMachine_ycx1c")
 states/AirAttack/position = Vector2(361, -29)
@@ -292,5 +292,5 @@ states/dash_end/node = SubResource("AnimationNodeAnimation_m0x7a")
 states/dash_end/position = Vector2(572, 63)
 states/dash_start/node = SubResource("AnimationNodeAnimation_1iu4k")
 states/dash_start/position = Vector2(559, 166)
-transitions = ["Start", "Grounded", SubResource("AnimationNodeStateMachineTransition_i2e8t"), "Start", "AirState", SubResource("AnimationNodeStateMachineTransition_1e7my"), "AirState", "Grounded", SubResource("AnimationNodeStateMachineTransition_x63xi"), "Grounded", "AirState", SubResource("AnimationNodeStateMachineTransition_qidb7"), "AirState", "dash_start", SubResource("AnimationNodeStateMachineTransition_lyrkg"), "dash_start", "dash_end", SubResource("AnimationNodeStateMachineTransition_c43xd"), "dash_end", "AirState", SubResource("AnimationNodeStateMachineTransition_avx33"), "Grounded", "dash_start", SubResource("AnimationNodeStateMachineTransition_rxg2u"), "dash_start", "AirState", SubResource("AnimationNodeStateMachineTransition_xixlo"), "Grounded", "GroundAttack", SubResource("AnimationNodeStateMachineTransition_ggkad"), "GroundAttack", "Grounded", SubResource("AnimationNodeStateMachineTransition_0sdxd"), "AirState", "AirAttack", SubResource("AnimationNodeStateMachineTransition_fsv7v"), "AirAttack", "AirState", SubResource("AnimationNodeStateMachineTransition_3q0lw")]
-graph_offset = Vector2(-218, -26)
+transitions = ["Start", "Grounded", SubResource("AnimationNodeStateMachineTransition_i2e8t"), "Start", "AirState", SubResource("AnimationNodeStateMachineTransition_1e7my"), "AirState", "Grounded", SubResource("AnimationNodeStateMachineTransition_x63xi"), "Grounded", "AirState", SubResource("AnimationNodeStateMachineTransition_qidb7"), "AirState", "dash_start", SubResource("AnimationNodeStateMachineTransition_lyrkg"), "dash_end", "AirState", SubResource("AnimationNodeStateMachineTransition_avx33"), "Grounded", "dash_start", SubResource("AnimationNodeStateMachineTransition_rxg2u"), "dash_start", "AirState", SubResource("AnimationNodeStateMachineTransition_xixlo"), "Grounded", "GroundAttack", SubResource("AnimationNodeStateMachineTransition_ggkad"), "GroundAttack", "Grounded", SubResource("AnimationNodeStateMachineTransition_0sdxd"), "AirState", "AirAttack", SubResource("AnimationNodeStateMachineTransition_fsv7v"), "AirAttack", "AirState", SubResource("AnimationNodeStateMachineTransition_3q0lw"), "dash_start", "dash_end", SubResource("AnimationNodeStateMachineTransition_ycx1c")]
+graph_offset = Vector2(-18, 22)
