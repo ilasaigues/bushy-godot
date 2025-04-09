@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://btja5sixyb4f8"]
 
-[ext_resource type="Script" path="res://Scripts/StateMachine OLD/States/AttackSteps/AttackStep.cs" id="1_ynga8"]
-[ext_resource type="Script" path="res://Scripts/Components/HitboxComponent.cs" id="2_6c8bt"]
+[ext_resource type="Script" uid="uid://cl3m4i7qw0uff" path="res://Scripts/StateMachine OLD/States/AttackSteps/AttackStep.cs" id="1_ynga8"]
+[ext_resource type="Script" uid="uid://bolcju87366an" path="res://Scripts/Components/HitboxComponent.cs" id="2_6c8bt"]
 
 [node name="AttackStep" type="Node2D"]
 script = ExtResource("1_ynga8")

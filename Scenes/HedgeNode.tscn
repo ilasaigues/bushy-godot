@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://cp0lnw8h4618y"]
 
-[ext_resource type="Script" path="res://Scripts/HedgeNode.cs" id="1_6g5dh"]
-[ext_resource type="Script" path="res://Scenes/HedgeArea2D.cs" id="2_0nfuf"]
-[ext_resource type="Script" path="res://Scenes/HedgeStaticBody2D.cs" id="2_hr5cn"]
+[ext_resource type="Script" uid="uid://bvhtyooaksq5q" path="res://Scripts/HedgeNode.cs" id="1_6g5dh"]
+[ext_resource type="Script" uid="uid://bbhgffkqqswoi" path="res://Scenes/HedgeArea2D.cs" id="2_0nfuf"]
+[ext_resource type="Script" uid="uid://duj723s47ie3p" path="res://Scenes/HedgeStaticBody2D.cs" id="2_hr5cn"]
 
 [sub_resource type="Curve2D" id="Curve2D_41h48"]
 

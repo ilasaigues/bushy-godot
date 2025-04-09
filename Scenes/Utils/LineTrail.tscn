@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dwt102y105ka0"]
 
-[ext_resource type="Script" path="res://Scenes/Utils/LineTrail.cs" id="1_4qkjx"]
+[ext_resource type="Script" uid="uid://7e144eivup0i" path="res://Scenes/Utils/LineTrail.cs" id="1_4qkjx"]
 
 [node name="LineTrail" type="Line2D"]
 show_behind_parent = true

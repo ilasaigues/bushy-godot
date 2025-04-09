@@ -37,12 +37,13 @@ public partial class MovementComponent : Node2D
 	}
 	public bool IsOnEdge { get { return _raysOnFloor == 1; } }
 	public HedgeNode HedgeEntered;
-	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge > 2; } }
+	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge >= 2; } }
 
 	private bool _isCoreography;
 	private int _raysOnFloor;
 	private int _raysOnHedge;
-
+	public Vector2 RealPositionChange { get; private set; } = Vector2.Zero;
+	private Vector2 _previousPosition;
 
 	public bool CourseCorrectionEnabled;
 
@@ -100,6 +101,7 @@ public partial class MovementComponent : Node2D
 		CourseCorrectRayYr.Enabled = false;
 
 		FacingDirection = Vector2.Right;
+		_previousPosition = GlobalPosition;
 
 		SetRaycastPosition();
 	}
@@ -297,5 +299,10 @@ public partial class MovementComponent : Node2D
 			this.AddToGroup();
 			this.WireNodes();
 		}
+	}
+	public override void _PhysicsProcess(double delta)
+	{
+		RealPositionChange = GlobalPosition - _previousPosition;
+		_previousPosition = GlobalPosition;
 	}
 }

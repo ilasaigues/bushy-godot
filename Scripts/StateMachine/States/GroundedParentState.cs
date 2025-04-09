@@ -47,6 +47,9 @@ namespace BushyCore
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
             HorizontalAxisMovement.OvershootDec(true);
 
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.Grounded, true);
+
+
             Agent.CollisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 
             SetupFromConfigs(configs);
@@ -66,7 +69,7 @@ namespace BushyCore
             }
         }
 
-        public override bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction action)
+        protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction action)
         {
             if (Agent.PlayerInfo.CanJump && actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.JumpAction)
             {
@@ -77,18 +80,23 @@ namespace BushyCore
                 && actionType == InputAction.InputActionType.InputPressed
                 && action == InputManager.Instance.DashAction)
             {
-                throw new StateInterrupt<DashState>(InitialVelocityVector(Agent.MovementInputVector, false, true));
+                throw StateInterrupt.New<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
+            }
+
+            if (actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.AttackAction)
+            {
+                throw StateInterrupt.New<AttackGroundState>(false);
             }
             return CurrentSubState.OnInputButtonChanged(actionType, action);
         }
 
         private void DoJump()
         {
-            throw new StateInterrupt<JumpState>(
+            throw StateInterrupt.New<JumpState>(false,
                     StateConfig.InitialVelocityVector(Agent.MovementComponent.Velocities[VelocityType.MainMovement]));
         }
 
-        public override bool OnInputAxisChanged(InputAxis axis)
+        protected override bool OnInputAxisChangedInternal(InputAxis axis)
         {
             return CurrentSubState.OnInputAxisChanged(axis);
         }
@@ -112,7 +120,8 @@ namespace BushyCore
 
         protected override void ExitStateInternal()
         {
-            ExitSubState();
+            base.ExitStateInternal();
+            Agent.AnimController.SetCondition(PlayerController.AnimConditions.Grounded, false);
         }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
@@ -145,7 +154,7 @@ namespace BushyCore
             }
 
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-            throw new StateInterrupt<FallState>();
+            throw StateInterrupt.New<FallState>();
         }
     }
 }

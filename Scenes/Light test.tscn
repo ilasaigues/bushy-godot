@@ -2,15 +2,15 @@
 
 [ext_resource type="Texture2D" uid="uid://m3y00yel1d44" path="res://Scripts/StateMachine OLD/States/bushy dat.png" id="1_bi2fn"]
 [ext_resource type="Texture2D" uid="uid://baqb8u2tj8ql5" path="res://Assets/Player/Idle Test.png" id="2_7b6sm"]
-[ext_resource type="Shader" path="res://light.gdshader" id="3_r2hyt"]
+[ext_resource type="Shader" uid="uid://tma0gmpdkq3d" path="res://light.gdshader" id="3_r2hyt"]
 [ext_resource type="Texture2D" uid="uid://d3kbhfsxjqv7b" path="res://Scripts/StateMachine OLD/States/Forest Pallete.png" id="4_fejph"]
 [ext_resource type="Texture2D" uid="uid://bs7wuia1gspve" path="res://Scripts/StateMachine OLD/States/bushy dat2.png" id="5_c16qj"]
-[ext_resource type="Script" path="res://Scenes/circle.cs" id="6_6yykf"]
+[ext_resource type="Script" uid="uid://duj3j4h1p5it5" path="res://Scenes/circle.cs" id="6_6yykf"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fpbqj"]
 shader = ExtResource("3_r2hyt")
-shader_parameter/default_light = Color(0.988235, 0.901961, 0.776471, 1)
 shader_parameter/pallete = ExtResource("4_fejph")
+shader_parameter/default_light = Color(0.988235, 0.901961, 0.776471, 1)
 
 [sub_resource type="Gradient" id="Gradient_5slnd"]
 offsets = PackedFloat32Array(0, 0.079258, 0.67285)
@@ -44,7 +44,7 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ovwyd"]
 _data = {
-"light": SubResource("Animation_c68js")
+&"light": SubResource("Animation_c68js")
 }
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0kf8i"]
@@ -78,7 +78,7 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_5cny7"]
 _data = {
-"Idle": SubResource("Animation_mi0st")
+&"Idle": SubResource("Animation_mi0st")
 }
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_qx2g3"]
@@ -94,8 +94,8 @@ transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8jdkq"]
 shader = ExtResource("3_r2hyt")
-shader_parameter/default_light = Color(0.988235, 0.901961, 0.776471, 1)
 shader_parameter/pallete = ExtResource("4_fejph")
+shader_parameter/default_light = Color(0.988235, 0.901961, 0.776471, 1)
 
 [sub_resource type="Gradient" id="Gradient_7hkim"]
 offsets = PackedFloat32Array(0, 0.163575, 0.419899)

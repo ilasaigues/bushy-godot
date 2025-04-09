@@ -7,22 +7,21 @@ namespace BushyCore
     {
         public bool Active { get; set; }
         public T Agent { get; set; }
-        public double TimeSinceStateStart { get; set; }
 
         public virtual void SetAgent(T newAgent)
         {
             Agent = newAgent;
         }
 
-        public virtual bool TryChangeToState(Type type, params StateConfig.IBaseStateConfig[] configs) => GetType() == type;
+        public virtual bool CanEnterState(Type type, params StateConfig.IBaseStateConfig[] configs) => type == GetType();
 
-        public virtual void EnterState(params StateConfig.IBaseStateConfig[] configs)
+
+        public virtual void EnterState(Type type, params StateConfig.IBaseStateConfig[] configs)
         {
-            if (Active)
+            if (type != GetType())
             {
                 return;
             }
-            //GD.Print("Entering State: " + GetType());
             Active = true;
             EnterStateInternal(configs);
         }
@@ -30,8 +29,9 @@ namespace BushyCore
         protected abstract void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs);
         public StateExecutionStatus ProcessState(StateExecutionStatus prevStatus, double delta)
         {
-            TimeSinceStateStart += delta;
-            return ProcessStateInternal(prevStatus, delta);
+            if (Active && prevStatus.StateExecutionResult == StateExecutionResult.Continue)
+                return ProcessStateInternal(prevStatus, delta);
+            return prevStatus;
         }
 
         protected abstract StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta);
@@ -47,14 +47,16 @@ namespace BushyCore
         }
         protected abstract void ExitStateInternal();
 
-        public virtual StateAnimationLevel UpdateAnimation() => StateAnimationLevel.Regular;
-        public virtual bool OnRigidBodyInteraction(Node2D node, bool enter) => true;
-        public virtual bool OnAreaChange(Area2D area, bool enter) => true;
-        public virtual bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action)
-        {
-            return true;
 
-        }
-        public virtual bool OnInputAxisChanged(InputAxis axis) => true;
+        public virtual StateAnimationLevel UpdateAnimation() => StateAnimationLevel.Regular;
+        public bool OnRigidBodyInteraction(Node2D node, bool enter) => OnRigidBodyInteractionInternal(node, enter);
+        protected virtual bool OnRigidBodyInteractionInternal(Node2D node, bool enter) => true;
+        public bool OnAreaChange(Area2D area, bool enter) => OnAreaChangeInternal(area, enter);
+        protected virtual bool OnAreaChangeInternal(Area2D area, bool enter) => true;
+        public bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action) => OnInputButtonChangedInternal(actionType, Action);
+        protected virtual bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction Action) => true;
+        public bool OnInputAxisChanged(InputAxis axis) => OnInputAxisChangedInternal(axis);
+        protected virtual bool OnInputAxisChangedInternal(InputAxis axis) => true;
+        public virtual string GetStateName() => GetType().Name;
     }
 }

@@ -4,26 +4,39 @@ using GodotUtilities;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace BushyCore
 {
 	[Scene]
 	public partial class PlayerController : CharacterBody2D
 	{
-		[Node]
-		public MovementComponent MovementComponent;
-		[Node]
-		public CharacterCollisionComponent CollisionComponent;
+		public static class AnimConditions
+		{
+			public const string Grounded = "parameters/PlayerMainLoop/conditions/Grounded";
+			public const string OnAir = "parameters/PlayerMainLoop/conditions/OnAir";
+			public const string Dashing = "parameters/PlayerMainLoop/conditions/Dashing";
+			public const string Running = "parameters/PlayerMainLoop/Grounded/conditions/Running";
+			public const string Falling = "parameters/PlayerMainLoop/AirState/conditions/Falling";
+			public const string Hedge = "parameters/conditions/Hedge";
+			public const string LandTrigger = "LandTrigger";
+			public const string TurnTrigger = "TurnTrigger";
+			public const string JumpTrigger = "JumpTrigger";
+			public const string AttackTrigger = "AttackTrigger";
+			public const string UpAttackTrigger = "UpAttackTrigger";
+			public const string DownAttackTrigger = "DownAttackTrigger";
+			public const string BushBlendValues = "parameters/BushBlendSpace/blend_position";
+		}
 
-		[Export]
-		public CharacterVariables CharacterVariables;
 
-		[Export]
-		public PlayerCascadeStateMachine CascadeStateMachine;
-		[Export]
-		public AnimationComponent AnimationComponent;
-		[Export]
-		private SpriteTrail spriteTrail;
+		[Node] public MovementComponent MovementComponent;
+		[Node] public CharacterCollisionComponent CollisionComponent;
+		[Export] public CharacterVariables CharacterVariables;
+		[Export] public PlayerCascadeStateMachine CascadeStateMachine;
+		[Export] public AnimationPlayer AnimationPlayer;
+		[Export] public AnimationController AnimController;
+		[Export] public Sprite2DComponent Sprite2DComponent;
+		[Export] private SpriteTrail spriteTrail;
 		public PlayerInfo PlayerInfo;
 
 		private Vector2 _movementInputVector;
@@ -32,7 +45,6 @@ namespace BushyCore
 		private InputManager inputManager => InputManager.Instance;
 
 		private List<DisposableBinding> _disposableBindings = new();
-
 
 
 		public override void _Notification(int what)
@@ -47,12 +59,14 @@ namespace BushyCore
 		public override void _Ready()
 		{
 			base._Ready();
+			AnimController.InitializeFromType(typeof(AnimConditions));
 			PlayerInfo = new PlayerInfo(CharacterVariables);
 			MovementComponent.SetParentController(this);
 			CollisionComponent.SetParentController(this);
 			BindInputs();
 			CascadeStateMachine.SetAgent(this);
 			CascadeStateMachine.SetState(typeof(FallState));
+			//Engine.TimeScale = 0.1f;
 		}
 
 		void BindInput(DisposableBinding binding)
@@ -121,6 +135,12 @@ namespace BushyCore
 			_disposableBindings.ForEach(d => d.Dispose());
 			base._ExitTree();
 		}
+
+		public override void _Process(double delta)
+		{
+			Sprite2DComponent.ForceOrientation(new Vector2(MovementInputVector.X, 0));
+		}
+
 
 		public override void _PhysicsProcess(double delta)
 		{

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ikw2snd4s3rd"]
 
-[ext_resource type="Script" path="res://Scripts/StateMachine OLD/States/DashState.cs" id="1_kg0i6"]
+[ext_resource type="Script" uid="uid://dqa8cohhj8fwp" path="res://Scripts/StateMachine OLD/States/DashState.cs" id="1_kg0i6"]
 
 [node name="DashState" type="Node2D"]
 script = ExtResource("1_kg0i6")

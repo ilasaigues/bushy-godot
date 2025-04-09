@@ -11,18 +11,20 @@ namespace BushyCore
         private TAgent Agent;
         public StateExecutionStatus MachineState { get; set; }
 
-        private List<BaseState<TAgent>> States = new();
+        [Export] public bool OverrideLower { get; private set; }
+
+        private Dictionary<Type, BaseState<TAgent>> States;
         private BaseState<TAgent> _currentState;
 
         public override void _Ready()
         {
-            States = GetChildren().OfType<BaseState<TAgent>>().ToList();
+            States = GetChildren().OfType<BaseState<TAgent>>().ToDictionary(child => child.GetType());
         }
 
         public void SetAgent(TAgent agent)
         {
             Agent = agent;
-            foreach (var state in States)
+            foreach (var state in States.Values)
             {
                 state.SetAgent(agent);
             }
@@ -32,23 +34,36 @@ namespace BushyCore
         {
             if (stateType.GetInterface(typeof(IState<TAgent>).Name) == null)
             {
-                return true;
+                throw new TypeLoadException();
             }
-            foreach (var state in States)
+
+            foreach (var nextState in States.Values)
             {
-                if (state.TryChangeToState(stateType))
+                if (nextState.CanEnterState(stateType, configs))
                 {
-                    state.EnterState(configs);
-                    if (state != _currentState)
+                    if (nextState.Active && nextState is IParentState parentState)
                     {
-                        _currentState?.ExitState();
-                        _currentState = state;
+                        nextState.EnterState(stateType, configs);
+                    }
+                    else
+                    {
+                        if (stateType != _currentState?.GetType())
+                        {
+                            _currentState?.ExitState();
+                            _currentState = nextState;
+                            nextState.EnterState(stateType, configs);
+                        }
                     }
                     return true;
                 }
             }
-
             return false;
+        }
+
+        public void UnsetState()
+        {
+            _currentState?.ExitState();
+            _currentState = null;
         }
 
         public bool OnRigidBodyInteraction(Node2D body, bool enter)
@@ -88,23 +103,28 @@ namespace BushyCore
             }
             catch (StateInterrupt interrupt)
             {
-                StopCurrentState();
+                if (interrupt.StopStateMachine)
+                {
+                    UnsetState();
+                }
                 if (!SetState(interrupt.NextStateType, interrupt.Configs))
                 {
                     throw;
                 }
                 return true;
             }
-        }
-
-        private void StopCurrentState()
-        {
-            _currentState.ExitState();
-            _currentState = null;
+            catch
+            {
+                throw;
+            }
         }
 
         public StateExecutionStatus ProcessState(StateExecutionStatus prevStatus, double delta)
         {
+            if (_currentState is { Active: false })
+            {
+                _currentState = null;
+            }
             if (_currentState != null && prevStatus.AnimationLevel != StateAnimationLevel.Uninterruptible)
             {
                 prevStatus.AnimationLevel |= _currentState.UpdateAnimation();
@@ -113,20 +133,31 @@ namespace BushyCore
             {
                 return prevStatus;
             }
-
             try
             {
                 return _currentState?.ProcessState(prevStatus, delta) ?? prevStatus;
             }
             catch (StateInterrupt ex)
             {
-                StopCurrentState();
+                if (ex.StopStateMachine)
+                {
+                    UnsetState();
+                }
                 if (!SetState(ex.NextStateType, ex.Configs))
                 {
                     throw;
                 }
                 return prevStatus;
             }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public string GetCurrentStateName()
+        {
+            return _currentState?.GetStateName();
         }
     }
 }

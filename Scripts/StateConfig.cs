@@ -3,7 +3,7 @@ using System;
 
 namespace BushyCore
 {
-    public partial class StateConfig : GodotObject
+    public partial class StateConfig
     {
         public interface IBaseStateConfig { }
         public struct InitialVerticalVelocityConfig : IBaseStateConfig
@@ -80,14 +80,9 @@ namespace BushyCore
             return new InitialGroundedConfig(doesDecelerate: doesDecelerate);
         }
 
-        public struct InitialAnimationConfig : IBaseStateConfig
+        public readonly struct SubStateConfig(Type substateType) : IBaseStateConfig
         {
-            public string AnimationName;
-            public InitialAnimationConfig(string animationName)
-            {
-                AnimationName = animationName;
-            }
+            public Type SubType { get; } = substateType;
         }
-
     }
 }

@@ -52,9 +52,12 @@ public partial class PlayerCameraTargetBehaviour : CameraTargetBehaviour<PlayerC
             Camera?.SetMidTarget(null);
         }
     }
-    public override Vector2 GetVelocity()
+
+
+
+    public override Vector2 GetVelocity(double delta)
     {
-        return Target.MovementComponent.CurrentVelocity;
+        return Target.MovementComponent.RealPositionChange / (float)delta;
     }
 
     public override void SetFloorHeight(float floorHeight)

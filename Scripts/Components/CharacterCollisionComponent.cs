@@ -6,7 +6,7 @@ namespace BushyCore
 	public partial class CharacterCollisionComponent : CollisionShape2D
 	{
 		public RayCast2D CourseCorrectRay1 { get; private set; }
-		public RayCast2D CourseCorrectRay2  { get; private set; }
+		public RayCast2D CourseCorrectRay2 { get; private set; }
 		public enum ShapeMode
 		{
 			RECTANGULAR,
@@ -25,7 +25,7 @@ namespace BushyCore
 		public Shape2D PointShape;
 		[Export]
 		private AreaDetectionComponent AreaDetectionComponent;
-		
+
 		private PlayerController parentController;
 
 		public override void _Ready()
@@ -33,24 +33,24 @@ namespace BushyCore
 			this.Shape = RectShape;
 		}
 
-        public void SwitchShape(ShapeMode mode)
+		public void SwitchShape(ShapeMode mode)
 		{
-			SwitchShape((int) mode);
+			SwitchShape((int)mode);
 		}
 		public void SwitchShape(int modeInt)
 		{
 			switch (modeInt)
 			{
-				case (int) ShapeMode.RECTANGULAR:
+				case (int)ShapeMode.RECTANGULAR:
 					this.Shape = RectShape;
 					break;
-				case (int) ShapeMode.CILINDER:
+				case (int)ShapeMode.CILINDER:
 					this.Shape = CilinderShape;
 					break;
-				case (int) ShapeMode.CIRCLE:
+				case (int)ShapeMode.CIRCLE:
 					this.Shape = CircleShape;
 					break;
-				case (int) ShapeMode.POINT:
+				case (int)ShapeMode.POINT:
 					this.Shape = PointShape;
 					break;
 			}
@@ -63,7 +63,7 @@ namespace BushyCore
 		public void SetParentController(PlayerController val) { this.parentController = val; }
 		public void ToggleHedgeCollision(bool isOn)
 		{
-			parentController.SetCollisionMaskValue(CollisionLayerConsts.HEDGE, isOn);
+			parentController.SetCollisionMaskValue(CollisionLayerConsts.HEDGE, isOn.WarnInPlace());
 		}
 	}
 }

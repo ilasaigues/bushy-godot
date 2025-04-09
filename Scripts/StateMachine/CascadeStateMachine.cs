@@ -8,7 +8,7 @@ namespace BushyCore
     public abstract partial class CascadeStateMachine<TAgent> : Node where TAgent : Node
     {
         TAgent Agent;
-        List<StateMachine<TAgent>> StateMachines;
+        public List<StateMachine<TAgent>> StateMachines;
         public override void _Ready()
         {
             StateMachines = GetChildren().OfType<StateMachine<TAgent>>().ToList();
@@ -51,20 +51,22 @@ namespace BushyCore
 
         public void SetState(Type stateType)
         {
-            CascadeThroughStates(stateType);
+            var interrupt = new StateInterrupt(stateType);
+            CascadeThroughStates(interrupt.NextStateType, interrupt.Configs);
         }
 
         private void CascadeThroughStates(Type stateType, params StateConfig.IBaseStateConfig[] configs)
         {
-            GD.Print("CASCADING");
+            bool stateSet = false;
             foreach (var machine in StateMachines)
             {
                 if (machine.SetState(stateType, configs))
                 {
-                    return;
+                    stateSet |= true;
                 }
             }
-            throw new Exception($"Type {stateType} is not a state in any player state machine!");
+            if (!stateSet)
+                throw new Exception($"Type {stateType} is not a state in any player state machine!");
         }
         public override void _PhysicsProcess(double delta)
         {
@@ -73,7 +75,8 @@ namespace BushyCore
                 var stateresult = default(StateExecutionStatus);
                 foreach (var machine in StateMachines)
                 {
-                    stateresult = machine.ProcessState(stateresult, delta);
+                    if (stateresult.StateExecutionResult == StateExecutionResult.Continue)
+                        stateresult = machine.ProcessState(stateresult, delta);
                 }
             }
             catch (StateInterrupt interrupt)

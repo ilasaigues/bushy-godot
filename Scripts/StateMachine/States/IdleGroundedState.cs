@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using static MovementComponent;
 
@@ -23,12 +24,7 @@ namespace BushyCore
 
             if (isLanding)
             {
-                Agent.AnimationComponent.Stop();
-                Agent.AnimationComponent.Play("land");
-            }
-            if (!isLanding)
-            {
-                Agent.AnimationComponent.Play("turn");
+                Agent.AnimController.SetTrigger(PlayerController.AnimConditions.LandTrigger);
             }
         }
 
@@ -36,27 +32,25 @@ namespace BushyCore
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
-
-            UpdateAnimation();
+            CheckVelocity();
             return prevStatus;
         }
 
-        public override bool OnInputAxisChanged(InputAxis axis)
+        protected void CheckVelocity()
+        {
+            if (Math.Abs(Agent.MovementComponent.Velocities[VelocityType.MainMovement].X) != 0 && Agent.MovementInputVector.X != 0)
+            {
+                throw new StateInterrupt(typeof(IdleGroundedState));
+            }
+        }
+
+        protected override bool OnInputAxisChangedInternal(InputAxis axis)
         {
             if (axis == InputManager.Instance.HorizontalAxis && axis.Value != 0)
             {
-                throw new StateInterrupt<WalkState>();
+                throw StateInterrupt.New<WalkState>();
             }
             return true;
-        }
-
-        public override StateAnimationLevel UpdateAnimation()
-        {
-            if (Agent.AnimationComponent.CurrentAnimation != "idle")
-            {
-                Agent.AnimationComponent.Queue("idle");
-            }
-            return StateAnimationLevel.Regular;
         }
     }
 }

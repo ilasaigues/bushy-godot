@@ -21,9 +21,9 @@ public abstract partial class CameraTargetBehaviour : Resource
 
     public abstract bool ShouldLockVertical { get; }
 
-    public abstract Vector2 GetVelocity();
+    public abstract Vector2 GetVelocity(double delta);
 
-    public abstract Node2D TargetNode { get; set;}
+    public abstract Node2D TargetNode { get; set; }
 }
 [Serializable]
 public abstract partial class CameraTargetBehaviour<T> : CameraTargetBehaviour where T : Node2D
@@ -34,8 +34,9 @@ public abstract partial class CameraTargetBehaviour<T> : CameraTargetBehaviour w
         {
             return Target;
         }
-        set{
-            if(value is T newTarget)
+        set
+        {
+            if (value is T newTarget)
             {
                 Target = newTarget;
             }
@@ -50,11 +51,12 @@ public abstract partial class CameraTargetBehaviour<T> : CameraTargetBehaviour w
         {
             return _target;
         }
-        set{
-            if(value is T newTarget)
+        set
+        {
+            if (value is T newTarget)
             {
-                ChangeTarget(newTarget);  
-                _target = value;             
+                ChangeTarget(newTarget);
+                _target = value;
             }
         }
     }
