@@ -36,19 +36,25 @@ config/icon="res://icon.svg"
 [autoload]
 
 InputManager="*res://Scripts/InputManager.cs"
+BetterTerrain="*res://addons/better-terrain/BetterTerrain.gd"
 
 [display]
 
 window/size/viewport_width=480
 window/size/viewport_height=270
-window/size/window_width_override=1440
-window/size/window_height_override=810
+window/size/mode=4
+window/size/window_width_override=1920
+window/size/window_height_override=1080
 window/stretch/mode="canvas_items"
 window/stretch/scale_mode="integer"
 
 [dotnet]
 
 project/assembly_name="Bushy-godot"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/better-terrain/plugin.cfg")
 
 [input]
 
@@ -95,4 +101,4 @@ common/physics_jitter_fix=0.0
 
 [rendering]
 
-environment/defaults/default_clear_color=Color(0.0431373, 0.0941176, 0.156863, 1)
+environment/defaults/default_clear_color=Color(0.987826, 0.903985, 0.664008, 1)
