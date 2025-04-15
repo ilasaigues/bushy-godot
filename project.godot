@@ -94,6 +94,7 @@ game_harpoon={
 2d_physics/layer_3="Hedge"
 2d_physics/layer_4="Hitbox"
 2d_physics/layer_5="Hurtbox"
+2d_physics/layer_6="Platform"
 
 [physics]
 
@@ -101,4 +102,4 @@ common/physics_jitter_fix=0.0
 
 [rendering]
 
-environment/defaults/default_clear_color=Color(0.987826, 0.903985, 0.664008, 1)
+environment/defaults/default_clear_color=Color(0.105688, 0.459623, 0.46816, 1)
