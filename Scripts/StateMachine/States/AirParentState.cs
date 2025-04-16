@@ -99,11 +99,14 @@ namespace BushyCore
             {
                 if (CanFallIntoHedge && Agent.MovementComponent.IsInHedge)
                 {
-                    throw StateInterrupt.New<HedgeEnteringState>(false, new StateConfig.InitialHedgeConfig(Agent.MovementComponent.HedgeEntered, (float)XAxisMovement.Velocity * Vector2.Right));
+                    throw StateInterrupt.New<HedgeEnteringState>(false, new StateConfig.InitialHedgeConfig(Agent.MovementComponent.CurrentHedge, (float)XAxisMovement.Velocity * Vector2.Right));
                 }
 
                 if (VerticalVelocity < 0f && Agent.MovementComponent.IsOnCeiling)
-                    VerticalVelocity = 0;
+                {
+                    VerticalVelocity = Mathf.Min(VerticalVelocity, 0);
+                    throw StateInterrupt.New<FallState>();
+                }
 
                 if (Agent.MovementComponent.IsOnFloor && VerticalVelocity >= 0)
                 {

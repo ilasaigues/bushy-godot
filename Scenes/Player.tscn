@@ -714,7 +714,7 @@ spriteTrail = NodePath("SpriteTrail")
 [node name="AreaDetectionComponent" parent="." instance=ExtResource("2_kbshe")]
 scale = Vector2(0.7, 0.7)
 
-[node name="CollisionComponent" type="CollisionShape2D" parent="." node_paths=PackedStringArray("AreaDetectionComponent")]
+[node name="CollisionComponent" type="CollisionShape2D" parent="."]
 position = Vector2(0, 1)
 shape = SubResource("RectangleShape2D_raavv")
 script = ExtResource("2_7fxs0")
@@ -722,7 +722,6 @@ RectShape = SubResource("RectangleShape2D_raavv")
 CilinderShape = SubResource("CapsuleShape2D_dshrg")
 CircleShape = SubResource("CircleShape2D_dwjyl")
 PointShape = SubResource("CircleShape2D_j2efp")
-AreaDetectionComponent = NodePath("../AreaDetectionComponent")
 
 [node name="SpriteTrail" type="Sprite2D" parent="." node_paths=PackedStringArray("_baseTrail")]
 visible = false
@@ -757,7 +756,7 @@ script = ExtResource("16_w750l")
 maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
-scale = Vector2(1.0875, 1.0875)
+scale = Vector2(1.0125, 1.0125)
 
 [node name="PlayerCascadeMachine" parent="." instance=ExtResource("12_4qmpi")]
 
@@ -777,6 +776,7 @@ parameters/PlayerMainLoop/Grounded/conditions/Running = false
 script = ExtResource("13_miouo")
 AnimationTree = NodePath("../AnimationTree")
 
-[connection signal="OnHedgeEnter" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeEnter"]
-[connection signal="OnHedgeExit" from="AreaDetectionComponent" to="MovementComponent" method="OnHedgeExit"]
+[connection signal="OnAreaEnter" from="AreaDetectionComponent" to="." method="OnArea2DEnter"]
+[connection signal="OnAreaExit" from="AreaDetectionComponent" to="." method="OnArea2DExit"]
+[connection signal="area_exited" from="AreaDetectionComponent" to="AreaDetectionComponent" method="OnAreaEntered"]
 [connection signal="CoreographyUpdate" from="MovementComponent" to="Sprite2DComponent" method="ForceOrientation"]

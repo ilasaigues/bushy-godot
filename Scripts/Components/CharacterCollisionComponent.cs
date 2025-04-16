@@ -23,8 +23,6 @@ namespace BushyCore
 		public Shape2D CircleShape;
 		[Export]
 		public Shape2D PointShape;
-		[Export]
-		private AreaDetectionComponent AreaDetectionComponent;
 
 		private PlayerController parentController;
 
@@ -63,7 +61,7 @@ namespace BushyCore
 		public void SetParentController(PlayerController val) { this.parentController = val; }
 		public void ToggleHedgeCollision(bool isOn)
 		{
-			parentController.SetCollisionMaskValue(CollisionLayerConsts.HEDGE, isOn.WarnInPlace());
+			parentController.SetCollisionMaskValue(CollisionLayerConsts.HEDGE, isOn);
 		}
 	}
 }

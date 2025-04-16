@@ -36,8 +36,8 @@ public partial class MovementComponent : Node2D
 		}
 	}
 	public bool IsOnEdge { get { return _raysOnFloor == 1; } }
-	public HedgeNode HedgeEntered;
-	public bool IsInHedge { get { return HedgeEntered != null && _raysOnHedge >= 2; } }
+	public GodotObject CurrentHedge;
+	public bool IsInHedge { get { return CurrentHedge != null && _raysOnHedge > 2; } }
 
 	private bool _isCoreography;
 	private int _raysOnFloor;
@@ -116,6 +116,7 @@ public partial class MovementComponent : Node2D
 		}
 
 		IsOnCeiling = characterBody2D.IsOnCeiling();
+
 		IsOnWall = characterBody2D.IsOnWall();
 
 		FloorNormal = characterBody2D.GetFloorNormal();
@@ -133,14 +134,21 @@ public partial class MovementComponent : Node2D
 		characterBody2D.FloorSnapLength = 5.0f;
 		characterBody2D.FloorStopOnSlope = false;
 
-		this._raysOnFloor = 0;
-		this._raysOnHedge = 0;
+		_raysOnFloor = 0;
+		_raysOnHedge = 0;
 
 		CheckRaycastFloor(GroundRayCastL);
 		CheckRaycastFloor(GroundRayCastR);
 
-		CheckRaycastHedge(CeilRayCastL);
+		CheckRaycastHedge(GroundRayCastR);
 		CheckRaycastHedge(CeilRayCastR);
+		CheckRaycastHedge(GroundRayCastL);
+		CheckRaycastHedge(CeilRayCastL);
+
+		if (!IsInHedge)
+		{
+			OnHedgeExit(CurrentHedge);
+		}
 
 		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f
 			? FacingDirection
@@ -159,6 +167,7 @@ public partial class MovementComponent : Node2D
 
 		if (collider != null)
 		{
+
 			Vector2 point = rayCast2D.GetCollisionPoint();
 			if (FloorHeight == null || point.Y < FloorHeight)
 			{
@@ -168,26 +177,27 @@ public partial class MovementComponent : Node2D
 
 			SnappedToFloor = true;
 			this._raysOnFloor++;
-			if (collider is HedgeStaticBody2D)
-			{
-				_raysOnHedge++;
-			}
 		}
 	}
 	private void CheckRaycastHedge(RayCast2D rayCast2D)
 	{
 		rayCast2D.ForceRaycastUpdate();
-
+		var prevMask = rayCast2D.CollisionMask;
+		rayCast2D.CollisionMask = 1 << 3;
 		GodotObject collider = rayCast2D.GetCollider();
 
 		if (collider != null)
 		{
-			if (collider is HedgeStaticBody2D)
+			_raysOnHedge++;
+			if (!IsInHedge && _raysOnHedge >= 2)
 			{
-				_raysOnHedge++;
+				OnHedgeEnter(collider);
 			}
 		}
+		rayCast2D.CollisionMask = prevMask;
 	}
+
+
 	public void Move(CharacterBody2D characterBody2D)
 	{
 		// Debug.WriteLine("MOVE");
@@ -269,14 +279,14 @@ public partial class MovementComponent : Node2D
 		CourseCorrectRayYr.Position = new Vector2(0, colliderSizeY / 2);
 	}
 
-	public void OnHedgeEnter(HedgeNode hedgeNode)
+	public void OnHedgeEnter(GodotObject hedgeNode)
 	{
-		this.HedgeEntered = hedgeNode;
+		this.CurrentHedge = hedgeNode;
 	}
 
-	public void OnHedgeExit(HedgeNode hedgeNode)
+	public void OnHedgeExit(GodotObject hedgeNode)
 	{
-		this.HedgeEntered = null;
+		this.CurrentHedge = null;
 	}
 
 	public void StartCoreography()
