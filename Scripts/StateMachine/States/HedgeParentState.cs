@@ -11,7 +11,7 @@ namespace BushyCore
 	public partial class HedgeParentState : BaseParentState<PlayerController, HedgeParentState>
 	{
 
-		private HedgeNode HedgeNode;
+		private GodotObject HedgeNode;
 		public AxisMovement xAxisMovement;
 		public AxisMovement yAxisMovement;
 
@@ -70,8 +70,6 @@ namespace BushyCore
 
 			// load configs
 			SetupFromConfigs(configs);
-			// Bind player movement to hedge
-			HedgeNode.SubscribeMovementComponent(Agent.MovementComponent);
 
 		}
 
@@ -93,7 +91,6 @@ namespace BushyCore
 
 			Agent.CollisionComponent.ToggleHedgeCollision(true);
 			Agent.PlayerInfo.DashEnabled = true;
-			HedgeNode.UnSubscribeMovementComponent(Agent.MovementComponent);
 		}
 
 		protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)

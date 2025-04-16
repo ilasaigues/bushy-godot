@@ -58,8 +58,6 @@ namespace BushyCore
                 {
                     if (nextState.CanEnterState(nextStateType, configs))
                     {
-                        GD.Print("Entering subState: " + nextStateType.Name);
-
                         CurrentSubState?.ExitState();
                         CurrentSubState = nextState;
                         nextState.EnterState(nextStateType, configs);

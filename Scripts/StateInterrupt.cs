@@ -15,7 +15,6 @@ namespace BushyCore
         {
             NextStateType = nextStateType;
             StopStateMachine = stopStateMachine;
-
             message = $"Changed to state {nextStateType}";
             Configs = configs;
         }

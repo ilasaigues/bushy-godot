@@ -3,12 +3,12 @@ using GodotUtilities;
 using System;
 using System.Diagnostics;
 
-namespace BushyCore 
+namespace BushyCore
 {
 	[Scene]
 	public partial class HedgeStateCheck : Node2D
 	{
-		// For now we're pretty stupidly using a single raycast for hedge checks. Will have to make it more detailed later
+		/*// For now we're pretty stupidly using a single raycast for hedge checks. Will have to make it more detailed later
 		[Node]
 		private RayCast2D HedgeRaycastTop;
 		[Node]
@@ -64,7 +64,7 @@ namespace BushyCore
 				return hedgeNode;
 			}
 			return null;
-		}
+		}*/
 	}
 }
 

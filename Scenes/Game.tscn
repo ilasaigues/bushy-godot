@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=22 format=3 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="Texture2D" uid="uid://b1uq3n6md5wce" path="res://Assets/Background/forest_background_1.png" id="1_02yv3"]
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="2_0axgj"]
@@ -10,7 +10,6 @@
 [ext_resource type="Script" uid="uid://bwi54fr00adbl" path="res://Scripts/Camera/PlayerCameraTargetBehaviour.cs" id="7_lgcn2"]
 [ext_resource type="PackedScene" uid="uid://cvihx0b7fk6dc" path="res://Scenes/Levels/tree_top.tscn" id="8_28kkd"]
 [ext_resource type="PackedScene" uid="uid://bco5h8a4p3ito" path="res://Scenes/Levels/test_forest.tscn" id="8_m158k"]
-[ext_resource type="PackedScene" uid="uid://cp0lnw8h4618y" path="res://Scenes/HedgeNode.tscn" id="10_qw50u"]
 [ext_resource type="Script" uid="uid://dy3cdgsv6frga" path="res://Scripts/Camera/CameraSecondaryTarget.cs" id="11_hnf68"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pptmd"]
@@ -85,19 +84,12 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nsg2r"]
-
-[sub_resource type="Curve2D" id="Curve2D_eu7ss"]
-bake_interval = 1.0
-_data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -7, 0, 0, 0, 0, 21, -7, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0)
-}
-point_count = 5
+size = Vector2(90, 90)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_satgw"]
 size = Vector2(223, 163)
 
 [node name="Game" type="Node2D"]
-position = Vector2(185, 24)
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
 
@@ -194,6 +186,11 @@ process_callback = 0
 position_smoothing_enabled = true
 position_smoothing_speed = 3.0
 script = ExtResource("6_ov3y4")
+LookAheadFactor = Vector2(10, 20)
+DampingSpeed = 10.0
+DeadzoneSize = 200.0
+VerticalLockThresholdAbove = 100.0
+VerticalLockThresholdBelow = 0.0
 _targetBehaviour = SubResource("Resource_oqkim")
 _targetNode = NodePath("../Player")
 
@@ -209,27 +206,51 @@ range_item_cull_mask = 2
 texture = SubResource("GradientTexture2D_f4u52")
 texture_scale = 1.5
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
-position = Vector2(244, 282)
+[node name="HedgeNode2" type="AnimatableBody2D" parent="."]
+position = Vector2(-803, 86)
+disable_mode = 1
+collision_layer = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HedgeNode2"]
+position = Vector2(31, 25)
 shape = SubResource("RectangleShape2D_nsg2r")
 
-[node name="ColorRect" type="ColorRect" parent="StaticBody2D"]
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
+[node name="ColorRect" type="ColorRect" parent="HedgeNode2"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -14.0
+offset_top = -20.0
+offset_right = 76.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.3965, 0.6, 0.27, 1)
+
+[node name="HedgeNode" type="AnimatableBody2D" parent="."]
+position = Vector2(-942, -6)
+disable_mode = 1
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HedgeNode"]
+position = Vector2(31, 25)
+shape = SubResource("RectangleShape2D_nsg2r")
+
+[node name="ColorRect" type="ColorRect" parent="HedgeNode"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -14.0
+offset_top = -20.0
+offset_right = 76.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.3965, 0.6, 0.27, 1)
 
 [node name="tree_top" parent="." instance=ExtResource("8_28kkd")]
 texture_filter = 1
 position = Vector2(1633, 154)
-
-[node name="HedgeNode" parent="." instance=ExtResource("10_qw50u")]
-position = Vector2(-942, 47)
-scale = Vector2(10, 10)
-curve = SubResource("Curve2D_eu7ss")
-Velocity = 5.0
 
 [node name="SecondaryTarget" type="Area2D" parent="."]
 position = Vector2(-545.5, 18.5)

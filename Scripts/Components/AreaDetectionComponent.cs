@@ -10,14 +10,12 @@ namespace BushyCore
 	public partial class AreaDetectionComponent : Area2D
 	{
 		[Signal]
-		public delegate void OnHedgeEnterEventHandler(HedgeNode hedgeNode);
+		public delegate void OnAreaEnterEventHandler(Area2D areaNode);
 		[Signal]
-		public delegate void OnHedgeExitEventHandler(HedgeNode hedgeNode);
+		public delegate void OnAreaExitEventHandler(Area2D areaNode);
 
 		[Node]
 		private CollisionShape2D CollisionShape2D;
-
-		HashSet<HedgeArea2D> _overlappingHedges = new();
 
 		public override void _Notification(int what)
 		{
@@ -30,23 +28,12 @@ namespace BushyCore
 
 		public void OnAreaExited(Area2D area2D)
 		{
-			if (area2D is HedgeArea2D hedgeArea2D)
-			{
-				_overlappingHedges.Remove(hedgeArea2D);
-				if (_overlappingHedges.Count == 0)
-				{
-					EmitSignal(SignalName.OnHedgeExit, hedgeArea2D.HedgeNode);
-				}
-			}
+			EmitSignal(SignalName.OnAreaExit, area2D);
 		}
 
 		public void OnAreaEntered(Area2D area2D)
 		{
-			if (area2D is HedgeArea2D hedgeArea2D)
-			{
-				_overlappingHedges.Add(hedgeArea2D);
-				EmitSignal(SignalName.OnHedgeEnter, hedgeArea2D.HedgeNode);
-			}
+			EmitSignal(SignalName.OnAreaEnter, area2D);
 		}
 	}
 }

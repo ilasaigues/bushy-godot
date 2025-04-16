@@ -10,7 +10,7 @@ namespace BushyCore
     {
         private Vector2 constantVelocity;
         private float direction;
-        private HedgeNode hedgeNode;
+        private GodotObject hedgeNode;
 
         [Export]
         private Timer DashDurationTimer;
@@ -81,12 +81,12 @@ namespace BushyCore
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
+            CheckHedge();
             if (DashEndTimer.TimeLeft == 0)
             {
                 EndDash();
             }
             VelocityUpdate();
-            CheckHedge();
             return new StateExecutionStatus(StateExecutionResult.Block, MovementLockFlags.All, StateAnimationLevel.Uninterruptible);
         }
 
@@ -125,7 +125,7 @@ namespace BushyCore
             if (!Agent.MovementComponent.IsInHedge) return;
 
             throw StateInterrupt.New<HedgeEnteringState>(true,
-                new StateConfig.InitialHedgeConfig(Agent.MovementComponent.HedgeEntered, direction * Vector2.Right));
+                new StateConfig.InitialHedgeConfig(Agent.MovementComponent.CurrentHedge, direction * Vector2.Right));
         }
         protected void VelocityUpdate()
         {

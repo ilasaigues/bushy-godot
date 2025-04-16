@@ -122,6 +122,17 @@ namespace BushyCore
 			_movementInputVector.Y = verticalAxis.Value;
 		}
 
+		public void OnArea2DEnter(Area2D areaNode)
+		{
+			CascadeStateMachine.OnArea2DEnter(areaNode);
+		}
+
+		public void OnArea2DExit(Area2D areaNode)
+		{
+			CascadeStateMachine.OnArea2DExit(areaNode);
+		}
+
+
 		void ClearInputBindings()
 		{
 			_disposableBindings.ForEach(b => b.Dispose());

@@ -14,6 +14,17 @@ namespace BushyCore
             StateMachines = GetChildren().OfType<StateMachine<TAgent>>().ToList();
         }
 
+        public void OnArea2DEnter(Area2D areaNode)
+        {
+            TryToChain(sm => sm.OnArea2DInteraction(areaNode, true));
+        }
+
+        public void OnArea2DExit(Area2D areaNode)
+        {
+            TryToChain(sm => sm.OnArea2DInteraction(areaNode, false));
+        }
+
+
         public void TryToChain(Func<StateMachine<TAgent>, bool> handler)
         {
             TryOrCascade(() =>

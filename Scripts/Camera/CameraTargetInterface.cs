@@ -19,9 +19,9 @@ public abstract partial class CameraTargetBehaviour : Resource
     }
     public abstract void SetFloorHeight(float floorHeight);
 
-    public abstract bool ShouldLockVertical { get; }
+    public abstract bool ShouldUpdateLastHeight { get; }
 
-    public abstract Vector2 GetVelocity(double delta);
+    public abstract Vector2 GetFrameVelocity();
 
     public abstract Node2D TargetNode { get; set; }
 }
