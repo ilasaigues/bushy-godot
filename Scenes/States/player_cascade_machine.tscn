@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bos0cujm0xhtq"]
+[gd_scene load_steps=19 format=3 uid="uid://bos0cujm0xhtq"]
 
 [ext_resource type="Script" uid="uid://dd1j72nkmfhew" path="res://Scripts/StateMachine/Implementations/PlayerCascadeStateMachine.cs" id="1_pk7ru"]
 [ext_resource type="Script" uid="uid://bpm74xg5ifstb" path="res://Scripts/StateMachine/Implementations/PlayerStateMachine.cs" id="2_owsau"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" uid="uid://c4kocpmh83odd" path="res://Scripts/StateMachine/States/HedgeEnteringState.cs" id="10_8y560"]
 [ext_resource type="Script" uid="uid://do0bbht2lsmg0" path="res://Scripts/StateMachine/States/HedgeMoveState.cs" id="11_ly2dg"]
 [ext_resource type="Script" uid="uid://ce35akn106l3v" path="res://Scripts/StateMachine/States/DashState.cs" id="12_h7yor"]
+[ext_resource type="Script" uid="uid://ciwqdt5jmvpo1" path="res://Scripts/StateMachine/States/HedgeExitState.cs" id="18_78rft"]
 
 [node name="PlayerCascadeMachine" type="Node"]
 script = ExtResource("1_pk7ru")
@@ -113,6 +114,9 @@ one_shot = true
 [node name="HedgeMoveState" type="Node" parent="BaseStateMachine/HedgeParentState"]
 script = ExtResource("11_ly2dg")
 
+[node name="HedgeMoveState2" type="Node" parent="BaseStateMachine/HedgeParentState"]
+script = ExtResource("18_78rft")
+
 [node name="JumpTimer" type="Timer" parent="BaseStateMachine/HedgeParentState"]
 
 [node name="DashTimer" type="Timer" parent="BaseStateMachine/HedgeParentState"]
@@ -120,3 +124,4 @@ script = ExtResource("11_ly2dg")
 [connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="AnimationUpdate"]
 [connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="PreEndDash"]
 [connection signal="timeout" from="BaseStateMachine/AirParentState/JumpState/JumpTimer" to="BaseStateMachine/AirParentState/JumpState" method="JumpTimedOut"]
+[connection signal="timeout" from="BaseStateMachine/AirParentState/CoyoteJumpTimer" to="BaseStateMachine/AirParentState" method="OnJumpCoyoteTimerTimeout"]

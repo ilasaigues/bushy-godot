@@ -25,14 +25,14 @@ public partial class Sprite2DComponent : Sprite2D
 
 		if (mainVelocity != Vector2.Zero)
 		{
-			this.FlipH = movementComponent.FacingDirection.X < 0f;
+			FlipH = movementComponent.FacingDirection.X < 0f;
 			return;
 		}
 	}
 
 	public void ForceOrientation(Vector2 direction)
 	{
-		this.FlipH = direction.X < 0f || (direction.X <= 0f && FlipH);
-		this.FlipV = direction.Y > 0f || (direction.Y >= 0f && FlipV);
+		FlipH = direction.X < 0f || (direction.X <= 0f && FlipH);
+		FlipV = direction.Y > 0f || (direction.Y >= 0f && FlipV);
 	}
 }

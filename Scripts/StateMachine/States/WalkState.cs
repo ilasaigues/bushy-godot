@@ -10,7 +10,7 @@ namespace BushyCore
     {
         private int _previousDirection = 0;
 
-        protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
+        protected override void EnterStateInternal(params IBaseStateConfig[] configs)
         {
             Agent.AnimController.SetCondition(PlayerController.AnimConditions.Running, true);
             _previousDirection = Mathf.Sign(

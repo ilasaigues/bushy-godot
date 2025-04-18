@@ -23,6 +23,7 @@ namespace BushyCore
                 return;
             }
             Active = true;
+            GD.Print("Entering state: " + GetType().Name);
             EnterStateInternal(configs);
         }
 

@@ -33,24 +33,24 @@ namespace BushyCore
             CharacterVariables _variables,
             Func<int, bool> _collisionCheck)
         {
-            this.Acceleration = _acceleration;
-            this.Deceleration = _deceleration;
-            this.MovementSpeed = _movementSpeed;
-            this.OvercappedDeceleration = _overcappedDeceleration;
-            this.TurnDeceleration = _turnDeceleration;
-            this.MovementSpeed = _movementSpeed;
-            this.OvercappedDeceleration = _overcappedDeceleration;
-            this.ThresholdSpeed = _thresholdSpeed;
-            this.Movement = _movement;
-            this.Direction = _direction;
-            this.Variables = _variables;
-            this.CollisionCheck = _collisionCheck;
+            Acceleration = _acceleration;
+            Deceleration = _deceleration;
+            MovementSpeed = _movementSpeed;
+            OvercappedDeceleration = _overcappedDeceleration;
+            TurnDeceleration = _turnDeceleration;
+            MovementSpeed = _movementSpeed;
+            OvercappedDeceleration = _overcappedDeceleration;
+            ThresholdSpeed = _thresholdSpeed;
+            Movement = _movement;
+            Direction = _direction;
+            Variables = _variables;
+            CollisionCheck = _collisionCheck;
 
-            this.HasOvershootDeceleration = true;
+            HasOvershootDeceleration = true;
         }
 
-        public void OvershootDec(bool val) { this.HasOvershootDeceleration = val; }
-        public void SetInitVel(double val) { this.Velocity = val; }
+        public void OvershootDec(bool val) { HasOvershootDeceleration = val; }
+        public void SetInitVel(double val) { Velocity = val; }
 
         public void HandleMovement(double deltaTime)
         {
@@ -107,20 +107,20 @@ namespace BushyCore
         }
         public Builder ToBuilder()
         {
-            return new Builder().Acc(this.Acceleration)
-                .Dec(this.Deceleration)
-                .Speed(this.MovementSpeed)
-                .OverDec(this.OvercappedDeceleration)
-                .TurnDec(this.Acceleration)
-                .OverDec(this.OvercappedDeceleration)
-                .ThresSpeed(this.ThresholdSpeed)
-                .Movement(this.Movement)
-                .Direction(this.Direction)
-                .Variables(this.Variables)
-                .Vel(this.Velocity)
-                .HasOvershoot(this.HasOvershootDeceleration)
-                .AxisDir(this._axisDirection)
-                .ColCheck(this.CollisionCheck);
+            return new Builder().Acc(Acceleration)
+                .Dec(Deceleration)
+                .Speed(MovementSpeed)
+                .OverDec(OvercappedDeceleration)
+                .TurnDec(Acceleration)
+                .OverDec(OvercappedDeceleration)
+                .ThresSpeed(ThresholdSpeed)
+                .Movement(Movement)
+                .Direction(Direction)
+                .Variables(Variables)
+                .Vel(Velocity)
+                .HasOvershoot(HasOvershootDeceleration)
+                .AxisDir(_axisDirection)
+                .ColCheck(CollisionCheck);
         }
         public class Builder
         {
@@ -158,14 +158,14 @@ namespace BushyCore
             public Builder ColCheck(Func<int, bool> collisionCheck) { _collisionCheck = collisionCheck; return this; }
             public AxisMovement Build()
             {
-                if (_acceleration == null) throw new System.Exception("No horizontal acceleration set");
-                if (_deceleration == null) throw new System.Exception("No horizontal decelartion set");
-                if (_movementSpeed == null) throw new System.Exception("No horizontal mov speed set");
-                if (_turnDeceleration == null) throw new System.Exception("No turn deceleration set");
-                if (_movement == null) throw new System.Exception("No movement set");
-                if (_direction == null) throw new System.Exception("No actions set");
-                if (_variables == null) throw new System.Exception("No char variables set");
-                if (_collisionCheck == null) throw new System.Exception("No collision checker variables set");
+                if (_acceleration == null) throw new Exception("No horizontal acceleration set");
+                if (_deceleration == null) throw new Exception("No horizontal decelartion set");
+                if (_movementSpeed == null) throw new Exception("No horizontal mov speed set");
+                if (_turnDeceleration == null) throw new Exception("No turn deceleration set");
+                if (_movement == null) throw new Exception("No movement set");
+                if (_direction == null) throw new Exception("No actions set");
+                if (_variables == null) throw new Exception("No char variables set");
+                if (_collisionCheck == null) throw new Exception("No collision checker variables set");
 
                 AxisMovement axisMovement = new AxisMovement(
                     _acceleration.Value,

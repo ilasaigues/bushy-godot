@@ -26,7 +26,7 @@ namespace BushyCore
         public override void SetAgent(PlayerController playerController)
         {
             base.SetAgent(playerController);
-            this.XAxisMovement = new AxisMovement.Builder()
+            XAxisMovement = new AxisMovement.Builder()
                 .Acc(Agent.CharacterVariables.AirHorizontalAcceleration)
                 .Dec(Agent.CharacterVariables.AirHorizontalDeceleration)
                 .Speed(Agent.CharacterVariables.AirHorizontalMovementSpeed)
@@ -89,7 +89,7 @@ namespace BushyCore
         {
             base.ExitStateInternal();
             Agent.AnimController.SetCondition(PlayerController.AnimConditions.OnAir, false);
-            if (!Agent.MovementComponent.IsInHedge)
+            if (!Agent.PlayerInfo.IsInHedge)
                 Agent.CollisionComponent.ToggleHedgeCollision(true);
         }
 
@@ -97,15 +97,11 @@ namespace BushyCore
         {
             if (processConfig.StateExecutionResult != StateExecutionResult.Block)
             {
-                if (CanFallIntoHedge && Agent.MovementComponent.IsInHedge)
+                if (CanFallIntoHedge
+                        && Agent.MovementComponent.ShouldEnterHedge
+                        && Agent.MovementComponent.InsideHedgeDirection.Normalized().Dot(Agent.MovementComponent.CurrentVelocity.Normalized()) > 0)
                 {
-                    throw StateInterrupt.New<HedgeEnteringState>(false, new StateConfig.InitialHedgeConfig(Agent.MovementComponent.CurrentHedge, (float)XAxisMovement.Velocity * Vector2.Right));
-                }
-
-                if (VerticalVelocity < 0f && Agent.MovementComponent.IsOnCeiling)
-                {
-                    VerticalVelocity = Mathf.Min(VerticalVelocity, 0);
-                    throw StateInterrupt.New<FallState>();
+                    throw StateInterrupt.New<HedgeEnteringState>(false, new InitialHedgeConfig(Agent.MovementComponent.OverlappedHedge, Agent.MovementComponent.CurrentVelocity));
                 }
 
                 if (Agent.MovementComponent.IsOnFloor && VerticalVelocity >= 0)
@@ -122,6 +118,13 @@ namespace BushyCore
                             new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration));
                     }
                 }
+
+                if (VerticalVelocity < 0f && Agent.MovementComponent.IsOnCeiling)
+                {
+                    VerticalVelocity = Mathf.Min(VerticalVelocity, 0);
+                    throw StateInterrupt.New<FallState>();
+                }
+
                 if (Agent.MovementComponent.CurrentVelocity.Y > 0)
                 {
                     Agent.CollisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);

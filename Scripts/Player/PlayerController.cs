@@ -52,7 +52,7 @@ namespace BushyCore
 			if (what == NotificationSceneInstantiated)
 			{
 				this.AddToGroup();
-				this.WireNodes();
+				WireNodes();
 			}
 		}
 

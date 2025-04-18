@@ -13,9 +13,10 @@ namespace BushyCore
         public AttackStep AirAttackCombo_2;
         private bool bufferComboAttack = false;
 
-        public override void StepEnter(AttackStepConfig config) {
+        public override void StepEnter(AttackStepConfig config)
+        {
             this.AddToGroup();
-            this.WireNodes();
+            WireNodes();
 
             bufferComboAttack = false;
             base.StepEnter(config);
@@ -31,7 +32,8 @@ namespace BushyCore
 
         public override void HandleAttackAction()
         {
-            switch (currentPhase) {
+            switch (currentPhase)
+            {
                 case AttackStepPhase.ACTION:
                 case AttackStepPhase.COMBO:
                     bufferComboAttack = true;
@@ -39,7 +41,7 @@ namespace BushyCore
                 case AttackStepPhase.RECOVERY:
                     EmitSignal(SignalName.ComboStep, AirAttackCombo_2, attackStepConfigs);
                     break;
-                default: 
+                default:
                     break;
             }
         }

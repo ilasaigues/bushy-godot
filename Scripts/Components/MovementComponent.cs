@@ -35,13 +35,17 @@ public partial class MovementComponent : Node2D
 				: Mathf.Pi / 2 * Mathf.Sign(FloorNormal.X);
 		}
 	}
-	public bool IsOnEdge { get { return _raysOnFloor == 1; } }
-	public GodotObject CurrentHedge;
-	public bool IsInHedge { get { return CurrentHedge != null && _raysOnHedge > 2; } }
+	public bool IsOnEdge => _raysOnFloor == 1;
+	public GodotObject OverlappedHedge;
+
+	public bool ShouldEnterHedge => OverlappedHedge != null && _raysOnHedge >= 2;
+	public bool ShouldExitHedge => _raysOnHedge < 4;
 
 	private bool _isCoreography;
 	private int _raysOnFloor;
 	private int _raysOnHedge;
+	public Vector2 OutsideHedgeDirection;
+	public Vector2 InsideHedgeDirection;
 	public Vector2 RealPositionChange { get; private set; } = Vector2.Zero;
 	private Vector2 _previousPosition;
 
@@ -140,23 +144,25 @@ public partial class MovementComponent : Node2D
 		CheckRaycastFloor(GroundRayCastL);
 		CheckRaycastFloor(GroundRayCastR);
 
-		CheckRaycastHedge(GroundRayCastR);
-		CheckRaycastHedge(CeilRayCastR);
-		CheckRaycastHedge(GroundRayCastL);
-		CheckRaycastHedge(CeilRayCastL);
+		OutsideHedgeDirection = InsideHedgeDirection = Vector2.Zero;
 
-		if (!IsInHedge)
+		CheckRaycastHedge(GroundRayCastR, -Vector2.Up + Vector2.Right);
+		CheckRaycastHedge(CeilRayCastR, Vector2.Up + Vector2.Right);
+		CheckRaycastHedge(GroundRayCastL, -Vector2.Up - Vector2.Right);
+		CheckRaycastHedge(CeilRayCastL, Vector2.Up - Vector2.Right);
+
+		if (_raysOnHedge < 2)
 		{
-			OnHedgeExit(CurrentHedge);
+			OverlappedHedge = null;
 		}
 
-		FacingDirection = this.Velocities[VelocityType.MainMovement].X == 0f
-			? FacingDirection
-			: this.Velocities[VelocityType.MainMovement].X * Vector2.Right;
 
-		_isCoreography = this.Velocities[VelocityType.MainMovement] == Vector2.Zero
-			? _isCoreography
-			: false;
+
+		FacingDirection = Velocities[VelocityType.MainMovement].X == 0f
+			? FacingDirection
+			: Velocities[VelocityType.MainMovement].X * Vector2.Right;
+
+		_isCoreography = Velocities[VelocityType.MainMovement] == Vector2.Zero && _isCoreography;
 	}
 
 	private void CheckRaycastFloor(RayCast2D rayCast2D)
@@ -176,25 +182,34 @@ public partial class MovementComponent : Node2D
 			}
 
 			SnappedToFloor = true;
-			this._raysOnFloor++;
+			_raysOnFloor++;
 		}
 	}
-	private void CheckRaycastHedge(RayCast2D rayCast2D)
+	private void CheckRaycastHedge(RayCast2D rayCast2D, Vector2 direction)
 	{
-		rayCast2D.ForceRaycastUpdate();
+		var prevPosition = rayCast2D.TargetPosition;
+		rayCast2D.Position = direction.Normalized() * prevPosition.Length();
 		var prevMask = rayCast2D.CollisionMask;
-		rayCast2D.CollisionMask = 1 << 3;
+		rayCast2D.CollisionMask = 1 << 2;
+		rayCast2D.ForceRaycastUpdate();
 		GodotObject collider = rayCast2D.GetCollider();
 
 		if (collider != null)
 		{
 			_raysOnHedge++;
-			if (!IsInHedge && _raysOnHedge >= 2)
+			InsideHedgeDirection += direction;
+
+			if (_raysOnHedge >= 2)
 			{
-				OnHedgeEnter(collider);
+				OverlappedHedge = collider;
 			}
 		}
+		else
+		{
+			OutsideHedgeDirection += direction;
+		}
 		rayCast2D.CollisionMask = prevMask;
+		rayCast2D.TargetPosition = prevPosition;
 	}
 
 
@@ -209,53 +224,53 @@ public partial class MovementComponent : Node2D
 		float x = IsOnWall ? parentController.GlobalPosition.Round().X : parentController.GlobalPosition.X;
 		parentController.GlobalPosition = new Vector2(x, y);
 	}
-	public void SetParentController(PlayerController val) { this.parentController = val; }
+	public void SetParentController(PlayerController val) { parentController = val; }
 
 	private void ApplyCourseCorrection(CharacterBody2D characterBody2D)
 	{
 		if (!CourseCorrectionEnabled) return;
 
-		var colSize = this.CollisionComponent.Shape.GetRect().Size;
-		var extent = Mathf.Sign(this.FacingDirection.X) * colSize.X / 2;
+		var colSize = CollisionComponent.Shape.GetRect().Size;
+		var extent = Mathf.Sign(FacingDirection.X) * colSize.X / 2;
 
 		// Lower corner check
-		this.CourseCorrectRayXd.TargetPosition = 20 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
-		this.CourseCorrectRayXu.TargetPosition = 20 * Vector2.Right * Mathf.Sign(this.FacingDirection.X);
+		CourseCorrectRayXd.TargetPosition = 20 * Vector2.Right * Mathf.Sign(FacingDirection.X);
+		CourseCorrectRayXu.TargetPosition = 20 * Vector2.Right * Mathf.Sign(FacingDirection.X);
 
-		this.CourseCorrectRayXu.Position = new Vector2(extent, -3f);
-		this.CourseCorrectRayXd.Position = new Vector2(extent, colSize.Y / 2);
+		CourseCorrectRayXu.Position = new Vector2(extent, -3f);
+		CourseCorrectRayXd.Position = new Vector2(extent, colSize.Y / 2);
 
-		this.CourseCorrectRayXu.ForceRaycastUpdate();
-		this.CourseCorrectRayXd.ForceRaycastUpdate();
+		CourseCorrectRayXu.ForceRaycastUpdate();
+		CourseCorrectRayXd.ForceRaycastUpdate();
 
-		var colliderUp = this.CourseCorrectRayXu.GetCollider();
-		var colliderDown = this.CourseCorrectRayXd.GetCollider();
+		var colliderUp = CourseCorrectRayXu.GetCollider();
+		var colliderDown = CourseCorrectRayXd.GetCollider();
 
 		bool upcomingCorner = colliderUp is not TileMap && colliderDown is TileMap;
-		upcomingCorner &= (this.FacingDirection.Normalized() + this.CourseCorrectRayXd.GetCollisionNormal()).Length() < 0.00001f;
+		upcomingCorner &= (FacingDirection.Normalized() + CourseCorrectRayXd.GetCollisionNormal()).Length() < 0.00001f;
 
 		if (upcomingCorner)
 		{
-			parentController.GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y - 3f);
+			parentController.GlobalPosition = new Vector2(GlobalPosition.X, GlobalPosition.Y - 3f);
 			return;
 		}
 
 		// Upper corner check
-		this.CourseCorrectRayXu.Position = new Vector2(extent, -colSize.Y / 2);
-		this.CourseCorrectRayXd.Position = new Vector2(extent, 3f);
+		CourseCorrectRayXu.Position = new Vector2(extent, -colSize.Y / 2);
+		CourseCorrectRayXd.Position = new Vector2(extent, 3f);
 
-		this.CourseCorrectRayXu.ForceRaycastUpdate();
-		this.CourseCorrectRayXd.ForceRaycastUpdate();
+		CourseCorrectRayXu.ForceRaycastUpdate();
+		CourseCorrectRayXd.ForceRaycastUpdate();
 
-		colliderUp = this.CourseCorrectRayXu.GetCollider();
-		colliderDown = this.CourseCorrectRayXd.GetCollider();
+		colliderUp = CourseCorrectRayXu.GetCollider();
+		colliderDown = CourseCorrectRayXd.GetCollider();
 
 		upcomingCorner = colliderUp is TileMap && colliderDown is not TileMap;
-		upcomingCorner &= (this.FacingDirection.Normalized() + this.CourseCorrectRayXu.GetCollisionNormal()).Length() < 0.00001f;
+		upcomingCorner &= (FacingDirection.Normalized() + CourseCorrectRayXu.GetCollisionNormal()).Length() < 0.00001f;
 
 		if (upcomingCorner)
 		{
-			parentController.GlobalPosition = new Vector2(this.GlobalPosition.X, this.GlobalPosition.Y + 3f);
+			parentController.GlobalPosition = new Vector2(GlobalPosition.X, GlobalPosition.Y + 3f);
 			return;
 		}
 	}
@@ -279,19 +294,10 @@ public partial class MovementComponent : Node2D
 		CourseCorrectRayYr.Position = new Vector2(0, colliderSizeY / 2);
 	}
 
-	public void OnHedgeEnter(GodotObject hedgeNode)
-	{
-		this.CurrentHedge = hedgeNode;
-	}
-
-	public void OnHedgeExit(GodotObject hedgeNode)
-	{
-		this.CurrentHedge = null;
-	}
 
 	public void StartCoreography()
 	{
-		this._isCoreography = true;
+		_isCoreography = true;
 	}
 
 	public void CoreographFaceDirection(Vector2 direction)
@@ -307,7 +313,7 @@ public partial class MovementComponent : Node2D
 		if (what == NotificationSceneInstantiated)
 		{
 			this.AddToGroup();
-			this.WireNodes();
+			WireNodes();
 		}
 	}
 	public override void _PhysicsProcess(double delta)

@@ -9,20 +9,32 @@ namespace BushyCore
     {
         [Export]
         private Timer EnteringTimer;
+
+        private Vector2 _targetVelocity;
+
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
-            ParentState.xAxisMovement.SetInitVel(Agent.MovementComponent.CurrentVelocity.X);
-            ParentState.yAxisMovement.SetInitVel(Agent.MovementComponent.CurrentVelocity.Y);
-
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
+            _targetVelocity = (Agent.MovementComponent.InsideHedgeDirection.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed).PrintInPlace("Target velocity: {0}");
             EnteringTimer.WaitTime = Agent.CharacterVariables.HedgeEnteringWaitTime;
+            SetupFromConfigs(configs);
             RemoveControls();
+        }
+
+        void SetupFromConfigs(params StateConfig.IBaseStateConfig[] configs)
+        {
+            foreach (var config in configs)
+            {
+                if (config is StateConfig.InitialHedgeConfig hedgeConfig)
+                {
+                    ParentState.SetVelocity(hedgeConfig.Direction.PrintInPlace("Starting velocity: {0}"));
+                }
+            }
         }
 
         void EnteringTimerTimeout()
         {
             EnteringTimer.Timeout -= EnteringTimerTimeout;
-            ReturnControls();
         }
 
         private void RemoveControls()
@@ -56,8 +68,12 @@ namespace BushyCore
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
-            if (EnteringTimer.TimeLeft <= 0)
+            ParentState.SetVelocity(ParentState.CurrentVelocity.PrintInPlace("Lerping: {0}").Slerp(
+                                _targetVelocity,
+                                0.33333f));
+            if (Agent.MovementComponent.InsideHedgeDirection == Vector2.Zero)
             {
+                ReturnControls();
                 throw StateInterrupt.New<HedgeMoveState>();
             }
             return prevStatus;
