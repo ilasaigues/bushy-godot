@@ -11,7 +11,7 @@ namespace BushyCore
 	public partial class HedgeParentState : BaseParentState<PlayerController, HedgeParentState>
 	{
 
-		private HedgeNode HedgeNode;
+		private GodotObject HedgeNode;
 		public AxisMovement xAxisMovement;
 		public AxisMovement yAxisMovement;
 
@@ -22,10 +22,12 @@ namespace BushyCore
 		private bool isExitJumpBuffered;
 		private bool isExitDashBuffered;
 
-		public Vector2 Direction;
+		public Vector2 CurrentVelocity => new((float)xAxisMovement.Velocity, (float)yAxisMovement.Velocity);
 
 		protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
+			Agent.PlayerInfo.IsInHedge = true;
+
 			// Movement axis config
 			var builder = new AxisMovement.Builder()
 				.Acc(Agent.CharacterVariables.HedgeAcceleration)
@@ -46,8 +48,6 @@ namespace BushyCore
 				.ThresSpeed(Agent.CharacterVariables.MaxHedgeEnterSpeed)
 				.Build();
 
-			xAxisMovement.SetInitVel(Agent.MovementComponent.CurrentVelocity.X);
-			yAxisMovement.SetInitVel(Agent.MovementComponent.CurrentVelocity.Y);
 
 			// Collission config
 			Agent.CollisionComponent.ToggleHedgeCollision(false);
@@ -67,12 +67,14 @@ namespace BushyCore
 			Agent.PlayerInfo.CanJump = true;
 			isExitJumpBuffered = false;
 			isExitDashBuffered = false;
-
 			// load configs
 			SetupFromConfigs(configs);
-			// Bind player movement to hedge
-			HedgeNode.SubscribeMovementComponent(Agent.MovementComponent);
+		}
 
+		public void SetVelocity(Vector2 velocity)
+		{
+			xAxisMovement.SetInitVel(velocity.X);
+			yAxisMovement.SetInitVel(velocity.Y);
 		}
 
 		void SetupFromConfigs(params StateConfig.IBaseStateConfig[] configs)
@@ -81,7 +83,6 @@ namespace BushyCore
 			{
 				if (config is StateConfig.InitialHedgeConfig hedgeConfig)
 				{
-					Direction = hedgeConfig.Direction.Normalized();
 					HedgeNode = hedgeConfig.Hedge;
 				}
 			}
@@ -89,27 +90,22 @@ namespace BushyCore
 
 		protected override void ExitStateInternal()
 		{
+			Agent.PlayerInfo.IsInHedge = true;
+
 			Agent.AnimController.SetCondition(PlayerController.AnimConditions.Hedge, false);
 
 			Agent.CollisionComponent.ToggleHedgeCollision(true);
 			Agent.PlayerInfo.DashEnabled = true;
-			HedgeNode.UnSubscribeMovementComponent(Agent.MovementComponent);
 		}
 
 		protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
 		{
 			yAxisMovement.HandleMovement(delta);
 			xAxisMovement.HandleMovement(delta);
-			CheckHedge();
+			Agent.MovementComponent.Velocities[VelocityType.MainMovement] = CurrentVelocity;
 			return ProcessSubState(prevStatus, delta);
 		}
 
-
-		private void CheckHedge()
-		{
-			if (!Agent.MovementComponent.IsInHedge)
-				OnHedgeExit();
-		}
 
 		public void OnHedgeExit()
 		{

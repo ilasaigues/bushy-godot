@@ -10,7 +10,7 @@ public partial class PlayerCameraTargetBehaviour : CameraTargetBehaviour<PlayerC
 
     private Area2D _playerArea;
 
-    public override bool ShouldLockVertical => !Target.MovementComponent.IsOnFloor;
+    public override bool ShouldUpdateLastHeight => Target.MovementComponent.IsOnFloor;
 
     public PlayerCameraTargetBehaviour()
     {
@@ -55,14 +55,17 @@ public partial class PlayerCameraTargetBehaviour : CameraTargetBehaviour<PlayerC
 
 
 
-    public override Vector2 GetVelocity(double delta)
+    public override Vector2 GetFrameVelocity()
     {
-        return Target.MovementComponent.RealPositionChange / (float)delta;
+        return Target.MovementComponent.RealPositionChange;
     }
 
     public override void SetFloorHeight(float floorHeight)
     {
-        Camera.UpdateFloorHeight(floorHeight);
+        if (Target.MovementComponent.IsOnFloor)
+        {
+            Camera.UpdateFloorHeight(floorHeight);
+        }
     }
 
     protected override void ChangeTarget(PlayerController newTarget)

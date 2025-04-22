@@ -8,7 +8,7 @@ namespace BushyCore
         [Export] public Timer AttackCooldownTimer;
         [Export] public Timer ComboTimer;
 
-        protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
+        protected override void EnterStateInternal(params IBaseStateConfig[] configs)
         {
 
         }

@@ -10,7 +10,7 @@ namespace BushyCore
     {
         private Vector2 constantVelocity;
         private float direction;
-        private HedgeNode hedgeNode;
+        private GodotObject hedgeNode;
 
         [Export]
         private Timer DashDurationTimer;
@@ -20,7 +20,7 @@ namespace BushyCore
         private Timer DashJumpTimer;
         [Export]
         private RayCast2D SlopeRaycast2D;
-        protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
+        protected override void EnterStateInternal(params IBaseStateConfig[] configs)
         {
             SetupFromConfigs(configs);
             direction = Agent.MovementInputVector.X != 0
@@ -48,11 +48,11 @@ namespace BushyCore
             Agent.CollisionComponent.ToggleHedgeCollision(false);
         }
 
-        private void SetupFromConfigs(StateConfig.IBaseStateConfig[] configs)
+        private void SetupFromConfigs(IBaseStateConfig[] configs)
         {
             foreach (var config in configs)
             {
-                if (config is StateConfig.InitialVelocityVectorConfig velocityConfig)
+                if (config is InitialVelocityVectorConfig velocityConfig)
                 {
                     constantVelocity = velocityConfig.Velocity.Normalized() * Agent.CharacterVariables.DashVelocity;
                 }
@@ -68,25 +68,16 @@ namespace BushyCore
             DashDurationTimer.Stop();
             DashEndTimer.Stop();
             DashJumpTimer.Stop();
-            Agent.MovementComponent.CourseCorrectionEnabled = false;
-
-            var exitVelocity = Agent.CharacterVariables.DashExitVelocity;
-            Agent.MovementComponent.Velocities[VelocityType.MainMovement] = new Vector2(
-                exitVelocity * direction,
-                Agent.MovementComponent.Velocities[VelocityType.MainMovement].Y);
-
-            if (!Agent.MovementComponent.IsInHedge)
-                Agent.CollisionComponent.ToggleHedgeCollision(true);
         }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
+            CheckHedge();
             if (DashEndTimer.TimeLeft == 0)
             {
                 EndDash();
             }
             VelocityUpdate();
-            CheckHedge();
             return new StateExecutionStatus(StateExecutionResult.Block, MovementLockFlags.All, StateAnimationLevel.Uninterruptible);
         }
 
@@ -112,8 +103,12 @@ namespace BushyCore
 
         public void EndDash()
         {
-            ExitState();
-            if (Agent.MovementComponent.IsOnFloor)
+            Agent.MovementComponent.CourseCorrectionEnabled = false;
+            Agent.CollisionComponent.ToggleHedgeCollision(true);
+            var exitVelocity = Agent.CharacterVariables.DashExitVelocity;
+            Agent.MovementComponent.Velocities[VelocityType.MainMovement] = new Vector2(
+                exitVelocity * direction,
+                Agent.MovementComponent.Velocities[VelocityType.MainMovement].Y); if (Agent.MovementComponent.IsOnFloor)
             {
                 throw StateInterrupt.New<WalkState>(true);
             }
@@ -122,10 +117,14 @@ namespace BushyCore
 
         private void CheckHedge()
         {
-            if (!Agent.MovementComponent.IsInHedge) return;
+            if (!Agent.MovementComponent.ShouldEnterHedge ||
+                Agent.MovementComponent.InsideHedgeDirection.Normalized().Dot(Agent.MovementComponent.CurrentVelocity.Normalized()) <= 0)
+            {
+                return;
+            }
 
             throw StateInterrupt.New<HedgeEnteringState>(true,
-                new StateConfig.InitialHedgeConfig(Agent.MovementComponent.HedgeEntered, direction * Vector2.Right));
+                    new InitialHedgeConfig(Agent.MovementComponent.OverlappedHedge, Agent.MovementComponent.CurrentVelocity));
         }
         protected void VelocityUpdate()
         {
@@ -161,7 +160,7 @@ namespace BushyCore
                 var jumpVelocity = Agent.MovementComponent.Velocities[VelocityType.MainMovement];
                 jumpVelocity.X *= Agent.CharacterVariables.DashJumpSpeed;
                 Agent.PlayerInfo.IsInDashMode = true;
-                throw StateInterrupt.New<JumpState>(true, new StateConfig.InitialVelocityVectorConfig(jumpVelocity, false, true));
+                throw StateInterrupt.New<JumpState>(true, new InitialVelocityVectorConfig(jumpVelocity, false, true));
             }
         }
 

@@ -23,7 +23,7 @@ namespace BushyCore
         public override void SetAgent(PlayerController playerController)
         {
             base.SetAgent(playerController);
-            this.HorizontalAxisMovement = new AxisMovement.Builder()
+            HorizontalAxisMovement = new AxisMovement.Builder()
                 .Acc(Agent.CharacterVariables.GroundHorizontalAcceleration)
                 .Dec(Agent.CharacterVariables.GroundHorizontalDeceleration)
                 .Speed(Agent.CharacterVariables.GroundHorizontalMovementSpeed)
@@ -37,9 +37,10 @@ namespace BushyCore
         }
 
 
-        protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
+        protected override void EnterStateInternal(params IBaseStateConfig[] configs)
         {
             HorizontalAxisMovement.SetInitVel(Agent.MovementComponent.Velocities[VelocityType.MainMovement].X);
+            Agent.CollisionComponent.ToggleHedgeCollision(true);
 
             _jumpBuffered = false;
             Agent.PlayerInfo.CanJump = true;

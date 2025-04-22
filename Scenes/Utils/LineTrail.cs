@@ -8,7 +8,7 @@ public partial class LineTrail : Line2D
 	private Node2D parent;
 	[Export]
 	private int maxPoints;
-	
+
 	public override void _Ready()
 	{
 		curve = new Curve2D();
@@ -18,9 +18,9 @@ public partial class LineTrail : Line2D
 	public override void _Process(double delta)
 	{
 		curve.AddPoint(parent.GlobalPosition);
-		if (curve.PointCount > maxPoints) 
+		if (curve.PointCount > maxPoints)
 			curve.RemovePoint(0);
-		this.Points = curve.GetBakedPoints();
+		Points = curve.GetBakedPoints();
 	}
 
 	public async void Stop()

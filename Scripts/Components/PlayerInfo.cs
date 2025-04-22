@@ -11,6 +11,7 @@ public class PlayerInfo
 	public bool CanDash => DashEnabled && !DashInCooldown;
 	public bool IsInDashMode;
 	public double LastDashTime;
+	public bool IsInHedge;
 	private bool _lookingRight = true;
 	public int LookDirection
 	{

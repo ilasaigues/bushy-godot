@@ -15,6 +15,7 @@ namespace BushyCore
         bool OnInputButtonChanged(InputAction.InputActionType actionType, InputAction Action);
         bool OnInputAxisChanged(InputAxis axis);
         string GetStateName();
+        TimeSpan TimeSinceStateEntered { get; }
     }
     public interface IState<T> : IState where T : Node
     {

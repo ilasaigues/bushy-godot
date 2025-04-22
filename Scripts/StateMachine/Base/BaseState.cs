@@ -7,6 +7,9 @@ namespace BushyCore
     {
         public bool Active { get; set; }
         public T Agent { get; set; }
+        private DateTime _timeOfActivation;
+
+        public TimeSpan TimeSinceStateEntered => DateTime.Now - _timeOfActivation;
 
         public virtual void SetAgent(T newAgent)
         {
@@ -23,6 +26,8 @@ namespace BushyCore
                 return;
             }
             Active = true;
+            _timeOfActivation = DateTime.Now;
+            GD.Print("Entering state: " + GetType().Name);
             EnterStateInternal(configs);
         }
 

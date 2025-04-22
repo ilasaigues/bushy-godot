@@ -8,10 +8,11 @@ namespace BushyCore
     partial class EndComboAttackStep : AttackStep
     {
 
-        public override void StepEnter(AttackStepConfig config) {
+        public override void StepEnter(AttackStepConfig config)
+        {
             this.AddToGroup();
-            this.WireNodes();
-            
+            WireNodes();
+
             base.StepEnter(config);
         }
 
@@ -20,33 +21,38 @@ namespace BushyCore
             if (what == NotificationSceneInstantiated)
             {
                 this.AddToGroup();
-                this.WireNodes();
+                WireNodes();
             }
         }
 
         private Shape2D _DebugHitboxShape;
         [Export]
-        protected Shape2D DebugHitboxShape { 
+        protected Shape2D DebugHitboxShape
+        {
             get { return _DebugHitboxShape; }
-            set {
+            set
+            {
                 if (!DebugHitbox) return;
-                if (_DebugHitboxShape != null) {
+                if (_DebugHitboxShape != null)
+                {
                     _DebugHitboxShape.Changed -= QueueRedraw;
                     _DebugHitboxShape.Changed -= RemoveToolRef;
                 }
-                
+
                 hitboxShape = value;
                 _DebugHitboxShape = value;
 
-                if (_DebugHitboxShape != null) {
+                if (_DebugHitboxShape != null)
+                {
                     _DebugHitboxShape.Changed += QueueRedraw;
                     _DebugHitboxShape.Changed += RemoveToolRef;
                 }
 
                 QueueRedraw();
-        }}
+            }
+        }
 
-        public void RemoveToolRef() 
+        public void RemoveToolRef()
         {
             hitboxShape = _DebugHitboxShape;
         }

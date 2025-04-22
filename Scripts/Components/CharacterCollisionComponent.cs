@@ -23,14 +23,12 @@ namespace BushyCore
 		public Shape2D CircleShape;
 		[Export]
 		public Shape2D PointShape;
-		[Export]
-		private AreaDetectionComponent AreaDetectionComponent;
 
 		private PlayerController parentController;
 
 		public override void _Ready()
 		{
-			this.Shape = RectShape;
+			Shape = RectShape;
 		}
 
 		public void SwitchShape(ShapeMode mode)
@@ -42,16 +40,16 @@ namespace BushyCore
 			switch (modeInt)
 			{
 				case (int)ShapeMode.RECTANGULAR:
-					this.Shape = RectShape;
+					Shape = RectShape;
 					break;
 				case (int)ShapeMode.CILINDER:
-					this.Shape = CilinderShape;
+					Shape = CilinderShape;
 					break;
 				case (int)ShapeMode.CIRCLE:
-					this.Shape = CircleShape;
+					Shape = CircleShape;
 					break;
 				case (int)ShapeMode.POINT:
-					this.Shape = PointShape;
+					Shape = PointShape;
 					break;
 			}
 
@@ -60,10 +58,10 @@ namespace BushyCore
 			// AreaDetectionComponent.SetShape(this.Shape);
 		}
 
-		public void SetParentController(PlayerController val) { this.parentController = val; }
+		public void SetParentController(PlayerController val) { parentController = val; }
 		public void ToggleHedgeCollision(bool isOn)
 		{
-			parentController.SetCollisionMaskValue(CollisionLayerConsts.HEDGE, isOn.WarnInPlace());
+			parentController.SetCollisionMaskValue(CollisionLayerConsts.HEDGE, isOn);
 		}
 	}
 }

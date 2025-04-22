@@ -1,13 +1,14 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Godot;
 
 public partial class CameraFollow : Camera2D
 {
     // Export variables for configuration
     [Export] public float DirectionOffset = 100.0f;
-    [Export][Range(0, 1)] public float LookaheadSpeed = 0.33333f;
-    [Export] public float Damping = 0.1f;
+    [Export] public Vector2 LookAheadFactor;
+    [Export] public float DampingSpeed = 0.1f;
     [Export] public float DeadzoneSize = 50.0f;
     [Export] public float VerticalLockThresholdAbove = 20.0f;
     [Export] public float VerticalLockThresholdBelow = 20.0f;
@@ -15,13 +16,11 @@ public partial class CameraFollow : Camera2D
     [Export] private Node2D _targetNode;
     private Node2D midTarget;
     private Node2D overrideTarget;
-    private bool verticalLocked = true;
-    private float floorHeight = 0.0f;
+    private float lastFloorHeight = 0.0f;
 
-    private Vector2 currentPosition;
-    private Vector2 directionOffset;
+    private Vector2 _targetPosition;
 
-    private int lookDirection = 1;
+    private int lastDirection;
 
     public override void _EnterTree()
     {
@@ -31,82 +30,80 @@ public partial class CameraFollow : Camera2D
 
     public override void _PhysicsProcess(double delta)
     {
-        if (_targetBehaviour == null)
+
+        if (_targetBehaviour == null || _targetBehaviour.TargetNode == null)
             return;
 
-        Vector2 targetPosition = _targetBehaviour.TargetNode.GlobalPosition;
-        Vector2 desiredPosition = currentPosition;
+        Vector2 charPos = _targetNode.GlobalPosition;
 
-        // handle lookahead based on speed
-        var velocity = _targetBehaviour.GetVelocity(delta);
+        Vector2 velocity = _targetBehaviour.GetFrameVelocity();
 
-        if (velocity.X > 1)
+        lastDirection = velocity.X > 0 ? 1 : (velocity.X < 0 ? -1 : lastDirection);
+
+        // HORIZONTAL FOLLOWING
+        float cameraX = GlobalPosition.X;
+        float leftDeadzone = cameraX - DeadzoneSize / 2f;
+        float rightDeadzone = cameraX + DeadzoneSize / 2f;
+
+        float targetX = cameraX;
+
+        if (charPos.X < leftDeadzone)
+            targetX = charPos.X + DirectionOffset * lastDirection;
+        else if (charPos.X > rightDeadzone)
+            targetX = charPos.X + DirectionOffset * lastDirection;
+
+        targetX += velocity.X * LookAheadFactor.X;
+
+        // VERTICAL FOLLOWING
+        float targetY;
+
+        bool aboveUpperThreshold = charPos.Y < lastFloorHeight - VerticalLockThresholdAbove;
+        bool belowLowerThreshold = charPos.Y > lastFloorHeight + VerticalLockThresholdBelow;
+
+        if (_targetBehaviour.ShouldUpdateLastHeight)
         {
-            lookDirection = 1;
-        }
-        else if (velocity.X < -1)
-        {
-            lookDirection = -1;
-        }
-        directionOffset = directionOffset.Lerp(new Vector2(DirectionOffset * lookDirection, 0), Damping);
-        Offset = Offset.Lerp(velocity, (float)delta * LookaheadSpeed);
-
-        // Deadzone logic
-        Rect2 deadzone = new(currentPosition.X - DeadzoneSize / 2, currentPosition.Y - 2000, DeadzoneSize, 4000);
-        if (!deadzone.HasPoint(targetPosition))
-        {
-            // Handle the camera catching up to the target
-
-            if (targetPosition.X > deadzone.End.X)
-            {
-                desiredPosition.X += targetPosition.X - deadzone.End.X;
-            }
-            else if (targetPosition.X < deadzone.Position.X)
-            {
-                desiredPosition.X += targetPosition.X - deadzone.Position.X;
-            }
+            UpdateFloorHeight(charPos.Y);
         }
 
-        bool belowLowerThreshold = targetPosition.Y < floorHeight - VerticalLockThresholdAbove;
-        bool aboveUpperThreshold = targetPosition.Y > floorHeight + VerticalLockThresholdBelow;
-
-        if (belowLowerThreshold || aboveUpperThreshold)
+        if (belowLowerThreshold || aboveUpperThreshold) // outside threshold, we follow fixed
         {
-            verticalLocked = false;
-        }
-        // Handle vertical locking
-        if (verticalLocked)
-        {
-            desiredPosition.Y = floorHeight;
+            targetY = charPos.Y + velocity.Y * LookAheadFactor.Y;
         }
         else
         {
-            // Damping for vertical movement when not locked
-            desiredPosition.Y = targetPosition.Y;
+            targetY = lastFloorHeight;
         }
 
+        _targetPosition = new Vector2(targetX, targetY);
         // Midpoint secondary target
         if (midTarget != null)
         {
-            desiredPosition = (desiredPosition + midTarget.GlobalPosition) / 2;
+            _targetPosition += (midTarget.GlobalPosition - Offset) / 2;
         }
 
         // Override secondary target
         if (overrideTarget != null)
         {
-            desiredPosition = overrideTarget.GlobalPosition;
+            _targetPosition = overrideTarget.GlobalPosition - Offset;
         }
 
-        // Add lookAhead and smoothly interpolate camera position
-        currentPosition = currentPosition.Lerp(desiredPosition, Damping);
-        GlobalPosition = currentPosition.Lerp(desiredPosition + directionOffset, Damping);
-
-        if (!_targetBehaviour.ShouldLockVertical)
-        {
-            _targetBehaviour.SetFloorHeight(GlobalPosition.Y);
-        }
+        // SMOOTH FOLLOW
+        float lerpFactor = Mathf.Clamp((float)delta * DampingSpeed, 0f, 1f);
+        GlobalPosition = GlobalPosition.Lerp(_targetPosition + Offset, lerpFactor);
     }
 
+
+    public override void _Draw()
+    {
+        DrawHorizontalLine(lastFloorHeight);
+        DrawHorizontalLine(lastFloorHeight - VerticalLockThresholdAbove);
+        DrawHorizontalLine(lastFloorHeight + VerticalLockThresholdBelow);
+    }
+
+    void DrawHorizontalLine(float height)
+    {
+        DrawLine(new Vector2(-10000, height) - GlobalPosition, new Vector2(-10000, height) - GlobalPosition, new Color(1, 1, 1));
+    }
 
     // Call this function to set the target
     public void SetTargetBehaviour(CameraTargetBehaviour newTargetBehaviour)
@@ -128,7 +125,7 @@ public partial class CameraFollow : Camera2D
     // Call this function to update the floor height
     public void UpdateFloorHeight(float newHeight)
     {
-        floorHeight = newHeight;
-        verticalLocked = true;
+        lastFloorHeight = newHeight;
     }
+
 }

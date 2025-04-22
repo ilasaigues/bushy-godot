@@ -7,34 +7,40 @@ namespace BushyCore
 {
     public partial class HedgeMoveState : BaseChildState<PlayerController, HedgeParentState>
     {
-
-        Vector2 CurrentVelocity;
-
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
         }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
-            ParentState.Direction = Agent.MovementInputVector;
-
+            CheckHedge();
             VelocityUpdate();
             prevStatus.AnimationLevel |= AnimationUpdate();
             return prevStatus;
         }
 
+        private void CheckHedge()
+        {
+            if (Agent.MovementComponent.ShouldExitHedge)
+            {
+                throw StateInterrupt.New<HedgeExitState>();
+            }
+        }
+
         protected void VelocityUpdate()
         {
-            CurrentVelocity = new Vector2(
-                (float)ParentState.xAxisMovement.Velocity,
-                (float)ParentState.yAxisMovement.Velocity);
-
-            Agent.MovementComponent.Velocities[VelocityType.MainMovement] = CurrentVelocity;
+            var xVel = (float)ParentState.xAxisMovement.Velocity;
+            var yVel = (float)ParentState.yAxisMovement.Velocity;
+            ParentState.SetVelocity(new Vector2(xVel, yVel));
+            if (ParentState.CurrentVelocity.Length() > Agent.CharacterVariables.HedgeMovementSpeed)
+            {
+                ParentState.SetVelocity(ParentState.CurrentVelocity.Normalized() * Agent.CharacterVariables.HedgeMovementSpeed);
+            }
         }
         private StateAnimationLevel AnimationUpdate()
         {
-            Agent.Sprite2DComponent.ForceOrientation(CurrentVelocity);
-            Agent.AnimController.SetBlendValue(PlayerController.AnimConditions.BushBlendValues, CurrentVelocity);
+            Agent.Sprite2DComponent.ForceOrientation(ParentState.CurrentVelocity);
+            Agent.AnimController.SetBlendValue(PlayerController.AnimConditions.BushBlendValues, ParentState.CurrentVelocity);
             return StateAnimationLevel.Uninterruptible;
         }
 

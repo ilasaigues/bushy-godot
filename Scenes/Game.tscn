@@ -1565,6 +1565,9 @@ process_callback = 0
 position_smoothing_enabled = true
 position_smoothing_speed = 3.0
 script = ExtResource("6_ov3y4")
+LookAheadFactor = Vector2(30, 0)
+DampingSpeed = 10.0
+VerticalLockThresholdAbove = 80.0
 _targetBehaviour = SubResource("Resource_oqkim")
 _targetNode = NodePath("../Player")
 

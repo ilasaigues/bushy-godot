@@ -10,9 +10,10 @@ namespace BushyCore
         [Export]
         public AttackStep BasicAttackCombo_3;
         private bool bufferComboAttack = false;
-        public override void StepEnter(AttackStepConfig config) {
+        public override void StepEnter(AttackStepConfig config)
+        {
             this.AddToGroup();
-            this.WireNodes();
+            WireNodes();
 
             bufferComboAttack = false;
             base.StepEnter(config);
@@ -28,7 +29,8 @@ namespace BushyCore
 
         public override void HandleAttackAction()
         {
-            switch (currentPhase) {
+            switch (currentPhase)
+            {
                 case AttackStepPhase.ACTION:
                 case AttackStepPhase.COMBO:
                     bufferComboAttack = true;
@@ -36,34 +38,39 @@ namespace BushyCore
                 case AttackStepPhase.RECOVERY:
                     EmitSignal(SignalName.ComboStep, BasicAttackCombo_3, attackStepConfigs);
                     break;
-                default: 
+                default:
                     break;
             }
         }
 
         private Shape2D _DebugHitboxShape;
         [Export]
-        protected Shape2D DebugHitboxShape { 
+        protected Shape2D DebugHitboxShape
+        {
             get { return _DebugHitboxShape; }
-            set {
+            set
+            {
                 if (!DebugHitbox) return;
-                if (_DebugHitboxShape != null) {
+                if (_DebugHitboxShape != null)
+                {
                     _DebugHitboxShape.Changed -= QueueRedraw;
                     _DebugHitboxShape.Changed -= RemoveToolRef;
                 }
-                
+
                 hitboxShape = value;
                 _DebugHitboxShape = value;
 
-                if (_DebugHitboxShape != null) {
+                if (_DebugHitboxShape != null)
+                {
                     _DebugHitboxShape.Changed += QueueRedraw;
                     _DebugHitboxShape.Changed += RemoveToolRef;
                 }
 
                 QueueRedraw();
-        }}
+            }
+        }
 
-        public void RemoveToolRef() 
+        public void RemoveToolRef()
         {
             hitboxShape = _DebugHitboxShape;
         }

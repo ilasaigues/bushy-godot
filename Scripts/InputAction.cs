@@ -36,7 +36,7 @@ public class InputAction
 
     public InputAction(string actionID)
     {
-        this.ActionID = actionID;
+        ActionID = actionID;
     }
 
     public DisposableBinding BindToInputJustPressed(Action<InputAction> handler)
