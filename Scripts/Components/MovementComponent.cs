@@ -38,12 +38,13 @@ public partial class MovementComponent : Node2D
 	public bool IsOnEdge => _raysOnFloor == 1;
 	public GodotObject OverlappedHedge;
 
-	public bool ShouldEnterHedge => OverlappedHedge != null && _raysOnHedge >= 2;
-	public bool ShouldExitHedge => _raysOnHedge < 4;
+	public bool ShouldEnterHedge => OverlappedHedge != null && (_raysOnHedge + _raysOnWall) >= 2;
+	public bool ShouldExitHedge => _raysOnWall == 0 && _raysOnHedge < 4;
 
 	private bool _isCoreography;
 	private int _raysOnFloor;
 	private int _raysOnHedge;
+	private int _raysOnWall;
 	public Vector2 OutsideHedgeDirection;
 	public Vector2 InsideHedgeDirection;
 	public Vector2 RealPositionChange { get; private set; } = Vector2.Zero;
@@ -140,6 +141,7 @@ public partial class MovementComponent : Node2D
 
 		_raysOnFloor = 0;
 		_raysOnHedge = 0;
+		_raysOnWall = 0;
 
 		CheckRaycastFloor(GroundRayCastL);
 		CheckRaycastFloor(GroundRayCastR);
@@ -190,23 +192,42 @@ public partial class MovementComponent : Node2D
 		var prevPosition = rayCast2D.TargetPosition;
 		rayCast2D.Position = direction.Normalized() * prevPosition.Length();
 		var prevMask = rayCast2D.CollisionMask;
-		rayCast2D.CollisionMask = 1 << 2;
-		rayCast2D.ForceRaycastUpdate();
-		GodotObject collider = rayCast2D.GetCollider();
-
-		if (collider != null)
+		GodotObject collider = null;
+		// if inside the bush, check check for walls and count them as "in the hedge"
+		if (OverlappedHedge != null)
 		{
-			_raysOnHedge++;
-			InsideHedgeDirection += direction;
-
-			if (_raysOnHedge >= 2)
+			rayCast2D.CollisionMask = 1 << 1 | 1 << 3;
+			rayCast2D.ForceRaycastUpdate();
+			collider = rayCast2D.GetCollider();
+			if (collider != null)
 			{
-				OverlappedHedge = collider;
+				_raysOnWall++;
+				OutsideHedgeDirection += direction;
+				InsideHedgeDirection -= direction;
 			}
 		}
-		else
+
+		if (collider == null) // if we do not hit a wall, proceed as usual
 		{
-			OutsideHedgeDirection += direction;
+			// check for in/out of hedge
+			rayCast2D.CollisionMask = 1 << 2;
+			rayCast2D.ForceRaycastUpdate();
+			collider = rayCast2D.GetCollider();
+
+			if (collider != null)
+			{
+				_raysOnHedge++;
+				InsideHedgeDirection += direction;
+
+				if (_raysOnHedge + _raysOnWall >= 2)
+				{
+					OverlappedHedge = collider;
+				}
+			}
+			else
+			{
+				OutsideHedgeDirection += direction;
+			}
 		}
 		rayCast2D.CollisionMask = prevMask;
 		rayCast2D.TargetPosition = prevPosition;

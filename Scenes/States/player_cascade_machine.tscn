@@ -121,7 +121,7 @@ script = ExtResource("18_78rft")
 
 [node name="DashTimer" type="Timer" parent="BaseStateMachine/HedgeParentState"]
 
-[connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="AnimationUpdate"]
 [connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="PreEndDash"]
+[connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="AnimationUpdate"]
 [connection signal="timeout" from="BaseStateMachine/AirParentState/JumpState/JumpTimer" to="BaseStateMachine/AirParentState/JumpState" method="JumpTimedOut"]
 [connection signal="timeout" from="BaseStateMachine/AirParentState/CoyoteJumpTimer" to="BaseStateMachine/AirParentState" method="OnJumpCoyoteTimerTimeout"]

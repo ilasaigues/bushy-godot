@@ -1,4 +1,5 @@
 
+using System;
 using Godot;
 using GodotUtilities;
 using static MovementComponent;
@@ -43,7 +44,7 @@ namespace BushyCore
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
-            if (Agent.MovementComponent.OutsideHedgeDirection == Vector2.Zero)
+            if (Agent.MovementComponent.OutsideHedgeDirection == Vector2.Zero || TimeSinceStateEntered > TimeSpan.FromMilliseconds(150))
             {
                 ParentState.OnHedgeExit();
             }

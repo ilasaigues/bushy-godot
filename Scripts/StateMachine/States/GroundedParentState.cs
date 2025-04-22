@@ -40,6 +40,7 @@ namespace BushyCore
         protected override void EnterStateInternal(params IBaseStateConfig[] configs)
         {
             HorizontalAxisMovement.SetInitVel(Agent.MovementComponent.Velocities[VelocityType.MainMovement].X);
+            Agent.CollisionComponent.ToggleHedgeCollision(true);
 
             _jumpBuffered = false;
             Agent.PlayerInfo.CanJump = true;

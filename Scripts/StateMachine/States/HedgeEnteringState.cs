@@ -1,4 +1,5 @@
 
+using System;
 using Godot;
 using GodotUtilities;
 using static MovementComponent;
@@ -7,16 +8,12 @@ namespace BushyCore
 {
     public partial class HedgeEnteringState : BaseChildState<PlayerController, HedgeParentState>
     {
-        [Export]
-        private Timer EnteringTimer;
-
         private Vector2 _targetVelocity;
 
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
             _targetVelocity = (Agent.MovementComponent.InsideHedgeDirection.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed).PrintInPlace("Target velocity: {0}");
-            EnteringTimer.WaitTime = Agent.CharacterVariables.HedgeEnteringWaitTime;
             SetupFromConfigs(configs);
             RemoveControls();
         }
@@ -32,15 +29,9 @@ namespace BushyCore
             }
         }
 
-        void EnteringTimerTimeout()
-        {
-            EnteringTimer.Timeout -= EnteringTimerTimeout;
-        }
-
         private void RemoveControls()
         {
-            EnteringTimer.Timeout += EnteringTimerTimeout;
-            EnteringTimer.Start();
+
 
             if (Mathf.Abs(ParentState.xAxisMovement.Velocity) > Agent.CharacterVariables.HedgeMovementSpeed)
                 ParentState.xAxisMovement = ParentState.xAxisMovement.ToBuilder().Copy()
@@ -71,7 +62,8 @@ namespace BushyCore
             ParentState.SetVelocity(ParentState.CurrentVelocity.PrintInPlace("Lerping: {0}").Slerp(
                                 _targetVelocity,
                                 0.33333f));
-            if (Agent.MovementComponent.InsideHedgeDirection == Vector2.Zero)
+            if (Agent.MovementComponent.InsideHedgeDirection == Vector2.Zero
+                    || TimeSinceStateEntered >= TimeSpan.FromSeconds(Agent.CharacterVariables.HedgeEnteringWaitTime))
             {
                 ReturnControls();
                 throw StateInterrupt.New<HedgeMoveState>();
