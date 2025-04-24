@@ -74,7 +74,15 @@ namespace BushyCore
         {
             if (Agent.PlayerInfo.CanJump && actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.JumpAction)
             {
-                DoJump();
+                if (Agent.MovementComponent.CanDropFromPlatform && Agent.MovementInputVector.Y > 0 && Agent.MovementInputVector.Dot(Vector2.Down * 10) > 0.707106781187) //Sin(45°)
+                {
+                    Agent.MovementComponent.IsOnFloor = false;
+                    throw StateInterrupt.New<FallState>(false, new PlatformDropConfig());
+                }
+                else
+                {
+                    DoJump();
+                }
             }
 
             if (Agent.PlayerInfo.CanDash
@@ -99,7 +107,7 @@ namespace BushyCore
 
         protected override bool OnInputAxisChangedInternal(InputAxis axis)
         {
-            if (Agent.MovementComponent.CanDropFromPlatform)
+            if (Agent.MovementComponent.CanDropFromPlatform && InputManager.Instance.JumpAction.Pressed)
             {
                 if (Agent.MovementInputVector.Y > 0 && Agent.MovementInputVector.Dot(Vector2.Down * 10) > 0.707106781187) //Sin(45°)
                 {
