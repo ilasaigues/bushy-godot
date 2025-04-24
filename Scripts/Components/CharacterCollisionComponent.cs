@@ -63,5 +63,10 @@ namespace BushyCore
 		{
 			parentController.SetCollisionMaskValue(CollisionLayerConsts.HEDGE, isOn);
 		}
+
+		public void TogglePlatformCollision(bool isOn)
+		{
+			parentController.SetCollisionMaskValue(CollisionLayerConsts.PLATFORM, isOn);
+		}
 	}
 }

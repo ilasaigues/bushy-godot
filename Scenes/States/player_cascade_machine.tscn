@@ -104,9 +104,8 @@ script = ExtResource("9_607nu")
 JumpBufferTimer = NodePath("JumpTimer")
 DashBufferTimer = NodePath("DashTimer")
 
-[node name="HedgeEnteringState" type="Node" parent="BaseStateMachine/HedgeParentState" node_paths=PackedStringArray("EnteringTimer")]
+[node name="HedgeEnteringState" type="Node" parent="BaseStateMachine/HedgeParentState"]
 script = ExtResource("10_8y560")
-EnteringTimer = NodePath("EnteringWaitTime")
 
 [node name="EnteringWaitTime" type="Timer" parent="BaseStateMachine/HedgeParentState/HedgeEnteringState"]
 one_shot = true
@@ -121,7 +120,7 @@ script = ExtResource("18_78rft")
 
 [node name="DashTimer" type="Timer" parent="BaseStateMachine/HedgeParentState"]
 
-[connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="PreEndDash"]
 [connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="AnimationUpdate"]
+[connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="PreEndDash"]
 [connection signal="timeout" from="BaseStateMachine/AirParentState/JumpState/JumpTimer" to="BaseStateMachine/AirParentState/JumpState" method="JumpTimedOut"]
 [connection signal="timeout" from="BaseStateMachine/AirParentState/CoyoteJumpTimer" to="BaseStateMachine/AirParentState" method="OnJumpCoyoteTimerTimeout"]

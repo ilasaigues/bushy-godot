@@ -5,6 +5,7 @@ using Godot;
 using GodotUtilities;
 using static BushyCore.StateConfig;
 using static MovementComponent;
+using Microsoft.CodeAnalysis;
 
 namespace BushyCore
 {
@@ -22,6 +23,10 @@ namespace BushyCore
         public bool CanCoyoteJump { get; set; }
 
         public bool CanFallIntoHedge { get; set; }
+
+        public bool IgnorePlatforms = false;
+
+        private float _lastPlatformHeight = 0;
 
         public override void SetAgent(PlayerController playerController)
         {
@@ -63,11 +68,6 @@ namespace BushyCore
             SetupFromConfigs(configs);
 
             Agent.AnimController.SetCondition(PlayerController.AnimConditions.OnAir, true);
-
-            if (CanFallIntoHedge)
-            {
-                Agent.CollisionComponent.ToggleHedgeCollision(false);
-            }
         }
 
         private void SetupFromConfigs(IBaseStateConfig[] configs)
@@ -82,12 +82,34 @@ namespace BushyCore
                     CanFallIntoHedge = velocityConfig.CanEnterHedge;
                     Agent.PlayerInfo.IsInDashMode = !velocityConfig.DoesDecelerate && velocityConfig.CanEnterHedge;
                 }
+                if (config is PlatformDropConfig)
+                {
+                    SetPlatformCollision(false);
+                }
+            }
+        }
+
+
+        private void SetPlatformCollision(bool enabled)
+        {
+            if (enabled)
+            {
+                IgnorePlatforms = false;
+                _lastPlatformHeight = 0;
+                Agent.CollisionComponent.TogglePlatformCollision(true);
+            }
+            else
+            {
+                IgnorePlatforms = true;
+                _lastPlatformHeight = Agent.Position.Y;
+                Agent.CollisionComponent.TogglePlatformCollision(false);
             }
         }
 
         protected override void ExitStateInternal()
         {
             base.ExitStateInternal();
+            SetPlatformCollision(true);
             Agent.AnimController.SetCondition(PlayerController.AnimConditions.OnAir, false);
             if (!Agent.PlayerInfo.IsInHedge)
                 Agent.CollisionComponent.ToggleHedgeCollision(true);
@@ -97,14 +119,22 @@ namespace BushyCore
         {
             if (processConfig.StateExecutionResult != StateExecutionResult.Block)
             {
+                if (IgnorePlatforms)
+                {
+                    if (Agent.Position.Y < _lastPlatformHeight || Agent.Position.Y > _lastPlatformHeight + 10)
+                    {
+                        SetPlatformCollision(true);
+                    }
+                }
+
                 if (CanFallIntoHedge
-                        && Agent.MovementComponent.ShouldEnterHedge
-                        && Agent.MovementComponent.InsideHedgeDirection.Normalized().Dot(Agent.MovementComponent.CurrentVelocity.Normalized()) > 0)
+                            && Agent.MovementComponent.ShouldEnterHedge
+                            && Agent.MovementComponent.InsideHedgeDirection.Normalized().Dot(Agent.MovementComponent.CurrentVelocity.Normalized()) > 0)
                 {
                     throw StateInterrupt.New<HedgeEnteringState>(false, new InitialHedgeConfig(Agent.MovementComponent.OverlappedHedge, Agent.MovementComponent.CurrentVelocity));
                 }
 
-                if (Agent.MovementComponent.IsOnFloor && VerticalVelocity >= 0)
+                if (!IgnorePlatforms && Agent.MovementComponent.IsOnFloor && VerticalVelocity >= 0)
                 {
                     bool IsJumpBuffered = InputManager.Instance.JumpAction.TimeSinceLastPressed <= Agent.CharacterVariables.JumpBufferTime;
                     if (Agent.MovementInputVector.X != 0)

@@ -99,6 +99,14 @@ namespace BushyCore
 
         protected override bool OnInputAxisChangedInternal(InputAxis axis)
         {
+            if (Agent.MovementComponent.CanDropFromPlatform)
+            {
+                if (Agent.MovementInputVector.Y > 0 && Agent.MovementInputVector.Dot(Vector2.Down * 10) > 0.707106781187) //Sin(45°)
+                {
+                    Agent.MovementComponent.IsOnFloor = false;
+                    throw StateInterrupt.New<FallState>(false, new PlatformDropConfig());
+                }
+            }
             return CurrentSubState.OnInputAxisChanged(axis);
         }
 
