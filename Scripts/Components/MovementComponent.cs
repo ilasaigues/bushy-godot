@@ -57,10 +57,9 @@ public partial class MovementComponent : Node2D
 	private int _raysOnFloor;
 	//private int _raysOnHedge;
 	private int _raysOnWall;
-	//public Vector2 OutsideHedgeDirection;
-	//public Vector2 InsideHedgeDirection;
+	public Vector2 OutsideHedgeDirection;
 
-	//private float _lastPlatformHeight;
+	private float _lastPlatformHeight;
 
 	public Vector2 RealPositionChange { get; private set; } = Vector2.Zero;
 	private Vector2 _previousPosition;
@@ -229,7 +228,6 @@ public partial class MovementComponent : Node2D
 		groundCast.CollisionMask = prevMask;
 		return groundCast.IsColliding();
 	}
-
 
 	public void Move(CharacterBody2D characterBody2D)
 	{
