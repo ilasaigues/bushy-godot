@@ -84,5 +84,6 @@ namespace BushyCore
         {
             public Type SubType { get; } = substateType;
         }
+        public readonly struct PlatformDropConfig() : IBaseStateConfig { }
     }
 }

@@ -14,7 +14,7 @@ public partial class MovementComponent : Node2D
 	// Where is the character body facing
 	public Vector2 FacingDirection { get; private set; }
 	// IsOnFloor references whether the node collider is actually touching the floor
-	public bool IsOnFloor { get; private set; }
+	public bool IsOnFloor { get; set; }
 	// IsOnRoof references whether the node collider is actually touching the roof
 	public bool IsOnCeiling { get; private set; }
 	// IsOnRoof references whether the node collider is next to wall in the facing direction
@@ -41,12 +41,17 @@ public partial class MovementComponent : Node2D
 	public bool ShouldEnterHedge => OverlappedHedge != null && (_raysOnHedge + _raysOnWall) >= 2;
 	public bool ShouldExitHedge => _raysOnWall == 0 && _raysOnHedge < 4;
 
+	public bool CanDropFromPlatform = false;
+
 	private bool _isCoreography;
 	private int _raysOnFloor;
 	private int _raysOnHedge;
 	private int _raysOnWall;
 	public Vector2 OutsideHedgeDirection;
 	public Vector2 InsideHedgeDirection;
+
+	private float _lastPlatformHeight;
+
 	public Vector2 RealPositionChange { get; private set; } = Vector2.Zero;
 	private Vector2 _previousPosition;
 
@@ -158,7 +163,7 @@ public partial class MovementComponent : Node2D
 			OverlappedHedge = null;
 		}
 
-
+		CanDropFromPlatform = CheckRaycastPlatform(GroundRayCastL) && CheckRaycastPlatform(GroundRayCastR);
 
 		FacingDirection = Velocities[VelocityType.MainMovement].X == 0f
 			? FacingDirection
@@ -231,6 +236,15 @@ public partial class MovementComponent : Node2D
 		}
 		rayCast2D.CollisionMask = prevMask;
 		rayCast2D.TargetPosition = prevPosition;
+	}
+
+	private bool CheckRaycastPlatform(RayCast2D groundCast)
+	{
+		var prevMask = groundCast.CollisionMask;
+		groundCast.CollisionMask = 1 << 5; //platfrom layer
+		groundCast.ForceRaycastUpdate();
+		groundCast.CollisionMask = prevMask;
+		return groundCast.IsColliding();
 	}
 
 
