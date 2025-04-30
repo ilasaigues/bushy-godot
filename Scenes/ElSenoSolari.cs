@@ -8,8 +8,6 @@ public partial class ElSenoSolari : Sprite2D
     {
         time += (float)delta;
         GlobalPosition += Vector2.Up * MathF.Sin(time * 2) * 0.2f;
-
-        GD.Print(MathF.Sin((float)delta));
     }
 
 

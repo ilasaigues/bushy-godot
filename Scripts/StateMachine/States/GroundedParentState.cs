@@ -131,7 +131,7 @@ namespace BushyCore
             var slopeVerticalComponent = Mathf.Tan(Agent.MovementComponent.FloorAngle) * (float)HorizontalAxisMovement.Velocity;
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Agent.MovementComponent.FloorAngle != 0 ?
                 Agent.MovementComponent.FloorNormal * (float)VerticalVelocity * downwardVel
-                : Vector2.Zero;
+                : Vector2.Down * downwardVel;
             Agent.MovementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)HorizontalAxisMovement.Velocity, slopeVerticalComponent);
         }
 

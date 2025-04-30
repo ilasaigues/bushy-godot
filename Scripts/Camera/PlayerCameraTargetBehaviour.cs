@@ -22,7 +22,6 @@ public partial class PlayerCameraTargetBehaviour : CameraTargetBehaviour<PlayerC
         Target = target;
         Camera = camera;
         _playerArea = target.GetFirstNodeOfType<AreaDetectionComponent>();
-        GD.Print(_playerArea);
         _playerArea.AreaEntered += OnAreaEnterPlayer;
         _playerArea.AreaExited += OnAreaExitPlayer;
     }

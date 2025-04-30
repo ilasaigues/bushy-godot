@@ -1,12 +1,12 @@
-[gd_scene load_steps=49 format=4 uid="uid://jqayura2cnu7"]
+[gd_scene load_steps=48 format=4 uid="uid://jqayura2cnu7"]
 
 [ext_resource type="FontFile" uid="uid://67vsahsd2gg1" path="res://Fonts/FredokaOne-Regular.ttf" id="2_0axgj"]
 [ext_resource type="PackedScene" uid="uid://cjm6k462fd10s" path="res://Scenes/Player.tscn" id="2_py0in"]
+[ext_resource type="Resource" uid="uid://8kukqoskyw1n" path="res://Assets/Events/OnPlayerEnterHedge.tres" id="4_71axn"]
 [ext_resource type="Script" uid="uid://bdvq1lcavyy6m" path="res://Scenes/CascadeMachineReader.cs" id="5_3so38"]
 [ext_resource type="Script" uid="uid://cu0o5wakc1mfu" path="res://Scripts/Camera/CameraFollow.cs" id="6_ov3y4"]
 [ext_resource type="Texture2D" uid="uid://dr64ituvxtnkc" path="res://Assets/WorldTiles/hedge_test.png" id="7_71axn"]
 [ext_resource type="Texture2D" uid="uid://chmtga3andwpf" path="res://Assets/WorldTiles/atlas_test.png" id="7_fgofq"]
-[ext_resource type="Script" uid="uid://bwi54fr00adbl" path="res://Scripts/Camera/PlayerCameraTargetBehaviour.cs" id="7_lgcn2"]
 [ext_resource type="Texture2D" uid="uid://dk70qxknoqma6" path="res://Assets/Others/angel de los perdedores.png" id="8_2irst"]
 [ext_resource type="Script" uid="uid://b1us3ti401cei" path="res://Scenes/ElSenoSolari.cs" id="9_bf53h"]
 [ext_resource type="Script" uid="uid://dy3cdgsv6frga" path="res://Scripts/Camera/CameraSecondaryTarget.cs" id="11_hnf68"]
@@ -69,9 +69,6 @@ Button/styles/focus = SubResource("StyleBoxEmpty_pptmd")
 Button/styles/hover = SubResource("StyleBoxFlat_5ef0f")
 Button/styles/normal = SubResource("StyleBoxFlat_0b37n")
 Button/styles/pressed = SubResource("StyleBoxFlat_0g4c4")
-
-[sub_resource type="Resource" id="Resource_oqkim"]
-script = ExtResource("7_lgcn2")
 
 [sub_resource type="Gradient" id="Gradient_bw885"]
 offsets = PackedFloat32Array(0, 0.668605)
@@ -1558,18 +1555,19 @@ justification_flags = 160
 script = ExtResource("5_3so38")
 player = NodePath("../../../Player")
 
-[node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("_targetNode")]
-position = Vector2(-812, 47)
-offset = Vector2(0, -32)
+[node name="PlayerCamera" type="Camera2D" parent="." node_paths=PackedStringArray("_targetNode")]
+position = Vector2(-1065, 191)
 process_callback = 0
-position_smoothing_enabled = true
-position_smoothing_speed = 3.0
+position_smoothing_speed = 1.0
 script = ExtResource("6_ov3y4")
-LookAheadFactor = Vector2(30, 0)
-DampingSpeed = 10.0
-VerticalLockThresholdAbove = 80.0
-_targetBehaviour = SubResource("Resource_oqkim")
 _targetNode = NodePath("../Player")
+_horizontalAnchors = 40.0
+_horizontalSmoothing = 0.4
+_topThreshold = -80.0
+_verticalOffset = -50.0
+_verticalSmoothing = 0.1
+_freeFollowToggleEvent = ExtResource("4_71axn")
+_freeFollowSmoothing = 0.1
 
 [node name="Player" parent="." instance=ExtResource("2_py0in")]
 light_mask = 2
@@ -1610,6 +1608,7 @@ shape = SubResource("RectangleShape2D_satgw")
 texture_filter = 1
 tile_map_data = PackedByteArray("AADK/wgAAAABAAIAAADL/wgAAAACAAIAAADM/wgAAAACAAIAAADN/wgAAAADAAIAAADK/wkAAAABAAIAAADL/wkAAAACAAIAAADM/wkAAAACAAIAAADN/wkAAAADAAIAAADK/woAAAABAAIAAADL/woAAAACAAIAAADM/woAAAACAAIAAADN/woAAAADAAIAAADK/wsAAAABAAIAAADL/wsAAAACAAIAAADM/wsAAAACAAIAAADN/wsAAAADAAIAAADK/wwAAAABAAMAAADL/wwAAAACAAMAAADM/wwAAAACAAMAAADN/wwAAAADAAMAAADK/wQAAAABAAIAAADL/wQAAAACAAIAAADM/wQAAAACAAIAAADN/wQAAAACAAIAAADK/wUAAAABAAIAAADL/wUAAAACAAIAAADM/wUAAAACAAIAAADN/wUAAAAGAAAAAADK/wYAAAABAAIAAADL/wYAAAACAAIAAADM/wYAAAACAAIAAADN/wYAAAADAAIAAADK/wcAAAABAAIAAADL/wcAAAACAAIAAADM/wcAAAACAAIAAADN/wcAAAADAAIAAADO/wYAAAAFAAAAAADO/wcAAAAEAAMAAADO/wUAAAADAAMAAADO/wgAAAAEAAMAAADO/wQAAAADAAIAAADJ/wcAAAAAAAEAAADJ/wYAAAAAAAMAAADJ/wUAAAAAAAMAAADL/wMAAAACAAEAAADM/wMAAAACAAEAAADN/wMAAAACAAEAAADO/wkAAAAEAAEAAADO/wMAAAADAAEAAADJ/wgAAAAAAAMAAADJ/wQAAAAAAAMAAADK/wMAAAABAAEAAADO/woAAAAEAAMAAADJ/wkAAAAAAAMAAADJ/wMAAAAAAAEAAADO/wsAAAAEAAEAAADJ/woAAAAAAAEAAADO/wwAAAAEAAMAAADN/w0AAAADAAQAAADM/w0AAAABAAQAAADL/w0AAAADAAQAAADJ/wsAAAAAAAMAAADO/w0AAAAEAAQAAADK/w0AAAABAAQAAADJ/wwAAAAAAAMAAADJ/w0AAAAAAAQAAADL/wIAAAABAAAAAADM/wIAAAADAAAAAADN/wIAAAABAAAAAADO/wIAAAADAAAAAADP/wMAAAAEAAEAAADP/wQAAAAEAAEAAADP/wIAAAAEAAAAAADP/wUAAAAEAAMAAADJ/wIAAAAAAAAAAADK/wIAAAABAAAAAADP/wYAAAAEAAQAAADu/wQAAAACAAEAAADv/wQAAAACAAEAAADw/wQAAAACAAEAAADx/wQAAAADAAEAAADu/wUAAAAHAAAAAADv/wUAAAACAAIAAADw/wUAAAACAAIAAADx/wUAAAADAAIAAADu/wYAAAABAAIAAADv/wYAAAACAAIAAADw/wYAAAACAAIAAADx/wYAAAADAAIAAADu/wcAAAABAAIAAADv/wcAAAACAAIAAADw/wcAAAACAAIAAADx/wcAAAADAAIAAADu/wgAAAABAAIAAADv/wgAAAACAAIAAADw/wgAAAACAAIAAADx/wgAAAADAAIAAADu/wkAAAABAAIAAADv/wkAAAACAAIAAADw/wkAAAACAAIAAADx/wkAAAADAAIAAADu/woAAAABAAIAAADv/woAAAACAAIAAADw/woAAAACAAIAAADx/woAAAADAAIAAADu/wsAAAABAAIAAADv/wsAAAACAAIAAADw/wsAAAACAAIAAADx/wsAAAADAAIAAADu/wwAAAABAAMAAADv/wwAAAACAAMAAADw/wwAAAACAAMAAADx/wwAAAADAAMAAADt/wUAAAACAAMAAADt/wQAAAACAAEAAADt/wMAAAABAAAAAADu/wMAAAADAAAAAADv/wMAAAADAAAAAADv/w0AAAADAAQAAADu/w0AAAABAAQAAADt/w0AAAAAAAQAAADt/wwAAAAAAAMAAADt/wsAAAAAAAEAAADw/wMAAAABAAAAAADw/w0AAAADAAQAAADx/wMAAAADAAAAAADx/w0AAAADAAQAAADy/wQAAAAEAAEAAADy/wUAAAAEAAMAAADy/wMAAAAEAAAAAADy/wwAAAAEAAMAAADy/w0AAAAEAAQAAADy/wsAAAAEAAMAAADt/wYAAAAFAAIAAADy/wYAAAAEAAMAAADt/wcAAAAAAAMAAADy/wcAAAAEAAEAAADt/wgAAAAAAAMAAADy/wgAAAAEAAEAAADt/wkAAAAAAAMAAADy/wkAAAAEAAEAAADt/woAAAAAAAMAAADy/woAAAAEAAEAAADs/wQAAAABAAEAAADs/wUAAAABAAMAAADr/wUAAAAAAAMAAADr/wQAAAAAAAEAAADr/wMAAAAAAAAAAADs/wMAAAABAAAAAADs/wYAAAABAAQAAADr/wYAAAAAAAQAAAA=")
 tile_set = SubResource("TileSet_3so38")
+use_kinematic_bodies = true
 
 [node name="Terrain" type="TileMapLayer" parent="Tilesets"]
 texture_filter = 1

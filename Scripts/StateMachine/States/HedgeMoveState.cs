@@ -21,7 +21,7 @@ namespace BushyCore
 
         private void CheckHedge()
         {
-            if (Agent.MovementComponent.ShouldExitHedge)
+            if (Agent.MovementComponent.HedgeState != HedgeOverlapState.Complete)
             {
                 throw StateInterrupt.New<HedgeExitState>();
             }

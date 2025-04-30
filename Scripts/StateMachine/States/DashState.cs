@@ -117,14 +117,13 @@ namespace BushyCore
 
         private void CheckHedge()
         {
-            if (!Agent.MovementComponent.ShouldEnterHedge ||
-                Agent.MovementComponent.InsideHedgeDirection.Normalized().Dot(Agent.MovementComponent.CurrentVelocity.Normalized()) <= 0)
+            if (Agent.MovementComponent.HedgeState == HedgeOverlapState.Outside)
             {
                 return;
             }
 
             throw StateInterrupt.New<HedgeEnteringState>(true,
-                    new InitialHedgeConfig(Agent.MovementComponent.OverlappedHedge, Agent.MovementComponent.CurrentVelocity));
+                    new InitialVelocityVectorConfig(Agent.MovementComponent.CurrentVelocity));
         }
         protected void VelocityUpdate()
         {

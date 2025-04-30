@@ -13,7 +13,7 @@ namespace BushyCore
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-            _targetVelocity = (Agent.MovementComponent.InsideHedgeDirection.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed).PrintInPlace("Target velocity: {0}");
+            _targetVelocity = Agent.MovementComponent.InsideHedgeDirection.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed;
             SetupFromConfigs(configs);
             RemoveControls();
         }
@@ -24,7 +24,7 @@ namespace BushyCore
             {
                 if (config is StateConfig.InitialHedgeConfig hedgeConfig)
                 {
-                    ParentState.SetVelocity(hedgeConfig.Direction.PrintInPlace("Starting velocity: {0}"));
+                    ParentState.SetVelocity(hedgeConfig.Direction);
                 }
             }
         }
@@ -59,13 +59,13 @@ namespace BushyCore
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
-            ParentState.SetVelocity(ParentState.CurrentVelocity.PrintInPlace("Lerping: {0}").Slerp(
+            ParentState.SetVelocity(ParentState.CurrentVelocity.Slerp(
                                 _targetVelocity,
                                 0.33333f));
-            if (Agent.MovementComponent.InsideHedgeDirection == Vector2.Zero
-                    || TimeSinceStateEntered >= TimeSpan.FromSeconds(Agent.CharacterVariables.HedgeEnteringWaitTime))
+            if (Agent.MovementComponent.HedgeState == HedgeOverlapState.Complete)
             {
                 ReturnControls();
+                Agent.Position += Agent.MovementComponent.InsideHedgeDirection;
                 throw StateInterrupt.New<HedgeMoveState>();
             }
             return prevStatus;

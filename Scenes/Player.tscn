@@ -757,7 +757,7 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 visible = false
-scale = Vector2(1.05, 1.05)
+scale = Vector2(1.1, 1.1)
 
 [node name="PlayerCascadeMachine" parent="." instance=ExtResource("12_4qmpi")]
 
