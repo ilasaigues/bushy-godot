@@ -101,6 +101,12 @@ namespace BushyCore
 
         private void DoJump()
         {
+            if (Agent.PlayerInfo.IsInDashMode && InputManager.Instance.DashAction.Pressed)
+            {
+                var jumpVelocity = Agent.MovementComponent.Velocities[VelocityType.MainMovement];
+                jumpVelocity.X = Mathf.Sign(jumpVelocity.X) * Agent.CharacterVariables.DashJumpSpeed;
+                throw StateInterrupt.New<JumpState>(true, new InitialVelocityVectorConfig(jumpVelocity, false, true));
+            }
             throw StateInterrupt.New<JumpState>(false,
                     StateConfig.InitialVelocityVector(Agent.MovementComponent.Velocities[VelocityType.MainMovement]));
         }

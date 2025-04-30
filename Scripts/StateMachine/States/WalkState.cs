@@ -34,6 +34,7 @@ namespace BushyCore
         {
             if (Math.Abs(Agent.MovementComponent.Velocities[VelocityType.MainMovement].X) < 2 && Agent.MovementInputVector.X == 0)
             {
+                Agent.PlayerInfo.IsInDashMode = false;
                 throw new StateInterrupt(typeof(IdleGroundedState));
             }
         }
@@ -47,6 +48,7 @@ namespace BushyCore
                 var anim = Agent.AnimController;
                 if (newDirection * _previousDirection == -1)
                 {
+                    Agent.PlayerInfo.IsInDashMode = false;
                     //GD.PrintRich("[color=red]BIJA[/color]");
                     anim.SetTrigger(PlayerController.AnimConditions.TurnTrigger);
                     _previousDirection = newDirection;

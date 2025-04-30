@@ -157,7 +157,7 @@ namespace BushyCore
             if (DashJumpTimer.TimeLeft > 0)
             {
                 var jumpVelocity = Agent.MovementComponent.Velocities[VelocityType.MainMovement];
-                jumpVelocity.X *= Agent.CharacterVariables.DashJumpSpeed;
+                jumpVelocity.X = Mathf.Sign(jumpVelocity.X) * Agent.CharacterVariables.DashJumpSpeed;
                 Agent.PlayerInfo.IsInDashMode = true;
                 throw StateInterrupt.New<JumpState>(true, new InitialVelocityVectorConfig(jumpVelocity, false, true));
             }

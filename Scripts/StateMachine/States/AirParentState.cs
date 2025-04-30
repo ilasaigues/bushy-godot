@@ -81,6 +81,7 @@ namespace BushyCore
                     VerticalVelocity = velocityConfig.Velocity.Y;
                     TargetHorizontalVelocity = velocityConfig.Velocity.X;
                     XAxisMovement.OvershootDec(velocityConfig.DoesDecelerate);
+                    XAxisMovement.SetInitVel(TargetHorizontalVelocity);
                     CanFallIntoHedge = velocityConfig.CanEnterHedge;
                     Agent.PlayerInfo.IsInDashMode = !velocityConfig.DoesDecelerate && velocityConfig.CanEnterHedge;
                 }
