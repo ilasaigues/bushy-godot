@@ -163,6 +163,17 @@ public partial class CameraFollow : Camera2D
 
 
         _targetPosition += Vector2.Right * horizontalVelocity;
+
+        if (midTarget != null)
+        {
+            _targetPosition = (_targetPosition + midTarget.GlobalPosition) / 2;
+        }
+        else if (overrideTarget != null)
+        {
+            _targetPosition = overrideTarget.GlobalPosition;
+        }
+
+
         GlobalPosition = new Vector2(
             Mathf.Lerp(GlobalPosition.X, _targetPosition.X, _horizontalSmoothing),
              Mathf.Lerp(GlobalPosition.Y, _targetPosition.Y, _verticalSmoothing)
