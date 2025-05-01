@@ -62,11 +62,10 @@ namespace BushyCore
             ParentState.SetVelocity(ParentState.CurrentVelocity.Slerp(
                                 _targetVelocity,
                                 0.33333f));
-            if (Agent.MovementComponent.HedgeState == HedgeOverlapState.Outside)
+            if (TimeSinceStateEntered > TimeSpan.FromSeconds(0.1) && Agent.MovementComponent.HedgeState == HedgeOverlapState.Outside)
             {
                 ReturnControls();
                 throw StateInterrupt.New<FallState>();
-
             }
 
             if (Agent.MovementComponent.HedgeState == HedgeOverlapState.Complete)
