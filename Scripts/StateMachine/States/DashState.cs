@@ -103,6 +103,7 @@ namespace BushyCore
 
         public void EndDash()
         {
+            Agent.PlayerInfo.IsInDashMode = false;
             Agent.MovementComponent.CourseCorrectionEnabled = false;
             Agent.CollisionComponent.ToggleHedgeCollision(true);
             var exitVelocity = Agent.CharacterVariables.DashExitVelocity;

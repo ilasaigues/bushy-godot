@@ -155,9 +155,9 @@ namespace BushyCore
 
 		public override void _PhysicsProcess(double delta)
 		{
-
 			MovementComponent.UpdateState(this);
 			MovementComponent.Move(this);
+			PlayerInfo.LookDirection = Mathf.Sign(MovementComponent.CurrentVelocity.X);
 		}
 	}
 
