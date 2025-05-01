@@ -89,7 +89,14 @@ namespace BushyCore
                 && actionType == InputAction.InputActionType.InputPressed
                 && action == InputManager.Instance.DashAction)
             {
-                throw StateInterrupt.New<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
+                if (Agent.MovementComponent.IsStandingOnHedge && Agent.MovementInputVector.Dot(Vector2.Down) > 0.4)
+                {
+                    throw StateInterrupt.New<HedgeEnteringState>(false, InitialVelocityVector(Agent.MovementInputVector.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed, false, true));
+                }
+                else
+                {
+                    throw StateInterrupt.New<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
+                }
             }
 
             if (actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.AttackAction)

@@ -48,16 +48,13 @@ public partial class MovementComponent : Node2D
 		}
 	}
 	public bool IsOnEdge => _raysOnFloor == 1;
-	//public GodotObject OverlappedHedge;
-
-	//public bool ShouldEnterHedge => OverlappedHedge != null && (_raysOnHedge + _raysOnWall) >= 2;
-	//public bool ShouldExitHedge => _raysOnWall == 0 && _raysOnHedge < 4;
+	public bool IsStandingOnHedge => _raysOnHedge > 0;
+	private int _raysOnHedge = 0;
 
 	public bool CanDropFromPlatform = false;
 
 	private bool _isCoreography;
 	private int _raysOnFloor;
-	//private int _raysOnHedge;
 	private int _raysOnWall;
 	public Vector2 OutsideHedgeDirection;
 
@@ -158,6 +155,7 @@ public partial class MovementComponent : Node2D
 
 		_raysOnFloor = 0;
 		_raysOnWall = 0;
+		_raysOnHedge = 0;
 
 		CheckHedge();
 
@@ -218,6 +216,22 @@ public partial class MovementComponent : Node2D
 				InsideHedgeDirection += corner / 2;
 			}
 		}
+
+		ReusableRay.Position = bl;
+		ReusableRay.TargetPosition = bl + Vector2.Down;
+		ReusableRay.ForceRaycastUpdate();
+		if (ReusableRay.IsColliding())
+		{
+			_raysOnHedge++;
+		}
+		ReusableRay.Position = br;
+		ReusableRay.TargetPosition = br + Vector2.Down;
+		ReusableRay.ForceRaycastUpdate();
+		if (ReusableRay.IsColliding())
+		{
+			_raysOnHedge++;
+		}
+
 		InsideHedgeDirection = InsideHedgeDirection.Normalized();
 		HedgeState = overlapCount == 0 ? HedgeOverlapState.Outside : overlapCount == 4 ? HedgeOverlapState.Complete : HedgeOverlapState.Partial;
 	}

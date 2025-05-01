@@ -45,22 +45,6 @@ namespace BushyCore
             return new InitialSwingHookConfig(hitPoint, earlyRelease);
         }
 
-        public struct InitialHedgeConfig : IBaseStateConfig
-        {
-            public GodotObject Hedge;
-            public Vector2 Direction;
-            public InitialHedgeConfig(GodotObject hedge, Vector2 dir)
-            {
-                Hedge = hedge;
-                Direction = dir;
-            }
-        }
-
-        public static InitialHedgeConfig InitialHedgeCollider(GodotObject hedge, Vector2 dir)
-        {
-            return new InitialHedgeConfig(hedge, dir);
-        }
-
         public struct InitialGroundedConfig : IBaseStateConfig
         {
             public bool IsJumpBuffered;

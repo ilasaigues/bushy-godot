@@ -13,6 +13,7 @@ namespace BushyCore
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
+            Agent.CollisionComponent.ToggleHedgeCollision(false);
             _targetVelocity = Agent.MovementComponent.InsideHedgeDirection.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed;
             SetupFromConfigs(configs);
             RemoveControls();
@@ -22,9 +23,9 @@ namespace BushyCore
         {
             foreach (var config in configs)
             {
-                if (config is StateConfig.InitialHedgeConfig hedgeConfig)
+                if (config is StateConfig.InitialVelocityVectorConfig velocityConfig)
                 {
-                    ParentState.SetVelocity(hedgeConfig.Direction);
+                    _targetVelocity = velocityConfig.Velocity;
                 }
             }
         }
