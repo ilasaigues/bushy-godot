@@ -50,7 +50,7 @@ namespace BushyCore
 
             Agent.AnimController.SetCondition(PlayerController.AnimConditions.Grounded, true);
 
-
+            Agent.MovementComponent.FloorHeightCheckEnabled = true;
             Agent.CollisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 
             SetupFromConfigs(configs);

@@ -66,6 +66,7 @@ namespace BushyCore
                  (int)CharacterCollisionComponent.ShapeMode.CILINDER);
 
             Agent.MovementComponent.IsOnFloor = false;
+            Agent.MovementComponent.FloorHeightCheckEnabled = false;
 
             SetupFromConfigs(configs);
 

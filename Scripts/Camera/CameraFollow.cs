@@ -147,7 +147,7 @@ public partial class CameraFollow : Camera2D
         // if we're on the floor:
         if (_targetNode is PlayerController pc)
         {
-            if (pc.MovementComponent.IsOnFloor)
+            if (pc.MovementComponent.FloorHeightCheckEnabled)
             {
                 _lastFloorHeight = pc.GlobalPosition.Y;
                 _targetPosition.Y = _lastFloorHeight + _verticalOffset;
