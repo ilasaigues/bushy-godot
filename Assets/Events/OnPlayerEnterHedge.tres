@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BoolEvent" load_steps=2 format=3 uid="uid://8kukqoskyw1n"]
+
+[ext_resource type="Script" uid="uid://cnwqciebg4pgq" path="res://Scripts/GodotEvents/Implementations/BoolEvent.cs" id="1_81oha"]
+
+[resource]
+script = ExtResource("1_81oha")
+_editorValue = false
+CallWithEditorValue = false
+_developerDescription = ""

@@ -65,6 +65,9 @@ namespace BushyCore
                  CharacterCollisionComponent.MethodName.SwitchShape,
                  (int)CharacterCollisionComponent.ShapeMode.CILINDER);
 
+            Agent.MovementComponent.IsOnFloor = false;
+            Agent.MovementComponent.FloorHeightCheckEnabled = false;
+
             SetupFromConfigs(configs);
 
             Agent.AnimController.SetCondition(PlayerController.AnimConditions.OnAir, true);
@@ -81,6 +84,11 @@ namespace BushyCore
                     XAxisMovement.OvershootDec(velocityConfig.DoesDecelerate);
                     CanFallIntoHedge = velocityConfig.CanEnterHedge;
                     Agent.PlayerInfo.IsInDashMode = !velocityConfig.DoesDecelerate && velocityConfig.CanEnterHedge;
+                    if (Agent.PlayerInfo.IsInDashMode && TargetHorizontalVelocity == 0)
+                    {
+                        TargetHorizontalVelocity = Agent.PlayerInfo.LookDirection * Agent.CharacterVariables.DashJumpSpeed;
+                    }
+                    XAxisMovement.SetInitVel(TargetHorizontalVelocity);
                 }
                 if (config is PlatformDropConfig)
                 {
@@ -127,11 +135,9 @@ namespace BushyCore
                     }
                 }
 
-                if (CanFallIntoHedge
-                            && Agent.MovementComponent.ShouldEnterHedge
-                            && Agent.MovementComponent.InsideHedgeDirection.Normalized().Dot(Agent.MovementComponent.CurrentVelocity.Normalized()) > 0)
+                if (CanFallIntoHedge && Agent.MovementComponent.HedgeState != HedgeOverlapState.Outside)
                 {
-                    throw StateInterrupt.New<HedgeEnteringState>(false, new InitialHedgeConfig(Agent.MovementComponent.OverlappedHedge, Agent.MovementComponent.CurrentVelocity));
+                    throw StateInterrupt.New<HedgeEnteringState>(false, new InitialVelocityVectorConfig(Agent.MovementComponent.CurrentVelocity));
                 }
 
                 if (!IgnorePlatforms && Agent.MovementComponent.IsOnFloor && VerticalVelocity >= 0)

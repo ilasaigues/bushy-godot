@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="PlayerCameraTargetBehaviour" load_steps=2 format=3 uid="uid://c6qi7xpojwl6d"]
+
+[ext_resource type="Script" uid="uid://bwi54fr00adbl" path="res://Scripts/Camera/PlayerCameraTargetBehaviour.cs" id="1_ubc3q"]
+
+[resource]
+script = ExtResource("1_ubc3q")
+metadata/_custom_type_script = "uid://bwi54fr00adbl"

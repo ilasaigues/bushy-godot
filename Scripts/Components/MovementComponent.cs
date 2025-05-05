@@ -7,18 +7,30 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 
-[Tool]
 [Scene]
 public partial class MovementComponent : Node2D
 {
+	public enum HedgeOverlapState
+	{
+		Outside,
+		Partial,
+		Complete,
+	}
 	// Where is the character body facing
 	public Vector2 FacingDirection { get; private set; }
 	// IsOnFloor references whether the node collider is actually touching the floor
 	public bool IsOnFloor { get; set; }
+	// FloorHeightCheckEnabled enables setting the last known height at which the player touched the ground
+	public bool FloorHeightCheckEnabled { get; set; }
 	// IsOnRoof references whether the node collider is actually touching the roof
 	public bool IsOnCeiling { get; private set; }
 	// IsOnRoof references whether the node collider is next to wall in the facing direction
 	public bool IsOnWall { get; private set; }
+	/// <summary>
+	/// Current ovelap state against hedge objects. 0 = not overlapping, 1 = partial overlapping, 2 = fully overlapped
+	/// </summary>
+	public HedgeOverlapState HedgeState { get; private set; }
+	public Vector2 InsideHedgeDirection { get; private set; }
 	// SnappedToFloor references whether the node collider is within snapping distance from the floor
 	public bool SnappedToFloor { get; private set; }
 	// Lowest point of collision between the component and the floor
@@ -36,19 +48,15 @@ public partial class MovementComponent : Node2D
 		}
 	}
 	public bool IsOnEdge => _raysOnFloor == 1;
-	public GodotObject OverlappedHedge;
-
-	public bool ShouldEnterHedge => OverlappedHedge != null && (_raysOnHedge + _raysOnWall) >= 2;
-	public bool ShouldExitHedge => _raysOnWall == 0 && _raysOnHedge < 4;
+	public bool IsStandingOnHedge => _raysOnHedge > 0;
+	private int _raysOnHedge = 0;
 
 	public bool CanDropFromPlatform = false;
 
 	private bool _isCoreography;
 	private int _raysOnFloor;
-	private int _raysOnHedge;
 	private int _raysOnWall;
 	public Vector2 OutsideHedgeDirection;
-	public Vector2 InsideHedgeDirection;
 
 	private float _lastPlatformHeight;
 
@@ -74,7 +82,8 @@ public partial class MovementComponent : Node2D
 	private RayCast2D CourseCorrectRayYl;
 	[Node]
 	private RayCast2D CourseCorrectRayYr;
-
+	[Node]
+	private RayCast2D ReusableRay;
 
 	[Export]
 	private CollisionShape2D CollisionComponent;
@@ -145,24 +154,16 @@ public partial class MovementComponent : Node2D
 		characterBody2D.FloorStopOnSlope = false;
 
 		_raysOnFloor = 0;
-		_raysOnHedge = 0;
 		_raysOnWall = 0;
+		_raysOnHedge = 0;
 
-		CheckRaycastFloor(GroundRayCastL);
-		CheckRaycastFloor(GroundRayCastR);
+		CheckHedge();
 
-		OutsideHedgeDirection = InsideHedgeDirection = Vector2.Zero;
-
-		CheckRaycastHedge(GroundRayCastR, -Vector2.Up + Vector2.Right);
-		CheckRaycastHedge(CeilRayCastR, Vector2.Up + Vector2.Right);
-		CheckRaycastHedge(GroundRayCastL, -Vector2.Up - Vector2.Right);
-		CheckRaycastHedge(CeilRayCastL, Vector2.Up - Vector2.Right);
-
-		if (_raysOnHedge < 2)
+		if (HedgeState == HedgeOverlapState.Outside)
 		{
-			OverlappedHedge = null;
+			CheckRaycastFloor(GroundRayCastL);
+			CheckRaycastFloor(GroundRayCastR);
 		}
-
 		CanDropFromPlatform = CheckRaycastPlatform(GroundRayCastL) && CheckRaycastPlatform(GroundRayCastR);
 
 		FacingDirection = Velocities[VelocityType.MainMovement].X == 0f
@@ -182,7 +183,7 @@ public partial class MovementComponent : Node2D
 		{
 
 			Vector2 point = rayCast2D.GetCollisionPoint();
-			if (FloorHeight == null || point.Y < FloorHeight)
+			if (FloorHeight == null || rayCast2D.GetCollisionNormal() == Vector2.Up || point.Y < FloorHeight)
 			{
 				FloorHeight = point.Y;
 				FloorNormal = rayCast2D.GetCollisionNormal();
@@ -192,50 +193,47 @@ public partial class MovementComponent : Node2D
 			_raysOnFloor++;
 		}
 	}
-	private void CheckRaycastHedge(RayCast2D rayCast2D, Vector2 direction)
+	private void CheckHedge()
 	{
-		var prevPosition = rayCast2D.TargetPosition;
-		rayCast2D.Position = direction.Normalized() * prevPosition.Length();
-		var prevMask = rayCast2D.CollisionMask;
-		GodotObject collider = null;
-		// if inside the bush, check check for walls and count them as "in the hedge"
-		if (OverlappedHedge != null)
+		var bounds = parentController.CollisionComponent.Shape.GetRect();
+		var tl = bounds.Position;
+		var tr = new Vector2(bounds.End.X, tl.Y);
+		var bl = new Vector2(tl.X, bounds.End.Y);
+		var br = bounds.End;
+		var corners = new Vector2[] { tl, tr, bl, br };
+		var overlapCount = 0;
+		InsideHedgeDirection = Vector2.Zero;
+
+		ReusableRay.CollisionMask = 1 << 2;
+		foreach (var corner in corners)
 		{
-			rayCast2D.CollisionMask = 1 << 1 | 1 << 3;
-			rayCast2D.ForceRaycastUpdate();
-			collider = rayCast2D.GetCollider();
-			if (collider != null)
+			ReusableRay.Position = corner;
+			ReusableRay.TargetPosition = -corner / 2;
+			ReusableRay.ForceRaycastUpdate();
+			if (ReusableRay.IsColliding())
 			{
-				_raysOnWall++;
-				OutsideHedgeDirection += direction;
-				InsideHedgeDirection -= direction;
+				overlapCount++;
+				InsideHedgeDirection += corner / 2;
 			}
 		}
 
-		if (collider == null) // if we do not hit a wall, proceed as usual
+		ReusableRay.Position = bl;
+		ReusableRay.TargetPosition = bl + Vector2.Down;
+		ReusableRay.ForceRaycastUpdate();
+		if (ReusableRay.IsColliding())
 		{
-			// check for in/out of hedge
-			rayCast2D.CollisionMask = 1 << 2;
-			rayCast2D.ForceRaycastUpdate();
-			collider = rayCast2D.GetCollider();
-
-			if (collider != null)
-			{
-				_raysOnHedge++;
-				InsideHedgeDirection += direction;
-
-				if (_raysOnHedge + _raysOnWall >= 2)
-				{
-					OverlappedHedge = collider;
-				}
-			}
-			else
-			{
-				OutsideHedgeDirection += direction;
-			}
+			_raysOnHedge++;
 		}
-		rayCast2D.CollisionMask = prevMask;
-		rayCast2D.TargetPosition = prevPosition;
+		ReusableRay.Position = br;
+		ReusableRay.TargetPosition = br + Vector2.Down;
+		ReusableRay.ForceRaycastUpdate();
+		if (ReusableRay.IsColliding())
+		{
+			_raysOnHedge++;
+		}
+
+		InsideHedgeDirection = InsideHedgeDirection.Normalized();
+		HedgeState = overlapCount == 0 ? HedgeOverlapState.Outside : overlapCount == 4 ? HedgeOverlapState.Complete : HedgeOverlapState.Partial;
 	}
 
 	private bool CheckRaycastPlatform(RayCast2D groundCast)
@@ -246,7 +244,6 @@ public partial class MovementComponent : Node2D
 		groundCast.CollisionMask = prevMask;
 		return groundCast.IsColliding();
 	}
-
 
 	public void Move(CharacterBody2D characterBody2D)
 	{
@@ -353,7 +350,7 @@ public partial class MovementComponent : Node2D
 	}
 	public override void _PhysicsProcess(double delta)
 	{
-		RealPositionChange = GlobalPosition - _previousPosition;
-		_previousPosition = GlobalPosition;
+		RealPositionChange = (parentController.GlobalPosition - _previousPosition) / (float)delta;
+		_previousPosition = parentController.GlobalPosition;
 	}
 }

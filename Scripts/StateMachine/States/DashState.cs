@@ -103,6 +103,7 @@ namespace BushyCore
 
         public void EndDash()
         {
+            Agent.PlayerInfo.IsInDashMode = false;
             Agent.MovementComponent.CourseCorrectionEnabled = false;
             Agent.CollisionComponent.ToggleHedgeCollision(true);
             var exitVelocity = Agent.CharacterVariables.DashExitVelocity;
@@ -117,14 +118,13 @@ namespace BushyCore
 
         private void CheckHedge()
         {
-            if (!Agent.MovementComponent.ShouldEnterHedge ||
-                Agent.MovementComponent.InsideHedgeDirection.Normalized().Dot(Agent.MovementComponent.CurrentVelocity.Normalized()) <= 0)
+            if (Agent.MovementComponent.HedgeState == HedgeOverlapState.Outside)
             {
                 return;
             }
 
             throw StateInterrupt.New<HedgeEnteringState>(true,
-                    new InitialHedgeConfig(Agent.MovementComponent.OverlappedHedge, Agent.MovementComponent.CurrentVelocity));
+                    new InitialVelocityVectorConfig(Agent.MovementComponent.CurrentVelocity));
         }
         protected void VelocityUpdate()
         {
@@ -158,7 +158,7 @@ namespace BushyCore
             if (DashJumpTimer.TimeLeft > 0)
             {
                 var jumpVelocity = Agent.MovementComponent.Velocities[VelocityType.MainMovement];
-                jumpVelocity.X *= Agent.CharacterVariables.DashJumpSpeed;
+                jumpVelocity.X = Mathf.Sign(jumpVelocity.X) * Agent.CharacterVariables.DashJumpSpeed;
                 Agent.PlayerInfo.IsInDashMode = true;
                 throw StateInterrupt.New<JumpState>(true, new InitialVelocityVectorConfig(jumpVelocity, false, true));
             }

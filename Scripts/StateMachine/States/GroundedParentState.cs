@@ -50,7 +50,7 @@ namespace BushyCore
 
             Agent.AnimController.SetCondition(PlayerController.AnimConditions.Grounded, true);
 
-
+            Agent.MovementComponent.FloorHeightCheckEnabled = true;
             Agent.CollisionComponent.SwitchShape(CharacterCollisionComponent.ShapeMode.RECTANGULAR);
 
             SetupFromConfigs(configs);
@@ -89,7 +89,14 @@ namespace BushyCore
                 && actionType == InputAction.InputActionType.InputPressed
                 && action == InputManager.Instance.DashAction)
             {
-                throw StateInterrupt.New<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
+                if (Agent.MovementComponent.IsStandingOnHedge && Agent.MovementInputVector.Dot(Vector2.Down) > 0.4)
+                {
+                    throw StateInterrupt.New<HedgeEnteringState>(false, InitialVelocityVector(Agent.MovementInputVector.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed, false, true));
+                }
+                else
+                {
+                    throw StateInterrupt.New<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
+                }
             }
 
             if (actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.AttackAction)
@@ -101,6 +108,12 @@ namespace BushyCore
 
         private void DoJump()
         {
+            if (Agent.PlayerInfo.IsInDashMode && InputManager.Instance.DashAction.Pressed)
+            {
+                var jumpVelocity = Agent.MovementComponent.Velocities[VelocityType.MainMovement];
+                jumpVelocity.X = Mathf.Sign(jumpVelocity.X) * Agent.CharacterVariables.DashJumpSpeed;
+                throw StateInterrupt.New<JumpState>(true, new InitialVelocityVectorConfig(jumpVelocity, false, true));
+            }
             throw StateInterrupt.New<JumpState>(false,
                     StateConfig.InitialVelocityVector(Agent.MovementComponent.Velocities[VelocityType.MainMovement]));
         }
@@ -131,7 +144,7 @@ namespace BushyCore
             var slopeVerticalComponent = Mathf.Tan(Agent.MovementComponent.FloorAngle) * (float)HorizontalAxisMovement.Velocity;
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Agent.MovementComponent.FloorAngle != 0 ?
                 Agent.MovementComponent.FloorNormal * (float)VerticalVelocity * downwardVel
-                : Vector2.Zero;
+                : Vector2.Down * downwardVel;
             Agent.MovementComponent.Velocities[VelocityType.MainMovement] = new Vector2((float)HorizontalAxisMovement.Velocity, slopeVerticalComponent);
         }
 

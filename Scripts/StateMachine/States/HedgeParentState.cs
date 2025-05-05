@@ -11,7 +11,6 @@ namespace BushyCore
 	public partial class HedgeParentState : BaseParentState<PlayerController, HedgeParentState>
 	{
 
-		private GodotObject HedgeNode;
 		public AxisMovement xAxisMovement;
 		public AxisMovement yAxisMovement;
 
@@ -19,6 +18,8 @@ namespace BushyCore
 		private Timer JumpBufferTimer;
 		[Export]
 		private Timer DashBufferTimer;
+		[Export]
+		private BoolEvent OnEnterHedgeEvent;
 		private bool isExitJumpBuffered;
 		private bool isExitDashBuffered;
 
@@ -27,7 +28,7 @@ namespace BushyCore
 		protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
 		{
 			Agent.PlayerInfo.IsInHedge = true;
-
+			OnEnterHedgeEvent?.TriggerEvent(true);
 			// Movement axis config
 			var builder = new AxisMovement.Builder()
 				.Acc(Agent.CharacterVariables.HedgeAcceleration)
@@ -81,9 +82,9 @@ namespace BushyCore
 		{
 			foreach (var config in configs)
 			{
-				if (config is StateConfig.InitialHedgeConfig hedgeConfig)
+				if (config is StateConfig.InitialVelocityVectorConfig velocityConfig)
 				{
-					HedgeNode = hedgeConfig.Hedge;
+					SetVelocity(velocityConfig.Velocity);
 				}
 			}
 		}
@@ -95,6 +96,7 @@ namespace BushyCore
 			Agent.AnimController.SetCondition(PlayerController.AnimConditions.Hedge, false);
 
 			Agent.CollisionComponent.ToggleHedgeCollision(true);
+			OnEnterHedgeEvent?.TriggerEvent(false);
 			Agent.PlayerInfo.DashEnabled = true;
 		}
 
@@ -134,7 +136,7 @@ namespace BushyCore
 					StateConfig.InitialVelocityVector(Agent.MovementComponent.Velocities[VelocityType.MainMovement]));
 			}
 
-			throw StateInterrupt.New<FallState>();
+			throw StateInterrupt.New<FallState>(false, new StateConfig.InitialVelocityVectorConfig(CurrentVelocity));
 		}
 
 		private void OnJumpActionCancelled()

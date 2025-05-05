@@ -11,8 +11,8 @@ namespace BushyCore
         protected override void EnterStateInternal(params StateConfig.IBaseStateConfig[] configs)
         {
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-            ParentState.SetVelocity(Agent.MovementComponent.OutsideHedgeDirection
-                                * Agent.CharacterVariables.HedgeMovementSpeed);
+            ParentState.SetVelocity(-Agent.MovementComponent.InsideHedgeDirection
+                                * Agent.CharacterVariables.HedgeMovementSpeed * 2);
             RemoveControls();
         }
 
@@ -44,7 +44,7 @@ namespace BushyCore
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
-            if (Agent.MovementComponent.OutsideHedgeDirection == Vector2.Zero || TimeSinceStateEntered > TimeSpan.FromMilliseconds(150))
+            if (Agent.MovementComponent.InsideHedgeDirection == Vector2.Zero || TimeSinceStateEntered > TimeSpan.FromMilliseconds(150))
             {
                 ParentState.OnHedgeExit();
             }

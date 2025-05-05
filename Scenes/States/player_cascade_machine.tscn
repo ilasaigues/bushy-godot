@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bos0cujm0xhtq"]
+[gd_scene load_steps=20 format=3 uid="uid://bos0cujm0xhtq"]
 
 [ext_resource type="Script" uid="uid://dd1j72nkmfhew" path="res://Scripts/StateMachine/Implementations/PlayerCascadeStateMachine.cs" id="1_pk7ru"]
 [ext_resource type="Script" uid="uid://bpm74xg5ifstb" path="res://Scripts/StateMachine/Implementations/PlayerStateMachine.cs" id="2_owsau"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" uid="uid://c4kocpmh83odd" path="res://Scripts/StateMachine/States/HedgeEnteringState.cs" id="10_8y560"]
 [ext_resource type="Script" uid="uid://do0bbht2lsmg0" path="res://Scripts/StateMachine/States/HedgeMoveState.cs" id="11_ly2dg"]
 [ext_resource type="Script" uid="uid://ce35akn106l3v" path="res://Scripts/StateMachine/States/DashState.cs" id="12_h7yor"]
+[ext_resource type="Resource" uid="uid://8kukqoskyw1n" path="res://Assets/Events/OnPlayerEnterHedge.tres" id="16_5juv1"]
 [ext_resource type="Script" uid="uid://ciwqdt5jmvpo1" path="res://Scripts/StateMachine/States/HedgeExitState.cs" id="18_78rft"]
 
 [node name="PlayerCascadeMachine" type="Node"]
@@ -103,6 +104,7 @@ process_callback = 0
 script = ExtResource("9_607nu")
 JumpBufferTimer = NodePath("JumpTimer")
 DashBufferTimer = NodePath("DashTimer")
+OnEnterHedgeEvent = ExtResource("16_5juv1")
 
 [node name="HedgeEnteringState" type="Node" parent="BaseStateMachine/HedgeParentState"]
 script = ExtResource("10_8y560")
