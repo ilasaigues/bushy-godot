@@ -6,12 +6,20 @@ using System.Runtime.CompilerServices;
 
 public partial class AnimationController : Node
 {
+    public Action<string> AnimationChangedEventHandler = _ => { };
     [Export] public AnimationTree AnimationTree { get; set; }
     private HashSet<string> _triggers = [];
 
     private Dictionary<string, string> NameToPath = [];
 
     private const bool DEBUG = false;
+
+    public override void _Ready()
+    {
+        base._Ready();
+        AnimationChangedEventHandler = s => { };
+    }
+
 
     public void InitializeFromType(Type nameContainerType)
     {
@@ -98,5 +106,10 @@ public partial class AnimationController : Node
         {
             GD.PushWarning($"Function {methodName} invoked with empty string.");
         }
+    }
+
+    public void OnCurrentAnimationChanged(string newAnimationName)
+    {
+        AnimationChangedEventHandler(newAnimationName);
     }
 }

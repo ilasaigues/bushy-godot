@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="Vector2Event" load_steps=2 format=3 uid="uid://cgdfck44ubaua"]
+
+[ext_resource type="Script" uid="uid://dgnfpwbgwmwsb" path="res://Scripts/GodotEvents/Implementations/Vector2Event.cs" id="1_8ahkb"]
+
+[resource]
+script = ExtResource("1_8ahkb")
+_editorValue = Vector2(0, 0)
+_developerDescription = ""
+metadata/_custom_type_script = "uid://dgnfpwbgwmwsb"

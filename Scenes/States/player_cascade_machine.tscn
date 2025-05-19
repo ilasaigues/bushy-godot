@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bos0cujm0xhtq"]
+[gd_scene load_steps=24 format=3 uid="uid://bos0cujm0xhtq"]
 
 [ext_resource type="Script" uid="uid://dd1j72nkmfhew" path="res://Scripts/StateMachine/Implementations/PlayerCascadeStateMachine.cs" id="1_pk7ru"]
 [ext_resource type="Script" uid="uid://bpm74xg5ifstb" path="res://Scripts/StateMachine/Implementations/PlayerStateMachine.cs" id="2_owsau"]
@@ -14,9 +14,13 @@
 [ext_resource type="Resource" uid="uid://diext71c262cl" path="res://airAttackData.tres" id="8_78rft"]
 [ext_resource type="Script" uid="uid://d1k8qll7pe3ak" path="res://Scripts/StateMachine/States/JumpState.cs" id="8_uinwk"]
 [ext_resource type="Script" uid="uid://ddn3l4ri586iy" path="res://Scripts/StateMachine/States/HedgeParentState.cs" id="9_607nu"]
+[ext_resource type="Script" uid="uid://bf6cm1hdx4ujk" path="res://Scripts/StateMachine/States/ProjectileAttackState.cs" id="9_rq6jg"]
 [ext_resource type="Script" uid="uid://c4kocpmh83odd" path="res://Scripts/StateMachine/States/HedgeEnteringState.cs" id="10_8y560"]
+[ext_resource type="PackedScene" uid="uid://cw5pxyak4klh6" path="res://Scenes/range_attack.tscn" id="10_82fk1"]
 [ext_resource type="Script" uid="uid://do0bbht2lsmg0" path="res://Scripts/StateMachine/States/HedgeMoveState.cs" id="11_ly2dg"]
+[ext_resource type="Script" uid="uid://ijr86b47mu6d" path="res://Scripts/GodotEvents/Implementations/Vector2EventListener.cs" id="11_pv8bo"]
 [ext_resource type="Script" uid="uid://ce35akn106l3v" path="res://Scripts/StateMachine/States/DashState.cs" id="12_h7yor"]
+[ext_resource type="Resource" uid="uid://cgdfck44ubaua" path="res://PlayerProjectileSpawnerPositionUpdateEvent.tres" id="12_l6squ"]
 [ext_resource type="Resource" uid="uid://8kukqoskyw1n" path="res://Assets/Events/OnPlayerEnterHedge.tres" id="16_5juv1"]
 [ext_resource type="Script" uid="uid://ciwqdt5jmvpo1" path="res://Scripts/StateMachine/States/HedgeExitState.cs" id="18_78rft"]
 
@@ -69,6 +73,14 @@ one_shot = true
 
 [node name="ComboTimer" type="Timer" parent="ActionStateMachine/AttackParentState"]
 one_shot = true
+
+[node name="ProjectileAttackState" type="Node" parent="ActionStateMachine"]
+script = ExtResource("9_rq6jg")
+_attackProjectileScene = ExtResource("10_82fk1")
+
+[node name="ProjectileSpawnPointListener" type="Node" parent="ActionStateMachine/ProjectileAttackState"]
+script = ExtResource("11_pv8bo")
+EventResource = ExtResource("12_l6squ")
 
 [node name="BaseStateMachine" type="Node" parent="."]
 script = ExtResource("2_owsau")
@@ -124,5 +136,6 @@ script = ExtResource("18_78rft")
 
 [connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="AnimationUpdate"]
 [connection signal="timeout" from="OverrideStateMachine/DashState/DashDuration" to="OverrideStateMachine/DashState" method="PreEndDash"]
+[connection signal="EventReceived" from="ActionStateMachine/ProjectileAttackState/ProjectileSpawnPointListener" to="ActionStateMachine/ProjectileAttackState" method="SetProjectileSpawnPoint"]
 [connection signal="timeout" from="BaseStateMachine/AirParentState/JumpState/JumpTimer" to="BaseStateMachine/AirParentState/JumpState" method="JumpTimedOut"]
 [connection signal="timeout" from="BaseStateMachine/AirParentState/CoyoteJumpTimer" to="BaseStateMachine/AirParentState" method="OnJumpCoyoteTimerTimeout"]

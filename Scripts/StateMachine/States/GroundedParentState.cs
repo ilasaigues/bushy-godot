@@ -103,6 +103,27 @@ namespace BushyCore
             {
                 throw StateInterrupt.New<AttackGroundState>(false);
             }
+
+            if (actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.BurstAction)
+            {
+                var direction = Agent.MovementInputVector;
+                if (direction == Vector2.Zero) // no input pressed, assume horizontal
+                {
+                    direction = Agent.PlayerInfo.LookDirection * Vector2.Right;
+                }
+                else // input is pressed, sanizite input in case of multiple axes being active at the same time
+                {
+                    if (Mathf.Abs(direction.X) >= Mathf.Abs(direction.Y))
+                    {
+                        direction.Y = 0;
+                        direction = direction.Normalized();
+                    }
+                }
+                if (direction.Y <= 0)
+                {
+                    throw StateInterrupt.New<ProjectileAttackState>(false, new FireProjectileConfig(direction, Agent.PlayerInfo.LookDirection == -1));
+                }
+            }
             return CurrentSubState.OnInputButtonChanged(actionType, action);
         }
 

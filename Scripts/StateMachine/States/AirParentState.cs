@@ -210,22 +210,40 @@ namespace BushyCore
             return CurrentSubState.OnInputAxisChanged(axis);
         }
 
-        protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction Action)
+        protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction action)
         {
             if (Agent.PlayerInfo.CanDash
                 && actionType == InputAction.InputActionType.InputPressed
-                && Action == InputManager.Instance.DashAction)
+                && action == InputManager.Instance.DashAction)
             {
                 throw StateInterrupt.New<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
             }
 
             if (actionType == InputAction.InputActionType.InputPressed
-                && Action == InputManager.Instance.AttackAction)
+                && action == InputManager.Instance.AttackAction)
             {
                 throw StateInterrupt.New<AttackAirState>(false);
             }
 
-            return CurrentSubState.OnInputButtonChanged(actionType, Action);
+            if (actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.BurstAction)
+            {
+                var direction = Agent.MovementInputVector;
+                if (direction == Vector2.Zero) // no input pressed, assume horizontal
+                {
+                    direction = Agent.PlayerInfo.LookDirection * Vector2.Right;
+                }
+                else // input is pressed, sanizite input in case of multiple axes being active at the same time
+                {
+                    if (Mathf.Abs(direction.X) > Mathf.Abs(direction.Y))
+                    {
+                        direction.Y = 0;
+                        direction = direction.Normalized();
+                    }
+                }
+                throw StateInterrupt.New<ProjectileAttackState>(false, new FireProjectileConfig(direction, Agent.PlayerInfo.LookDirection == -1));
+            }
+
+            return CurrentSubState.OnInputButtonChanged(actionType, action);
         }
 
         float GetGravity()

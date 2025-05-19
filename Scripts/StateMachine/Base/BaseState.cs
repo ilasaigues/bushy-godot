@@ -27,7 +27,7 @@ namespace BushyCore
             }
             Active = true;
             _timeOfActivation = DateTime.Now;
-            GD.Print("Entering state: " + GetType().Name);
+            //GD.Print("✔️‍️: " + GetType().Name);
             EnterStateInternal(configs);
         }
 
@@ -48,6 +48,8 @@ namespace BushyCore
                 return;
             }
             Active = false;
+            //GD.Print("❌: " + GetType().Name);
+
             ExitStateInternal();
         }
         protected abstract void ExitStateInternal();

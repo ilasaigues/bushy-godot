@@ -60,9 +60,11 @@ namespace BushyCore
             }
         }
 
-        public void SetState(Type stateType)
+
+
+        public void SetState(Type stateType, params StateConfig.IBaseStateConfig[] configs)
         {
-            var interrupt = new StateInterrupt(stateType);
+            var interrupt = new StateInterrupt(stateType, configs: configs);
             CascadeThroughStates(interrupt.NextStateType, interrupt.Configs);
         }
 

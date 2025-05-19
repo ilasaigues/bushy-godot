@@ -23,9 +23,7 @@ namespace BushyCore
         protected override void EnterStateInternal(params IBaseStateConfig[] configs)
         {
             SetupFromConfigs(configs);
-            direction = Agent.MovementInputVector.X != 0
-                ? Mathf.Sign(Agent.MovementInputVector.X)
-                : Mathf.Sign(Agent.MovementComponent.FacingDirection.X);
+            direction = Agent.PlayerInfo.LookDirection;
 
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
             Agent.PlayerInfo.IsInDashMode = true;

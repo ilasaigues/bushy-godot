@@ -14,7 +14,7 @@ namespace BushyCore
         {
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
             Agent.CollisionComponent.ToggleHedgeCollision(false);
-            _targetVelocity = Agent.MovementComponent.InsideHedgeDirection.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed;
+            UpdateTargetVelocity();
             SetupFromConfigs(configs);
             RemoveControls();
         }
@@ -56,10 +56,17 @@ namespace BushyCore
                 .Build();
         }
 
+        private void UpdateTargetVelocity()
+        {
+            _targetVelocity = Agent.MovementComponent.InsideHedgeDirection.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed;
+
+        }
+
         protected override void ExitStateInternal() { }
 
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
+            UpdateTargetVelocity();
             ParentState.SetVelocity(ParentState.CurrentVelocity.Slerp(
                                 _targetVelocity,
                                 0.33333f));

@@ -114,7 +114,7 @@ namespace BushyCore
 			Agent.CollisionComponent.ToggleHedgeCollision(true);
 			Agent.Sprite2DComponent.ForceOrientation(new Vector2(Agent.MovementComponent.CurrentVelocity.X, -10));
 
-			var direction = Agent.MovementComponent.FacingDirection;
+			var direction = Agent.PlayerInfo.LookDirection * Vector2.Right;
 			if (isExitDashBuffered && isExitJumpBuffered)
 			{
 				Agent.MovementComponent.Velocities[VelocityType.MainMovement] = new Vector2(Agent.CharacterVariables.DashJumpSpeed * Mathf.Sign(direction.X), 0);
