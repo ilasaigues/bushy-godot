@@ -30,6 +30,11 @@ namespace BushyCore
 			public const string BushBlendValues = "parameters/BushBlendSpace/blend_position";
 		}
 
+		public enum StateMessage
+		{
+			Knockback,
+		}
+
 
 		[Node] public MovementComponent MovementComponent;
 		[Node] public CharacterCollisionComponent CollisionComponent;
@@ -119,12 +124,18 @@ namespace BushyCore
 
 		private void OnHorizontalAxisChanged(InputAxis horizontalAxis)
 		{
-			_movementInputVector.X = horizontalAxis.Value;
+			if (!PlayerInfo.IsAttacking)
+			{
+				_movementInputVector.X = horizontalAxis.Value;
+			}
 		}
 
 		private void OnVerticalAxisChanged(InputAxis verticalAxis)
 		{
-			_movementInputVector.Y = verticalAxis.Value;
+			if (!PlayerInfo.IsAttacking)
+			{
+				_movementInputVector.Y = verticalAxis.Value;
+			}
 		}
 
 		public void OnArea2DEnter(Area2D areaNode)
@@ -146,11 +157,7 @@ namespace BushyCore
 
 		public void Knockback(Vector2 velocity)
 		{
-			if (Mathf.Abs(velocity.Y) > Mathf.Abs(velocity.X) && velocity.Y < 0)
-			{
-				velocity.Y = CharacterVariables.JumpSpeed;
-			}
-			CascadeStateMachine.SetState(typeof(JumpState), new StateConfig.InitialVelocityVectorConfig(velocity));
+			CascadeStateMachine.SendMessageToStates(StateMessage.Knockback, velocity);
 		}
 
 		public override void _ExitTree()

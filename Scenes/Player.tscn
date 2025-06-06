@@ -506,6 +506,20 @@ tracks/1/keys = {
 "method": &"SetSubAnimation"
 }]
 }
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimationController")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["ProjectileAnimationEnded"],
+"method": &"SendAnimationMessage"
+}]
+}
 
 [sub_resource type="Animation" id="Animation_j3baa"]
 resource_name = "range_attack_side"
@@ -537,6 +551,20 @@ tracks/1/keys = {
 "method": &"SetSubAnimation"
 }]
 }
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimationController")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["ProjectileAnimationEnded"],
+"method": &"SendAnimationMessage"
+}]
+}
 
 [sub_resource type="Animation" id="Animation_enj7f"]
 resource_name = "range_attack_up"
@@ -566,6 +594,20 @@ tracks/1/keys = {
 "values": [{
 "args": ["range_up_vfx"],
 "method": &"SetSubAnimation"
+}]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimationController")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["ProjectileAnimationEnded"],
+"method": &"SendAnimationMessage"
 }]
 }
 
@@ -801,7 +843,7 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 visible = false
-scale = Vector2(1.1, 1.1)
+scale = Vector2(1.05, 1.05)
 
 [node name="PlayerCascadeMachine" parent="." instance=ExtResource("12_4qmpi")]
 

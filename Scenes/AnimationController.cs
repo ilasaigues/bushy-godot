@@ -6,7 +6,8 @@ using System.Runtime.CompilerServices;
 
 public partial class AnimationController : Node
 {
-    public Action<string> AnimationChangedEventHandler = _ => { };
+
+    [Signal] public delegate void AnimationMessageSentEventHandler(string message);
     [Export] public AnimationTree AnimationTree { get; set; }
     private HashSet<string> _triggers = [];
 
@@ -17,7 +18,6 @@ public partial class AnimationController : Node
     public override void _Ready()
     {
         base._Ready();
-        AnimationChangedEventHandler = s => { };
     }
 
 
@@ -108,8 +108,8 @@ public partial class AnimationController : Node
         }
     }
 
-    public void OnCurrentAnimationChanged(string newAnimationName)
+    public void SendAnimationMessage(string message)
     {
-        AnimationChangedEventHandler(newAnimationName);
+        EmitSignal(SignalName.AnimationMessageSent, message);
     }
 }

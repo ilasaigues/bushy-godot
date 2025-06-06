@@ -73,14 +73,14 @@ namespace BushyCore
             if (TimeSinceStateEntered > TimeSpan.FromSeconds(0.1) && Agent.MovementComponent.HedgeState == HedgeOverlapState.Outside)
             {
                 ReturnControls();
-                throw StateInterrupt.New<FallState>();
+                ChangeState<FallState>();
             }
 
             if (Agent.MovementComponent.HedgeState == HedgeOverlapState.Complete)
             {
                 ReturnControls();
                 Agent.Position += Agent.MovementComponent.InsideHedgeDirection;
-                throw StateInterrupt.New<HedgeMoveState>();
+                ChangeState<HedgeMoveState>();
             }
             return prevStatus;
         }

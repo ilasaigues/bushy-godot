@@ -22,8 +22,6 @@ namespace BushyCore
 
         public bool CanCoyoteJump { get; set; }
 
-        public bool CanFallIntoHedge { get; set; }
-
         public bool IgnorePlatforms = false;
 
         private float _lastPlatformHeight = 0;
@@ -50,7 +48,7 @@ namespace BushyCore
             XAxisMovement.SetInitVel(Agent.MovementComponent.Velocities[VelocityType.MainMovement].X);
 
             VerticalVelocity = 0;
-            CanFallIntoHedge = false;
+            Agent.PlayerInfo.CanFallIntoHedge = false;
             CanCoyoteJump = Agent.PlayerInfo.CanJump;
 
             if (CanCoyoteJump)
@@ -82,7 +80,7 @@ namespace BushyCore
                     VerticalVelocity = velocityConfig.Velocity.Y;
                     TargetHorizontalVelocity = velocityConfig.Velocity.X;
                     XAxisMovement.OvershootDec(velocityConfig.DoesDecelerate);
-                    CanFallIntoHedge = velocityConfig.CanEnterHedge;
+                    Agent.PlayerInfo.CanFallIntoHedge = velocityConfig.CanEnterHedge;
                     Agent.PlayerInfo.IsInDashMode = !velocityConfig.DoesDecelerate && velocityConfig.CanEnterHedge;
                     if (Agent.PlayerInfo.IsInDashMode && TargetHorizontalVelocity == 0)
                     {
@@ -114,6 +112,28 @@ namespace BushyCore
             }
         }
 
+        public override bool Message(Enum message, params object[] args)
+        {
+            if (message is PlayerController.StateMessage stateMessage)
+            {
+                var velocity = (Vector2)args[0];
+                switch (stateMessage)
+                {
+                    case PlayerController.StateMessage.Knockback:
+                        if (Mathf.Abs(velocity.Y) > Mathf.Abs(velocity.X) && velocity.Y < 0) // if the velocity is vertical 
+                        {
+                            velocity.Y = Agent.CharacterVariables.JumpSpeed;
+                            velocity.X = Agent.MovementComponent.Velocities[VelocityType.MainMovement].X;
+                        }
+                        TargetHorizontalVelocity = velocity.X;
+                        XAxisMovement.SetInitVel(TargetHorizontalVelocity);
+                        ChangeState<FallState>(false, new InitialVelocityVectorConfig(velocity, !Agent.PlayerInfo.IsInDashMode, Agent.PlayerInfo.CanFallIntoHedge));
+                        break;
+                }
+            }
+            return true;
+        }
+
         protected override void ExitStateInternal()
         {
             base.ExitStateInternal();
@@ -135,9 +155,9 @@ namespace BushyCore
                     }
                 }
 
-                if (CanFallIntoHedge && Agent.MovementComponent.HedgeState != HedgeOverlapState.Outside)
+                if (Agent.PlayerInfo.CanFallIntoHedge && Agent.MovementComponent.HedgeState != HedgeOverlapState.Outside)
                 {
-                    throw StateInterrupt.New<HedgeEnteringState>(false, new InitialVelocityVectorConfig(Agent.MovementComponent.CurrentVelocity));
+                    ChangeState<HedgeEnteringState>(false, new InitialVelocityVectorConfig(Agent.MovementComponent.CurrentVelocity));
                 }
 
                 if (!IgnorePlatforms && Agent.MovementComponent.IsOnFloor && VerticalVelocity >= 0)
@@ -145,12 +165,12 @@ namespace BushyCore
                     bool IsJumpBuffered = InputManager.Instance.JumpAction.TimeSinceLastPressed <= Agent.CharacterVariables.JumpBufferTime;
                     if (Agent.MovementInputVector.X != 0)
                     {
-                        throw StateInterrupt.New<WalkState>(false,
+                        ChangeState<WalkState>(false,
                             new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration));
                     }
                     else
                     {
-                        throw StateInterrupt.New<IdleGroundedState>(false,
+                        ChangeState<IdleGroundedState>(false,
                             new InitialGroundedConfig(IsJumpBuffered, XAxisMovement.HasOvershootDeceleration));
                     }
                 }
@@ -158,7 +178,7 @@ namespace BushyCore
                 if (VerticalVelocity < 0f && Agent.MovementComponent.IsOnCeiling)
                 {
                     VerticalVelocity = Mathf.Min(VerticalVelocity, 0);
-                    throw StateInterrupt.New<FallState>();
+                    ChangeState<FallState>();
                 }
 
                 if (Agent.MovementComponent.CurrentVelocity.Y > 0)
@@ -207,22 +227,30 @@ namespace BushyCore
 
         protected override bool OnInputAxisChangedInternal(InputAxis axis)
         {
+            if (Agent.PlayerInfo.IsAttacking)
+            {
+                return true;
+            }
             return CurrentSubState.OnInputAxisChanged(axis);
         }
 
         protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction action)
         {
+            if (Agent.PlayerInfo.IsAttacking)
+            {
+                return true;
+            }
             if (Agent.PlayerInfo.CanDash
                 && actionType == InputAction.InputActionType.InputPressed
                 && action == InputManager.Instance.DashAction)
             {
-                throw StateInterrupt.New<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
+                ChangeState<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
             }
 
             if (actionType == InputAction.InputActionType.InputPressed
                 && action == InputManager.Instance.AttackAction)
             {
-                throw StateInterrupt.New<AttackAirState>(false);
+                ChangeState<AttackAirState>(false);
             }
 
             if (actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.BurstAction)
@@ -240,7 +268,7 @@ namespace BushyCore
                         direction = direction.Normalized();
                     }
                 }
-                throw StateInterrupt.New<ProjectileAttackState>(false, new FireProjectileConfig(direction, Agent.PlayerInfo.LookDirection == -1));
+                ChangeState<ProjectileAttackState>(false, new FireProjectileConfig(direction, Agent.PlayerInfo.LookDirection == -1));
             }
 
             return CurrentSubState.OnInputButtonChanged(actionType, action);

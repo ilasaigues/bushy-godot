@@ -23,7 +23,7 @@ namespace BushyCore
         {
             if (Agent.MovementComponent.HedgeState != HedgeOverlapState.Complete)
             {
-                throw StateInterrupt.New<HedgeExitState>();
+                ChangeState<HedgeExitState>();
             }
         }
 
