@@ -69,5 +69,18 @@ namespace BushyCore
             public Type SubType { get; } = substateType;
         }
         public readonly struct PlatformDropConfig() : IBaseStateConfig { }
+
+        public readonly struct FireProjectileConfig : IBaseStateConfig
+        {
+            public readonly Vector2 Direction;
+            public readonly bool FlipHorizontal;
+
+            public FireProjectileConfig(Vector2 direction, bool flipHorizontal)
+            {
+                Direction = direction;
+                FlipHorizontal = flipHorizontal;
+            }
+
+        }
     }
 }

@@ -17,6 +17,9 @@ namespace BushyCore
         string GetStateName();
         TimeSpan TimeSinceStateEntered { get; }
     }
+
+    public interface INullState : IState { }
+
     public interface IState<T> : IState where T : Node
     {
         T Agent { get; set; }

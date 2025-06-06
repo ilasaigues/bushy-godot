@@ -83,6 +83,11 @@ namespace BushyCore
         public int HedgeMovementSpeed { get; private set; }
         [Export]
         public int MaxHedgeEnterSpeed { get; private set; }
+        [ExportCategory("Projectile")]
+        [Export] public float ProjectileSpeed;
+        [Export] public float ProjectileLifetime;
+        [Export] public float ProjectileBlastHorizontalKnockback;
+        [Export] public float ProjectileBlastVerticalKnockback;
         public CharacterVariables() { }
     }
 }

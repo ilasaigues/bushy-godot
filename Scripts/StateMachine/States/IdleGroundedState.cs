@@ -48,7 +48,7 @@ namespace BushyCore
         {
             if (axis == InputManager.Instance.HorizontalAxis && axis.Value != 0)
             {
-                throw StateInterrupt.New<WalkState>();
+                ChangeState<WalkState>();
             }
             return true;
         }

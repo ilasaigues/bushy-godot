@@ -72,12 +72,16 @@ namespace BushyCore
 
         protected override bool OnInputButtonChangedInternal(InputAction.InputActionType actionType, InputAction action)
         {
+            if (Agent.PlayerInfo.IsAttacking)
+            {
+                return true;
+            }
             if (Agent.PlayerInfo.CanJump && actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.JumpAction)
             {
                 if (Agent.MovementComponent.CanDropFromPlatform && Agent.MovementInputVector.Y > 0 && Agent.MovementInputVector.Dot(Vector2.Down * 10) > 0.707106781187) //Sin(45°)
                 {
                     Agent.MovementComponent.IsOnFloor = false;
-                    throw StateInterrupt.New<FallState>(false, new PlatformDropConfig());
+                    ChangeState<FallState>(false, new PlatformDropConfig());
                 }
                 else
                 {
@@ -91,20 +95,61 @@ namespace BushyCore
             {
                 if (Agent.MovementComponent.IsStandingOnHedge && Agent.MovementInputVector.Dot(Vector2.Down) > 0.4)
                 {
-                    throw StateInterrupt.New<HedgeEnteringState>(false, InitialVelocityVector(Agent.MovementInputVector.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed, false, true));
+                    ChangeState<HedgeEnteringState>(false, InitialVelocityVector(Agent.MovementInputVector.Normalized() * Agent.CharacterVariables.MaxHedgeEnterSpeed, false, true));
                 }
                 else
                 {
-                    throw StateInterrupt.New<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
+                    ChangeState<DashState>(false, InitialVelocityVector(Agent.MovementInputVector, false, true));
                 }
             }
 
             if (actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.AttackAction)
             {
-                throw StateInterrupt.New<AttackGroundState>(false);
+                ChangeState<AttackGroundState>(false);
+            }
+
+            if (actionType == InputAction.InputActionType.InputPressed && action == InputManager.Instance.BurstAction)
+            {
+                var direction = Agent.MovementInputVector;
+                if (direction == Vector2.Zero) // no input pressed, assume horizontal
+                {
+                    direction = Agent.PlayerInfo.LookDirection * Vector2.Right;
+                }
+                else // input is pressed, sanizite input in case of multiple axes being active at the same time
+                {
+                    if (Mathf.Abs(direction.X) >= Mathf.Abs(direction.Y))
+                    {
+                        direction.Y = 0;
+                        direction = direction.Normalized();
+                    }
+                }
+                if (direction.Y <= 0)
+                {
+                    ChangeState<ProjectileAttackState>(false, new FireProjectileConfig(direction, Agent.PlayerInfo.LookDirection == -1));
+                }
             }
             return CurrentSubState.OnInputButtonChanged(actionType, action);
         }
+
+        public override bool Message(Enum message, params object[] args)
+        {
+            if (message is PlayerController.StateMessage stateMessage)
+            {
+                var velocity = (Vector2)args[0];
+                switch (stateMessage)
+                {
+                    case PlayerController.StateMessage.Knockback:
+                        if (Mathf.Abs(velocity.Y) > Mathf.Abs(velocity.X) && velocity.Y < 0)
+                        {
+                            velocity.Y = Agent.CharacterVariables.JumpSpeed;
+                        }
+                        ChangeState<JumpState>(false, new InitialVelocityVectorConfig(velocity));
+                        break;
+                }
+            }
+            return true;
+        }
+
 
         private void DoJump()
         {
@@ -112,20 +157,24 @@ namespace BushyCore
             {
                 var jumpVelocity = Agent.MovementComponent.Velocities[VelocityType.MainMovement];
                 jumpVelocity.X = Mathf.Sign(jumpVelocity.X) * Agent.CharacterVariables.DashJumpSpeed;
-                throw StateInterrupt.New<JumpState>(true, new InitialVelocityVectorConfig(jumpVelocity, false, true));
+                ChangeState<JumpState>(true, new InitialVelocityVectorConfig(jumpVelocity, false, true));
             }
-            throw StateInterrupt.New<JumpState>(false,
+            ChangeState<JumpState>(false,
                     StateConfig.InitialVelocityVector(Agent.MovementComponent.Velocities[VelocityType.MainMovement]));
         }
 
         protected override bool OnInputAxisChangedInternal(InputAxis axis)
         {
+            if (Agent.PlayerInfo.IsAttacking)
+            {
+                return true;
+            }
             if (Agent.MovementComponent.CanDropFromPlatform && InputManager.Instance.JumpAction.Pressed)
             {
                 if (Agent.MovementInputVector.Y > 0 && Agent.MovementInputVector.Dot(Vector2.Down * 10) > 0.707106781187) //Sin(45°)
                 {
                     Agent.MovementComponent.IsOnFloor = false;
-                    throw StateInterrupt.New<FallState>(false, new PlatformDropConfig());
+                    ChangeState<FallState>(false, new PlatformDropConfig());
                 }
             }
             return CurrentSubState.OnInputAxisChanged(axis);
@@ -184,7 +233,7 @@ namespace BushyCore
             }
 
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
-            throw StateInterrupt.New<FallState>();
+            ChangeState<FallState>();
         }
     }
 }

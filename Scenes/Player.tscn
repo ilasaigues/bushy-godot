@@ -1,4 +1,4 @@
-[gd_scene load_steps=67 format=3 uid="uid://cjm6k462fd10s"]
+[gd_scene load_steps=68 format=3 uid="uid://cjm6k462fd10s"]
 
 [ext_resource type="Script" uid="uid://bcha5w1pwh5d2" path="res://Scripts/Player/PlayerController.cs" id="1_1vn0y"]
 [ext_resource type="Script" uid="uid://dvkvcx38bvjqw" path="res://Scripts/Components/CharacterCollisionComponent.cs" id="2_7fxs0"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://bvpryooe1yv6v" path="res://Scenes/AnimationController.cs" id="13_miouo"]
 [ext_resource type="AnimationNodeStateMachine" uid="uid://laxffl7ikanw" path="res://Assets/AnimationData/TreeData/PlayerMainLoop.tres" id="13_o3h8g"]
 [ext_resource type="PackedScene" uid="uid://dajw6wecjujr8" path="res://Scenes/light.tscn" id="14_a60b8"]
+[ext_resource type="PackedScene" uid="uid://r2823owwmwbp" path="res://Scenes/range_vfx.tscn" id="15_1e7my"]
 [ext_resource type="Script" uid="uid://dqh4jt8qsak5q" path="res://Scripts/Components/AnimationComponent.cs" id="16_w750l"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_raavv"]
@@ -491,6 +492,34 @@ tracks/0/keys = {
 "update": 1,
 "values": [73, 74, 75, 76, 77, 78]
 }
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("range_vfx")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["range_down_vfx"],
+"method": &"SetSubAnimation"
+}]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimationController")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["ProjectileAnimationEnded"],
+"method": &"SendAnimationMessage"
+}]
+}
 
 [sub_resource type="Animation" id="Animation_j3baa"]
 resource_name = "range_attack_side"
@@ -508,6 +537,34 @@ tracks/0/keys = {
 "update": 1,
 "values": [67, 68, 69, 70, 71, 72]
 }
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("range_vfx")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["range_side_vfx"],
+"method": &"SetSubAnimation"
+}]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimationController")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["ProjectileAnimationEnded"],
+"method": &"SendAnimationMessage"
+}]
+}
 
 [sub_resource type="Animation" id="Animation_enj7f"]
 resource_name = "range_attack_up"
@@ -524,6 +581,34 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [79, 80, 81, 82, 83, 84]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("range_vfx")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["range_up_vfx"],
+"method": &"SetSubAnimation"
+}]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimationController")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["ProjectileAnimationEnded"],
+"method": &"SendAnimationMessage"
+}]
 }
 
 [sub_resource type="Animation" id="Animation_ake6q"]
@@ -700,7 +785,7 @@ states/PlayerMainLoop/position = Vector2(413, 55)
 transitions = ["Start", "PlayerMainLoop", SubResource("AnimationNodeStateMachineTransition_arntx"), "PlayerMainLoop", "BushBlendSpace", SubResource("AnimationNodeStateMachineTransition_lslt6"), "BushBlendSpace", "PlayerMainLoop", SubResource("AnimationNodeStateMachineTransition_ulo2v")]
 graph_offset = Vector2(-130, -6)
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("CascadeStateMachine", "AnimationPlayer", "AnimController", "Sprite2DComponent", "spriteTrail")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("CascadeStateMachine", "AnimationPlayer", "AnimController", "Sprite2DComponent", "spriteTrail", "rangeVFX")]
 z_index = 1
 collision_mask = 47
 script = ExtResource("1_1vn0y")
@@ -710,6 +795,7 @@ AnimationPlayer = NodePath("AnimationComponent")
 AnimController = NodePath("AnimationController")
 Sprite2DComponent = NodePath("Sprite2DComponent")
 spriteTrail = NodePath("SpriteTrail")
+rangeVFX = NodePath("range_vfx")
 
 [node name="AreaDetectionComponent" parent="." instance=ExtResource("2_kbshe")]
 scale = Vector2(0.7, 0.7)
@@ -757,7 +843,7 @@ maxPoints = 24
 
 [node name="Light" parent="." instance=ExtResource("14_a60b8")]
 visible = false
-scale = Vector2(1.1, 1.1)
+scale = Vector2(1.05, 1.05)
 
 [node name="PlayerCascadeMachine" parent="." instance=ExtResource("12_4qmpi")]
 
@@ -772,12 +858,16 @@ parameters/PlayerMainLoop/conditions/Grounded = false
 parameters/PlayerMainLoop/conditions/OnAir = false
 parameters/PlayerMainLoop/AirState/conditions/Falling = false
 parameters/PlayerMainLoop/Grounded/conditions/Running = false
+parameters/PlayerMainLoop/ProjectileAttack/blend_position = Vector2(-0.00320172, 0.0224216)
 
 [node name="AnimationController" type="Node" parent="." node_paths=PackedStringArray("AnimationTree")]
 script = ExtResource("13_miouo")
 AnimationTree = NodePath("../AnimationTree")
 
+[node name="range_vfx" parent="." instance=ExtResource("15_1e7my")]
+
 [connection signal="OnAreaEnter" from="AreaDetectionComponent" to="." method="OnArea2DEnter"]
 [connection signal="OnAreaExit" from="AreaDetectionComponent" to="." method="OnArea2DExit"]
 [connection signal="area_exited" from="AreaDetectionComponent" to="AreaDetectionComponent" method="OnAreaEntered"]
 [connection signal="CoreographyUpdate" from="MovementComponent" to="Sprite2DComponent" method="ForceOrientation"]
+[connection signal="current_animation_changed" from="AnimationComponent" to="AnimationController" method="OnCurrentAnimationChanged"]

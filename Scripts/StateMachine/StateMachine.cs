@@ -41,6 +41,7 @@ namespace BushyCore
             {
                 if (nextState.CanEnterState(stateType, configs))
                 {
+                    _currentState?.ExitState();
                     if (nextState.Active && nextState is IParentState parentState)
                     {
                         nextState.EnterState(stateType, configs);
@@ -49,7 +50,6 @@ namespace BushyCore
                     {
                         if (stateType != _currentState?.GetType())
                         {
-                            _currentState?.ExitState();
                             _currentState = nextState;
                             nextState.EnterState(stateType, configs);
                         }
@@ -64,6 +64,13 @@ namespace BushyCore
         {
             _currentState?.ExitState();
             _currentState = null;
+        }
+
+        public bool OnMessageToStateSent(Enum message, params object[] args)
+        {
+            return TryReturnOrInterrupt(
+                () => _currentState == null || _currentState.Message(message, args)
+            );
         }
 
         public bool OnRigidBodyInteraction(Node2D body, bool enter)
@@ -107,6 +114,10 @@ namespace BushyCore
                 {
                     UnsetState();
                 }
+                if (interrupt.NextStateType == typeof(INullState))
+                {
+                    return true;
+                }
                 if (!SetState(interrupt.NextStateType, interrupt.Configs))
                 {
                     throw;
@@ -142,6 +153,10 @@ namespace BushyCore
                 if (ex.StopStateMachine)
                 {
                     UnsetState();
+                }
+                if (ex.NextStateType == typeof(INullState))
+                {
+                    return prevStatus;
                 }
                 if (!SetState(ex.NextStateType, ex.Configs))
                 {

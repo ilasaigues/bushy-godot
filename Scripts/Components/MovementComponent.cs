@@ -16,8 +16,7 @@ public partial class MovementComponent : Node2D
 		Partial,
 		Complete,
 	}
-	// Where is the character body facing
-	public Vector2 FacingDirection { get; private set; }
+
 	// IsOnFloor references whether the node collider is actually touching the floor
 	public bool IsOnFloor { get; set; }
 	// FloorHeightCheckEnabled enables setting the last known height at which the player touched the ground
@@ -87,7 +86,7 @@ public partial class MovementComponent : Node2D
 
 	[Export]
 	private CollisionShape2D CollisionComponent;
-	private PlayerController parentController;
+	public PlayerController ParentController { get; private set; }
 
 	public enum VelocityType
 	{
@@ -119,7 +118,6 @@ public partial class MovementComponent : Node2D
 		CourseCorrectRayYl.Enabled = false;
 		CourseCorrectRayYr.Enabled = false;
 
-		FacingDirection = Vector2.Right;
 		_previousPosition = GlobalPosition;
 
 		SetRaycastPosition();
@@ -164,11 +162,7 @@ public partial class MovementComponent : Node2D
 			CheckRaycastFloor(GroundRayCastL);
 			CheckRaycastFloor(GroundRayCastR);
 		}
-		CanDropFromPlatform = CheckRaycastPlatform(GroundRayCastL) && CheckRaycastPlatform(GroundRayCastR);
-
-		FacingDirection = Velocities[VelocityType.MainMovement].X == 0f
-			? FacingDirection
-			: Velocities[VelocityType.MainMovement].X * Vector2.Right;
+		CanDropFromPlatform = (CheckRaycastPlatform(GroundRayCastL) || CheckRaycastPlatform(GroundRayCastR)) && _raysOnFloor == 0;
 
 		_isCoreography = Velocities[VelocityType.MainMovement] == Vector2.Zero && _isCoreography;
 	}
@@ -195,7 +189,7 @@ public partial class MovementComponent : Node2D
 	}
 	private void CheckHedge()
 	{
-		var bounds = parentController.CollisionComponent.Shape.GetRect();
+		var bounds = ParentController.CollisionComponent.Shape.GetRect();
 		var tl = bounds.Position;
 		var tr = new Vector2(bounds.End.X, tl.Y);
 		var bl = new Vector2(tl.X, bounds.End.Y);
@@ -216,7 +210,6 @@ public partial class MovementComponent : Node2D
 				InsideHedgeDirection += corner / 2;
 			}
 		}
-
 		ReusableRay.Position = bl;
 		ReusableRay.TargetPosition = bl + Vector2.Down;
 		ReusableRay.ForceRaycastUpdate();
@@ -252,22 +245,22 @@ public partial class MovementComponent : Node2D
 		characterBody2D.Velocity = CurrentVelocity;
 		ApplyCourseCorrection(characterBody2D);
 		characterBody2D.MoveAndSlide();
-		float y = parentController.GlobalPosition.Y;
-		float x = IsOnWall ? parentController.GlobalPosition.Round().X : parentController.GlobalPosition.X;
-		parentController.GlobalPosition = new Vector2(x, y);
+		float y = ParentController.GlobalPosition.Y;
+		float x = IsOnWall ? ParentController.GlobalPosition.Round().X : ParentController.GlobalPosition.X;
+		ParentController.GlobalPosition = new Vector2(x, y);
 	}
-	public void SetParentController(PlayerController val) { parentController = val; }
+	public void SetParentController(PlayerController val) { ParentController = val; }
 
 	private void ApplyCourseCorrection(CharacterBody2D characterBody2D)
 	{
 		if (!CourseCorrectionEnabled) return;
 
 		var colSize = CollisionComponent.Shape.GetRect().Size;
-		var extent = Mathf.Sign(FacingDirection.X) * colSize.X / 2;
+		var extent = Mathf.Sign(ParentController.PlayerInfo.LookDirection) * colSize.X / 2;
 
 		// Lower corner check
-		CourseCorrectRayXd.TargetPosition = 20 * Vector2.Right * Mathf.Sign(FacingDirection.X);
-		CourseCorrectRayXu.TargetPosition = 20 * Vector2.Right * Mathf.Sign(FacingDirection.X);
+		CourseCorrectRayXd.TargetPosition = 20 * Vector2.Right * Mathf.Sign(ParentController.PlayerInfo.LookDirection);
+		CourseCorrectRayXu.TargetPosition = 20 * Vector2.Right * Mathf.Sign(ParentController.PlayerInfo.LookDirection);
 
 		CourseCorrectRayXu.Position = new Vector2(extent, -3f);
 		CourseCorrectRayXd.Position = new Vector2(extent, colSize.Y / 2);
@@ -279,11 +272,11 @@ public partial class MovementComponent : Node2D
 		var colliderDown = CourseCorrectRayXd.GetCollider();
 
 		bool upcomingCorner = colliderUp is not TileMap && colliderDown is TileMap;
-		upcomingCorner &= (FacingDirection.Normalized() + CourseCorrectRayXd.GetCollisionNormal()).Length() < 0.00001f;
+		upcomingCorner &= (ParentController.PlayerInfo.LookDirection * Vector2.Right + CourseCorrectRayXd.GetCollisionNormal()).Length() < 0.00001f;
 
 		if (upcomingCorner)
 		{
-			parentController.GlobalPosition = new Vector2(GlobalPosition.X, GlobalPosition.Y - 3f);
+			ParentController.GlobalPosition = new Vector2(GlobalPosition.X, GlobalPosition.Y - 3f);
 			return;
 		}
 
@@ -298,11 +291,11 @@ public partial class MovementComponent : Node2D
 		colliderDown = CourseCorrectRayXd.GetCollider();
 
 		upcomingCorner = colliderUp is TileMap && colliderDown is not TileMap;
-		upcomingCorner &= (FacingDirection.Normalized() + CourseCorrectRayXu.GetCollisionNormal()).Length() < 0.00001f;
+		upcomingCorner &= (ParentController.PlayerInfo.LookDirection * Vector2.Right + CourseCorrectRayXu.GetCollisionNormal()).Length() < 0.00001f;
 
 		if (upcomingCorner)
 		{
-			parentController.GlobalPosition = new Vector2(GlobalPosition.X, GlobalPosition.Y + 3f);
+			ParentController.GlobalPosition = new Vector2(GlobalPosition.X, GlobalPosition.Y + 3f);
 			return;
 		}
 	}
@@ -350,7 +343,7 @@ public partial class MovementComponent : Node2D
 	}
 	public override void _PhysicsProcess(double delta)
 	{
-		RealPositionChange = (parentController.GlobalPosition - _previousPosition) / (float)delta;
-		_previousPosition = parentController.GlobalPosition;
+		RealPositionChange = (ParentController.GlobalPosition - _previousPosition) / (float)delta;
+		_previousPosition = ParentController.GlobalPosition;
 	}
 }

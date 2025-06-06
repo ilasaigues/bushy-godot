@@ -10,7 +10,7 @@ namespace BushyCore
 
         protected override void EnterStateInternal(params IBaseStateConfig[] configs)
         {
-
+            Agent.PlayerInfo.IsAttacking = true;
         }
 
         public void SetFirstAttack(ComboAttackData attackData)
@@ -24,6 +24,7 @@ namespace BushyCore
         protected override void ExitStateInternal()
         {
             base.ExitStateInternal();
+            Agent.PlayerInfo.IsAttacking = false;
             AttackCooldownTimer.Stop();
             ComboTimer.Stop();
         }
@@ -51,14 +52,14 @@ namespace BushyCore
                 {
                     if (Agent.MovementInputVector.X == 0)
                     {
-                        throw StateInterrupt.New<IdleGroundedState>(true);
+                        ChangeState<IdleGroundedState>(true);
                     }
                     else
                     {
-                        throw StateInterrupt.New<WalkState>(true);
+                        ChangeState<WalkState>(true);
                     }
                 }
-                throw StateInterrupt.New<FallState>(true);
+                ChangeState<FallState>(true);
             }
 
             // process the current attack state (air or ground) and return the according executionstatus, like allowed movement and such

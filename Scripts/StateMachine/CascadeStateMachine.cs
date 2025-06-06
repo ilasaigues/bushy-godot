@@ -39,6 +39,11 @@ namespace BushyCore
             });
         }
 
+        public void SendMessageToStates(Enum message, params object[] args)
+        {
+            TryToChain(sm => sm.OnMessageToStateSent(message, args));
+        }
+
         private void TryOrCascade(Action handler)
         {
             try
@@ -47,6 +52,10 @@ namespace BushyCore
             }
             catch (StateInterrupt interrupt)
             {
+                if (interrupt.NextStateType == typeof(INullState))
+                {
+                    return;
+                }
                 CascadeThroughStates(interrupt.NextStateType, interrupt.Configs);
             }
         }
@@ -60,9 +69,11 @@ namespace BushyCore
             }
         }
 
-        public void SetState(Type stateType)
+
+
+        public void SetState(Type stateType, params StateConfig.IBaseStateConfig[] configs)
         {
-            var interrupt = new StateInterrupt(stateType);
+            var interrupt = new StateInterrupt(stateType, configs: configs);
             CascadeThroughStates(interrupt.NextStateType, interrupt.Configs);
         }
 
@@ -92,6 +103,10 @@ namespace BushyCore
             }
             catch (StateInterrupt interrupt)
             {
+                if (interrupt.NextStateType == typeof(INullState))
+                {
+                    return;
+                }
                 CascadeThroughStates(interrupt.NextStateType, interrupt.Configs);
             }
         }

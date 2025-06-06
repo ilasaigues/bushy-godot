@@ -25,7 +25,14 @@ namespace BushyCore
 			public const string AttackTrigger = "AttackTrigger";
 			public const string UpAttackTrigger = "UpAttackTrigger";
 			public const string DownAttackTrigger = "DownAttackTrigger";
+			public const string ProjectileAttackTrigger = "ProjectileAttackTrigger";
+			public const string ProjectileDirectionBlendValues = "parameters/PlayerMainLoop/ProjectileAttack/blend_position";
 			public const string BushBlendValues = "parameters/BushBlendSpace/blend_position";
+		}
+
+		public enum StateMessage
+		{
+			Knockback,
 		}
 
 
@@ -37,6 +44,8 @@ namespace BushyCore
 		[Export] public AnimationController AnimController;
 		[Export] public Sprite2DComponent Sprite2DComponent;
 		[Export] private SpriteTrail spriteTrail;
+		[Export] private Sprite2D rangeVFX;
+		public AnimationPlayer RangeVFXAnimPlayer { get; private set; }
 		public PlayerInfo PlayerInfo;
 
 		private Vector2 _movementInputVector;
@@ -66,7 +75,8 @@ namespace BushyCore
 			BindInputs();
 			CascadeStateMachine.SetAgent(this);
 			CascadeStateMachine.SetState(typeof(FallState));
-			//Engine.TimeScale = 0.1f;
+			RangeVFXAnimPlayer = rangeVFX.GetChild<AnimationPlayer>(0);
+			rangeVFX.Visible = false;
 		}
 
 		void BindInput(DisposableBinding binding)
@@ -114,12 +124,18 @@ namespace BushyCore
 
 		private void OnHorizontalAxisChanged(InputAxis horizontalAxis)
 		{
-			_movementInputVector.X = horizontalAxis.Value;
+			if (!PlayerInfo.IsAttacking)
+			{
+				_movementInputVector.X = horizontalAxis.Value;
+			}
 		}
 
 		private void OnVerticalAxisChanged(InputAxis verticalAxis)
 		{
-			_movementInputVector.Y = verticalAxis.Value;
+			if (!PlayerInfo.IsAttacking)
+			{
+				_movementInputVector.Y = verticalAxis.Value;
+			}
 		}
 
 		public void OnArea2DEnter(Area2D areaNode)
@@ -139,9 +155,13 @@ namespace BushyCore
 			_disposableBindings.Clear();
 		}
 
+		public void Knockback(Vector2 velocity)
+		{
+			CascadeStateMachine.SendMessageToStates(StateMessage.Knockback, velocity);
+		}
+
 		public override void _ExitTree()
 		{
-
 			ClearInputBindings();
 			_disposableBindings.ForEach(d => d.Dispose());
 			base._ExitTree();
@@ -157,7 +177,15 @@ namespace BushyCore
 		{
 			MovementComponent.UpdateState(this);
 			MovementComponent.Move(this);
-			PlayerInfo.LookDirection = Mathf.Sign(MovementComponent.CurrentVelocity.X);
+			if (MovementComponent.Velocities[MovementComponent.VelocityType.MainMovement].X > 0)
+			{
+				PlayerInfo.LookDirection = 1;
+			}
+			else if (MovementComponent.Velocities[MovementComponent.VelocityType.MainMovement].X < 0)
+			{
+				PlayerInfo.LookDirection = -1;
+			}
+			rangeVFX.FlipH = PlayerInfo.LookDirection == -1;
 		}
 	}
 

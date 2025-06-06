@@ -19,6 +19,14 @@ public partial class InputManager : Node
 
     public List<InputAction> InputActions { get; private set; } = new();
 
+    public enum InputMode
+    {
+        Keyboard,
+        Controller,
+    }
+
+    public InputMode LastInputMode { get; private set; } = InputMode.Keyboard;
+
     public override void _Ready()
     {
         Instance ??= this;
@@ -41,6 +49,11 @@ public partial class InputManager : Node
 
     public override void _Input(InputEvent @event)
     {
+        if (@event is InputEventKey or InputEventMouse)
+            LastInputMode = InputMode.Keyboard;
+        else if (@event is InputEventJoypadButton or InputEventJoypadMotion)
+            LastInputMode = InputMode.Controller;
+
         InputActions.ForEach(inputAction => inputAction.PassInputEvent(@event));
     }
 

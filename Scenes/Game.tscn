@@ -1561,6 +1561,7 @@ process_callback = 0
 position_smoothing_speed = 1.0
 script = ExtResource("6_ov3y4")
 _targetNode = NodePath("../Player")
+_drawDebugLines = false
 _horizontalAnchors = 40.0
 _horizontalSmoothing = 0.4
 _topThreshold = -80.0
