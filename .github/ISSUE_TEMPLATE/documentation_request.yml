@@ -1,0 +1,23 @@
+name: Documentation Request
+description: Request documentation related to a feature
+title: "[Document]: "
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: documentation-request
+    attributes:
+      label: Documentaiton request
+      description: What feature or process needs to be documented?
+      placeholder: What information do you seek?
+      value: "Need clarification on the way X enemy behaves"
+    validations:
+      required: true
+  - type: textarea
+    id: suggested-location
+    attributes:
+      label: Suggested Location in Docs
+      description: Where would you suggest we add this new information in the existing documentatio?
+      placeholder: Where should this go?
+      value: "Add it somewhere around there..."
+    validations:
+      required: false
