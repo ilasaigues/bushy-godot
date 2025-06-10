@@ -16,7 +16,7 @@ body:
     id: suggested-location
     attributes:
       label: Suggested Location in Docs
-      description: Where would you suggest we add this new information in the existing documentatio?
+      description: Where would you suggest we add this new information in the existing documentation?
       placeholder: Where should this go?
       value: "Add it somewhere around there..."
     validations:
