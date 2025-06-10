@@ -1,0 +1,27 @@
+name: Implementation Request
+description: Request, in detail, a new feature implementation.
+title: "[Implement]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: request-summary
+    attributes:
+      label: Request Summary
+      description: What is the desired implementation?
+      placeholder: Whatchu want?
+      value: "Please add X or Y feature"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What are the required checkboxes the feature must pass before it is considered done?
+      placeholder: What needs to be done?
+      value: |
+        -
+        -
+        -
+        ...
+    validations:
+      required: true
