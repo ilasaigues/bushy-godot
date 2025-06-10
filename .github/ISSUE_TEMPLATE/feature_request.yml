@@ -1,7 +1,6 @@
 name: Implementation Request
 description: Request, in detail, a new feature implementation.
 title: "[Implement]: "
-labels: ["bug"]
 body:
   - type: textarea
     id: request-summary
