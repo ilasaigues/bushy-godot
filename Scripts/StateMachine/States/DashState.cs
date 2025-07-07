@@ -23,7 +23,15 @@ namespace BushyCore
         protected override void EnterStateInternal(params IBaseStateConfig[] configs)
         {
             SetupFromConfigs(configs);
-            direction = Agent.PlayerInfo.LookDirection;
+            if (constantVelocity.X == 0)
+            {
+                direction = Agent.PlayerInfo.LookDirection;
+                constantVelocity.X = Agent.PlayerInfo.LookDirection * Agent.CharacterVariables.DashVelocity;
+            }
+            else
+            {
+                direction = Mathf.Sign(constantVelocity.X);
+            }
 
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
             Agent.PlayerInfo.IsInDashMode = true;
@@ -71,6 +79,7 @@ namespace BushyCore
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
             CheckHedge();
+            // 
             if (DashEndTimer.TimeLeft == 0)
             {
                 EndDash();
