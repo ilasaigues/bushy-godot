@@ -17,7 +17,6 @@ namespace BushyCore
             add
             {
                 _onEventTriggered ??= a => { };
-                GD.Print("ADDED");
                 _onEventTriggered += value;
             }
             remove { _onEventTriggered -= value; }
@@ -28,14 +27,12 @@ namespace BushyCore
         protected void TestWithEditorValue()
         {
             if (Engine.IsEditorHint()) return;
-            GD.Print("BOLAS");
             TriggerEvent(_editorValue);
         }
 
         public void TriggerEvent(T value)
         {
             if (Engine.IsEditorHint()) return;
-            GD.Print("TRIGGERING EVENT");
             _onEventTriggered ??= a => { };
             _onEventTriggered.Invoke(value);
         }

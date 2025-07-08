@@ -1,4 +1,4 @@
-[gd_resource type="AnimationNodeStateMachine" load_steps=64 format=3 uid="uid://laxffl7ikanw"]
+[gd_resource type="AnimationNodeStateMachine" load_steps=74 format=3 uid="uid://laxffl7ikanw"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_vodyf"]
 animation = &"air_attack_1"
@@ -220,6 +220,34 @@ states/turn/position = Vector2(751, 236)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_arntx"), "idle", "run_start", SubResource("AnimationNodeStateMachineTransition_lslt6"), "run_start", "run", SubResource("AnimationNodeStateMachineTransition_ulo2v"), "run", "turn", SubResource("AnimationNodeStateMachineTransition_1iu4k"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_5v66d"), "turn", "run", SubResource("AnimationNodeStateMachineTransition_miouo")]
 graph_offset = Vector2(19.643, 20)
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0sdxd"]
+animation = &"range_attack_up"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_4t8tr"]
+animation = &"range_attack_side"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ukuj2"]
+animation = &"range_attack_down"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_suaxv"]
+animation = &"range_attack_side"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_1fs3b"]
+animation = &"range_attack_side"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_sq32y"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_0sdxd")
+blend_point_0/pos = Vector2(0, -1)
+blend_point_1/node = SubResource("AnimationNodeAnimation_4t8tr")
+blend_point_1/pos = Vector2(0, 0)
+blend_point_2/node = SubResource("AnimationNodeAnimation_ukuj2")
+blend_point_2/pos = Vector2(0, 1)
+blend_point_3/node = SubResource("AnimationNodeAnimation_suaxv")
+blend_point_3/pos = Vector2(-1, 0)
+blend_point_4/node = SubResource("AnimationNodeAnimation_1fs3b")
+blend_point_4/pos = Vector2(1, 0)
+blend_mode = 1
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_m0x7a"]
 animation = &"dash_end"
 
@@ -278,19 +306,39 @@ advance_expression = "CheckTrigger(\"AttackTrigger\")"
 switch_mode = 2
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ycx1c"]
+advance_mode = 2
+advance_expression = "CheckTrigger(\"ProjectileAttackTrigger\")"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_n25i1"]
+advance_mode = 2
+advance_expression = "CheckTrigger(\"ProjectileAttackTrigger\")"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_on85w"]
+switch_mode = 2
+advance_mode = 2
+advance_condition = &"OnAir"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ivq8k"]
+switch_mode = 2
+advance_mode = 2
+advance_condition = &"Grounded"
+
 [resource]
 states/AirAttack/node = SubResource("AnimationNodeStateMachine_ycx1c")
 states/AirAttack/position = Vector2(361, -29)
 states/AirState/node = SubResource("AnimationNodeStateMachine_miouo")
-states/AirState/position = Vector2(361, 73)
+states/AirState/position = Vector2(368, 38)
 states/GroundAttack/node = SubResource("AnimationNodeStateMachine_n25i1")
 states/GroundAttack/position = Vector2(341, 312)
 states/Grounded/node = SubResource("AnimationNodeStateMachine_x63xi")
-states/Grounded/position = Vector2(341, 217)
-states/Start/position = Vector2(73, 100)
+states/Grounded/position = Vector2(368, 243)
+states/ProjectileAttack/node = SubResource("AnimationNodeBlendSpace2D_sq32y")
+states/ProjectileAttack/position = Vector2(243, 121)
+states/Start/position = Vector2(54, 121)
 states/dash_end/node = SubResource("AnimationNodeAnimation_m0x7a")
 states/dash_end/position = Vector2(572, 63)
 states/dash_start/node = SubResource("AnimationNodeAnimation_1iu4k")
 states/dash_start/position = Vector2(559, 166)
-transitions = ["Start", "Grounded", SubResource("AnimationNodeStateMachineTransition_i2e8t"), "Start", "AirState", SubResource("AnimationNodeStateMachineTransition_1e7my"), "AirState", "Grounded", SubResource("AnimationNodeStateMachineTransition_x63xi"), "Grounded", "AirState", SubResource("AnimationNodeStateMachineTransition_qidb7"), "AirState", "dash_start", SubResource("AnimationNodeStateMachineTransition_lyrkg"), "dash_start", "dash_end", SubResource("AnimationNodeStateMachineTransition_c43xd"), "dash_end", "AirState", SubResource("AnimationNodeStateMachineTransition_avx33"), "Grounded", "dash_start", SubResource("AnimationNodeStateMachineTransition_rxg2u"), "dash_start", "AirState", SubResource("AnimationNodeStateMachineTransition_xixlo"), "Grounded", "GroundAttack", SubResource("AnimationNodeStateMachineTransition_ggkad"), "GroundAttack", "Grounded", SubResource("AnimationNodeStateMachineTransition_0sdxd"), "AirState", "AirAttack", SubResource("AnimationNodeStateMachineTransition_fsv7v"), "AirAttack", "AirState", SubResource("AnimationNodeStateMachineTransition_3q0lw")]
-graph_offset = Vector2(-218, -26)
+transitions = ["Start", "Grounded", SubResource("AnimationNodeStateMachineTransition_i2e8t"), "Start", "AirState", SubResource("AnimationNodeStateMachineTransition_1e7my"), "AirState", "Grounded", SubResource("AnimationNodeStateMachineTransition_x63xi"), "Grounded", "AirState", SubResource("AnimationNodeStateMachineTransition_qidb7"), "AirState", "dash_start", SubResource("AnimationNodeStateMachineTransition_lyrkg"), "dash_start", "dash_end", SubResource("AnimationNodeStateMachineTransition_c43xd"), "dash_end", "AirState", SubResource("AnimationNodeStateMachineTransition_avx33"), "Grounded", "dash_start", SubResource("AnimationNodeStateMachineTransition_rxg2u"), "dash_start", "AirState", SubResource("AnimationNodeStateMachineTransition_xixlo"), "Grounded", "GroundAttack", SubResource("AnimationNodeStateMachineTransition_ggkad"), "GroundAttack", "Grounded", SubResource("AnimationNodeStateMachineTransition_0sdxd"), "AirState", "AirAttack", SubResource("AnimationNodeStateMachineTransition_fsv7v"), "AirAttack", "AirState", SubResource("AnimationNodeStateMachineTransition_3q0lw"), "AirState", "ProjectileAttack", SubResource("AnimationNodeStateMachineTransition_ycx1c"), "Grounded", "ProjectileAttack", SubResource("AnimationNodeStateMachineTransition_n25i1"), "ProjectileAttack", "AirState", SubResource("AnimationNodeStateMachineTransition_on85w"), "ProjectileAttack", "Grounded", SubResource("AnimationNodeStateMachineTransition_ivq8k")]
+graph_offset = Vector2(-280, 12)

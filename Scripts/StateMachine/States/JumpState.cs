@@ -42,7 +42,7 @@ namespace BushyCore
                 }
                 if (ParentState.VerticalVelocity > Agent.CharacterVariables.AirSpeedThresholds.X)
                 {
-                    throw StateInterrupt.New<FallState>();
+                    ChangeState<FallState>();
                 }
             }
             return new StateExecutionStatus(prevStatus);

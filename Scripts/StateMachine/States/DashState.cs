@@ -23,9 +23,15 @@ namespace BushyCore
         protected override void EnterStateInternal(params IBaseStateConfig[] configs)
         {
             SetupFromConfigs(configs);
-            direction = Agent.MovementInputVector.X != 0
-                ? Mathf.Sign(Agent.MovementInputVector.X)
-                : Mathf.Sign(Agent.MovementComponent.FacingDirection.X);
+            if (constantVelocity.X == 0)
+            {
+                direction = Agent.PlayerInfo.LookDirection;
+                constantVelocity.X = Agent.PlayerInfo.LookDirection * Agent.CharacterVariables.DashVelocity;
+            }
+            else
+            {
+                direction = Mathf.Sign(constantVelocity.X);
+            }
 
             Agent.MovementComponent.Velocities[VelocityType.Gravity] = Vector2.Zero;
             Agent.PlayerInfo.IsInDashMode = true;
@@ -42,8 +48,8 @@ namespace BushyCore
             StartDash();
             Agent.AnimController.SetCondition(PlayerController.AnimConditions.Dashing, true);
             base.Agent.CollisionComponent.CallDeferred(
-         CharacterCollisionComponent.MethodName.SwitchShape,
-         (int)CharacterCollisionComponent.ShapeMode.CILINDER);
+                CharacterCollisionComponent.MethodName.SwitchShape,
+                (int)CharacterCollisionComponent.ShapeMode.CILINDER);
 
             Agent.CollisionComponent.ToggleHedgeCollision(false);
         }
@@ -73,6 +79,7 @@ namespace BushyCore
         protected override StateExecutionStatus ProcessStateInternal(StateExecutionStatus prevStatus, double delta)
         {
             CheckHedge();
+            // 
             if (DashEndTimer.TimeLeft == 0)
             {
                 EndDash();
@@ -111,9 +118,9 @@ namespace BushyCore
                 exitVelocity * direction,
                 Agent.MovementComponent.Velocities[VelocityType.MainMovement].Y); if (Agent.MovementComponent.IsOnFloor)
             {
-                throw StateInterrupt.New<WalkState>(true);
+                ChangeState<WalkState>(true);
             }
-            throw StateInterrupt.New<FallState>(true);
+            ChangeState<FallState>(true);
         }
 
         private void CheckHedge()
@@ -123,7 +130,7 @@ namespace BushyCore
                 return;
             }
 
-            throw StateInterrupt.New<HedgeEnteringState>(true,
+            ChangeState<HedgeEnteringState>(true,
                     new InitialVelocityVectorConfig(Agent.MovementComponent.CurrentVelocity));
         }
         protected void VelocityUpdate()
@@ -160,7 +167,7 @@ namespace BushyCore
                 var jumpVelocity = Agent.MovementComponent.Velocities[VelocityType.MainMovement];
                 jumpVelocity.X = Mathf.Sign(jumpVelocity.X) * Agent.CharacterVariables.DashJumpSpeed;
                 Agent.PlayerInfo.IsInDashMode = true;
-                throw StateInterrupt.New<JumpState>(true, new InitialVelocityVectorConfig(jumpVelocity, false, true));
+                ChangeState<JumpState>(true, new InitialVelocityVectorConfig(jumpVelocity, false, true));
             }
         }
 

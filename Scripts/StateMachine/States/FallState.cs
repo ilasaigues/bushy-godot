@@ -41,7 +41,7 @@ namespace BushyCore
         {
             if (ParentState.CanCoyoteJump && actionType == InputAction.InputActionType.InputPressed && Action == InputManager.Instance.JumpAction)
             {
-                throw StateInterrupt.New<JumpState>(false,
+                ChangeState<JumpState>(false,
                     new StateConfig.InitialVelocityVectorConfig(Agent.MovementComponent.Velocities[VelocityType.MainMovement])
                 );
             }

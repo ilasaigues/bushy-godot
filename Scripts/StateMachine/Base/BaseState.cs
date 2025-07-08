@@ -16,7 +16,7 @@ namespace BushyCore
             Agent = newAgent;
         }
 
-        public virtual bool CanEnterState(Type type, params StateConfig.IBaseStateConfig[] configs) => type == GetType();
+        public virtual bool CanEnterState(Type type, params StateConfig.IBaseStateConfig[] configs) => !Active && type == GetType();
 
 
         public virtual void EnterState(Type type, params StateConfig.IBaseStateConfig[] configs)
@@ -27,7 +27,6 @@ namespace BushyCore
             }
             Active = true;
             _timeOfActivation = DateTime.Now;
-            GD.Print("Entering state: " + GetType().Name);
             EnterStateInternal(configs);
         }
 
@@ -55,6 +54,7 @@ namespace BushyCore
 
         public virtual StateAnimationLevel UpdateAnimation() => StateAnimationLevel.Regular;
         public bool OnRigidBodyInteraction(Node2D node, bool enter) => OnRigidBodyInteractionInternal(node, enter);
+        public virtual bool Message(Enum message, params object[] args) => true;
         protected virtual bool OnRigidBodyInteractionInternal(Node2D node, bool enter) => true;
         public bool OnAreaChange(Area2D area, bool enter) => OnAreaChangeInternal(area, enter);
         protected virtual bool OnAreaChangeInternal(Area2D area, bool enter) => true;
@@ -63,5 +63,11 @@ namespace BushyCore
         public bool OnInputAxisChanged(InputAxis axis) => OnInputAxisChangedInternal(axis);
         protected virtual bool OnInputAxisChangedInternal(InputAxis axis) => true;
         public virtual string GetStateName() => GetType().Name;
+
+        protected virtual void ChangeState<newStateType>(bool stopStateMachine = false, params StateConfig.IBaseStateConfig[] configs) where newStateType : IState
+        {
+            GD.PrintRich($"Changing from: [color=#FF0000]{GetType()}[/color] to [color=#00FF00]{typeof(newStateType)}[/color]");
+            throw new StateInterrupt(typeof(newStateType), stopStateMachine, configs);
+        }
     }
 }

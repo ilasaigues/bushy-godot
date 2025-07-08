@@ -21,13 +21,7 @@ public partial class Sprite2DComponent : Sprite2D
 
 	private void CheckSpriteOrientation()
 	{
-		var mainVelocity = movementComponent.Velocities[MovementComponent.VelocityType.MainMovement];
-
-		if (mainVelocity != Vector2.Zero)
-		{
-			FlipH = movementComponent.FacingDirection.X < 0f;
-			return;
-		}
+		FlipH = movementComponent.ParentController.PlayerInfo.LookDirection < 0;
 	}
 
 	public void ForceOrientation(Vector2 direction)

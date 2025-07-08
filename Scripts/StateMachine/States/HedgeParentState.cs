@@ -114,29 +114,29 @@ namespace BushyCore
 			Agent.CollisionComponent.ToggleHedgeCollision(true);
 			Agent.Sprite2DComponent.ForceOrientation(new Vector2(Agent.MovementComponent.CurrentVelocity.X, -10));
 
-			var direction = Agent.MovementComponent.FacingDirection;
+			var direction = Agent.PlayerInfo.LookDirection * Vector2.Right;
 			if (isExitDashBuffered && isExitJumpBuffered)
 			{
 				Agent.MovementComponent.Velocities[VelocityType.MainMovement] = new Vector2(Agent.CharacterVariables.DashJumpSpeed * Mathf.Sign(direction.X), 0);
 				Agent.PlayerInfo.DashEnabled = false;
-				throw StateInterrupt.New<JumpState>(false,
+				ChangeState<JumpState>(false,
 					StateConfig.InitialVelocityVector(
 						Agent.MovementComponent.Velocities[VelocityType.MainMovement], false, true));
 			}
 
 			if (isExitDashBuffered)
 			{
-				throw StateInterrupt.New<DashState>(false,
+				ChangeState<DashState>(false,
 					StateConfig.InitialVelocityVector(new Vector2(Agent.CharacterVariables.DashVelocity * Mathf.Sign(direction.X), 0)));
 			}
 
 			if (isExitJumpBuffered)
 			{
-				throw StateInterrupt.New<JumpState>(false,
+				ChangeState<JumpState>(false,
 					StateConfig.InitialVelocityVector(Agent.MovementComponent.Velocities[VelocityType.MainMovement]));
 			}
 
-			throw StateInterrupt.New<FallState>(false, new StateConfig.InitialVelocityVectorConfig(CurrentVelocity));
+			ChangeState<FallState>(false, new StateConfig.InitialVelocityVectorConfig(CurrentVelocity));
 		}
 
 		private void OnJumpActionCancelled()

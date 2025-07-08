@@ -40,3 +40,7 @@ HedgeTurnDeceleration = 1100
 HedgeOvercappedDeceleration = 800
 HedgeMovementSpeed = 120
 MaxHedgeEnterSpeed = 200
+ProjectileSpeed = 250.0
+ProjectileLifetime = 1.0
+ProjectileBlastHorizontalKnockback = 500.0
+ProjectileBlastVerticalKnockback = -150.0

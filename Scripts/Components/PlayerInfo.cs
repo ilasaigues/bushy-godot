@@ -13,6 +13,9 @@ public class PlayerInfo
 	public double LastDashTime;
 	public bool IsInHedge;
 	private bool _lookingRight = true;
+
+	public bool IsAttacking = false;
+
 	public int LookDirection
 	{
 		get

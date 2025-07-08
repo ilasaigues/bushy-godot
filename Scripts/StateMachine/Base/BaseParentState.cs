@@ -22,7 +22,7 @@ namespace BushyCore
 
         public override bool CanEnterState(Type type, params IBaseStateConfig[] configs)
         {
-            return SubStates.ContainsKey(type);
+            return SubStates.TryGetValue(type, out var subState);
         }
 
 
@@ -102,6 +102,10 @@ namespace BushyCore
             }
             catch (StateInterrupt interrupt)
             {
+                if (interrupt.NextStateType == typeof(INullState))
+                {
+                    return default;
+                }
                 if (!SetSubstate(interrupt.NextStateType, interrupt.Configs))
                 {
                     throw;
